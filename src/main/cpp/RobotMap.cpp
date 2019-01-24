@@ -12,11 +12,18 @@
   shared_ptr<rev::CANSparkMax> RobotMap::driveBaseFrontRightDrive;
   shared_ptr<WPI_TalonSRX> RobotMap::driveBaseFrontRightSteer;
   shared_ptr<rev::CANSparkMax> RobotMap::driveBaseRearLeftDrive;
-  shared_ptr<WPI_TalonSRX> RobotMap:: driveBaseRearLeftSteer;
+  shared_ptr<WPI_TalonSRX> RobotMap::driveBaseRearLeftSteer;
   shared_ptr<rev::CANSparkMax> RobotMap::driveBaseRearRightDrive;
   shared_ptr<WPI_TalonSRX> RobotMap::driveBaseRearRightSteer;
 
   std::shared_ptr<BSGyro> RobotMap::gyro;
+
+  std::shared_ptr<WPI_TalonSRX> RobotMap::elevatorMotor;
+  std::shared_ptr<WPI_TalonSRX> RobotMap::crawlMotor;
+  std::shared_ptr<WPI_TalonSRX> RobotMap::rotateLeftMotor;
+  std::shared_ptr<WPI_VictorSPX> RobotMap::rotateRightMotor;
+  std::shared_ptr<WPI_VictorSPX> RobotMap::beaterTopMotor;
+  std::shared_ptr<WPI_VictorSPX> RobotMap::beaterBottomMotor;
 
 
 RobotMap::RobotMap() {
@@ -30,6 +37,12 @@ RobotMap::RobotMap() {
   driveBaseRearLeftSteer.reset(new WPI_TalonSRX{6});
   driveBaseRearRightSteer.reset(new WPI_TalonSRX{8});
 
-  // FIXME: Need Info
+  elevatorMotor.reset(new WPI_TalonSRX{9});
+  crawlMotor.reset(new WPI_TalonSRX{10});
+  rotateLeftMotor.reset(new WPI_TalonSRX{11});
+  rotateRightMotor.reset(new WPI_VictorSPX{12});
+  beaterTopMotor.reset(new WPI_VictorSPX{13});
+  beaterBottomMotor.reset(new WPI_VictorSPX{14});
+
   gyro.reset(new BSGyro(1));
 }
