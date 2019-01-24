@@ -44,5 +44,5 @@ RobotMap::RobotMap() {
   beaterTopMotor.reset(new WPI_VictorSPX{13});
   beaterBottomMotor.reset(new WPI_VictorSPX{14});
 
-  gyro.reset(new BSGyro(1));
+  gyro.reset(new BSGyro(crawlMotor.get()));
 }
