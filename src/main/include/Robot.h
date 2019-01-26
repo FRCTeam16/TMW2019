@@ -17,6 +17,7 @@
 #include "OI.h"
 #include "DMS/DmsProcessManager.h"
 #include "DMS/StatusReporter.h"
+#include "Subsystems/JackScrews.h"
 
 
 
@@ -46,5 +47,8 @@ private:
   std::unique_ptr<RobotMap> robotMap;
   std::shared_ptr<StatusReporter> statusReporter;
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
+
+  std::shared_ptr<JackScrews> jackScrews;
+  bool runningScrews = false;	// true when running jackscrews
 
 };

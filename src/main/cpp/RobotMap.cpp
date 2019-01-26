@@ -28,6 +28,8 @@
   std::shared_ptr<Solenoid> RobotMap::frontAxleSolenoid;
   std::shared_ptr<Solenoid> RobotMap::rearAxleSolenoid;
 
+  std::shared_ptr<Compressor> RobotMap::compressor;
+
 
 
 RobotMap::RobotMap() {
@@ -52,5 +54,8 @@ RobotMap::RobotMap() {
 
   frontAxleSolenoid.reset(new Solenoid{0});
   rearAxleSolenoid.reset(new Solenoid{1});
+
+  compressor.reset(new Compressor{0});
+  compressor->SetClosedLoopControl(true);
 
 }

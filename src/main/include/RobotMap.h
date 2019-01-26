@@ -40,4 +40,6 @@ class RobotMap {
   static std::shared_ptr<Solenoid> frontAxleSolenoid;
   static std::shared_ptr<Solenoid> rearAxleSolenoid;
 
+  static std::shared_ptr<Compressor> compressor;
+
 };

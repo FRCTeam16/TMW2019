@@ -6,8 +6,10 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-#include <Robot.h>
-#include <WPILib.h>
+#include <frc/WPILib.h>
+#include <frc/Solenoid.h>
+
+using namespace frc;
 
 class JackScrews {
  private:
@@ -16,6 +18,8 @@ class JackScrews {
 
     bool running = false;
     bool direction = 1.0;
+
+    double openLoopSpeed = 0.0;
 
  public:
   JackScrews(std::shared_ptr<Solenoid> frontAxleSolenoid, std::shared_ptr<Solenoid> rearAxleSolenoid) : 
@@ -33,4 +37,6 @@ class JackScrews {
   // void SetExtendRR(bool extend);
 
   void SetExtendScrews(bool extend, bool running);
+
+  void RunOpenLoop(double speed);
 };

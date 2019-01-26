@@ -24,6 +24,21 @@ void TMW2019SwerveWheel::InitializeDrivePID() {
     assert(driveMotor.get() != nullptr);
     frc::Preferences *prefs = frc::Preferences::GetInstance();
 
+    if (!prefs->ContainsKey("DriveP")) {
+        prefs->PutFloat("DriveP", 0.00);
+    }
+    if (!prefs->ContainsKey("DriveI")) {
+        prefs->PutFloat("DriveI", 0.00);
+    }
+    if (!prefs->ContainsKey("DriveD")) {
+        prefs->PutFloat("DriveD", 0.00);
+    }
+    if (!prefs->ContainsKey("DriveF")) {
+        prefs->PutFloat("DriveF", 0.00);
+    }
+    if (!prefs->ContainsKey("DriveIZone")) {
+        prefs->PutFloat("DriveIZone", 0.00);
+    }
     const double driveP = prefs->GetFloat("DriveP");
 	const double driveI = prefs->GetFloat("DriveI");
 	const double driveD = prefs->GetFloat("DriveD");
@@ -34,11 +49,14 @@ void TMW2019SwerveWheel::InitializeDrivePID() {
     driveMotor->Set(0.0);
     isOpenLoop = true;
 
-    driveMotor->GetPIDController().SetP(driveP, 0);    
-    driveMotor->GetPIDController().SetI(driveI, 0);
-    driveMotor->GetPIDController().SetD(driveD, 0);
-    driveMotor->GetPIDController().SetFF(driveF, 0);
-    driveMotor->GetPIDController().SetIZone(driveIZone, 0);
+
+    rev::CANPIDController pid = driveMotor->GetPIDController();
+    pid.SetP(driveP);    
+    pid.SetI(driveI);
+    pid.SetD(driveD);
+    pid.SetFF(driveF);
+    pid.SetIZone(driveIZone);
+    pid.SetOutputRange(-1.0, 1.0);
 }
 
 bool TMW2019SwerveWheel::IsOpenLoopDrive() {
@@ -79,7 +97,24 @@ void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
 
 void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
     // driveMotor->Set(ControlMode::Velocity, 0);
-    driveMotor->GetPIDController().SetReference(value, rev::ControlType::kVelocity);
+    std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ")\n";
+
+    frc::Preferences *prefs = frc::Preferences::GetInstance();
+    const double driveP = prefs->GetFloat("DriveP");
+	const double driveI = prefs->GetFloat("DriveI");
+	const double driveD = prefs->GetFloat("DriveD");
+	const double driveF = prefs->GetFloat("DriveF");
+	const double driveIZone = prefs->GetFloat("DriveIZone");
+
+    rev::CANPIDController pid = driveMotor->GetPIDController();
+    pid.SetP(driveP);    
+    pid.SetI(driveI);
+    pid.SetD(driveD);
+    pid.SetFF(driveF);
+    pid.SetIZone(driveIZone);
+    pid.SetOutputRange(-1.0, 1.0);
+
+    pid.SetReference(value, rev::ControlType::kVelocity);
     isOpenLoop = false;
 }
 
