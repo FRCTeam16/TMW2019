@@ -37,7 +37,7 @@ private:
 	std::shared_ptr<SwerveWheel> frontRight;
 	std::shared_ptr<SwerveWheel> rearLeft;
 	std::shared_ptr<SwerveWheel> rearRight;
-	std::vector<std::shared_ptr<SwerveWheel>> wheels;
+	
 
 	std::unique_ptr<CrabSpeed> crabSpeedTwist;
 	std::unique_ptr<FrontTwoAveragingDriveEncoderPIDSource> driveControlEncoderSource;
@@ -124,6 +124,9 @@ public:
 	Wheelbase GetWheelbase();
 
 	void SetConstantVelocity(double twistInput, double velocity);
+
+	// FIXME: Should be private
+	std::vector<std::shared_ptr<SwerveWheel>> wheels;
 
 	const double GetLastSpeedX() { return lastSpeedX; }
 	const double GetLastSpeedY() { return lastSpeedY; }

@@ -25,6 +25,10 @@
   std::shared_ptr<WPI_VictorSPX> RobotMap::beaterTopMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::beaterBottomMotor;
 
+  std::shared_ptr<Solenoid> RobotMap::frontAxleSolenoid;
+  std::shared_ptr<Solenoid> RobotMap::rearAxleSolenoid;
+
+
 
 RobotMap::RobotMap() {
   driveBaseFrontLeftDrive.reset(new rev::CANSparkMax{1, rev::CANSparkMaxLowLevel::MotorType::kBrushless});
@@ -45,4 +49,8 @@ RobotMap::RobotMap() {
   beaterBottomMotor.reset(new WPI_VictorSPX{14});
 
   gyro.reset(new BSGyro(crawlMotor.get()));
+
+  frontAxleSolenoid.reset(new Solenoid{0});
+  rearAxleSolenoid.reset(new Solenoid{1});
+
 }

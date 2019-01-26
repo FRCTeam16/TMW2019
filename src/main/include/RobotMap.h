@@ -37,4 +37,7 @@ class RobotMap {
   static std::shared_ptr<WPI_VictorSPX> beaterTopMotor;
   static std::shared_ptr<WPI_VictorSPX> beaterBottomMotor;
 
+  static std::shared_ptr<Solenoid> frontAxleSolenoid;
+  static std::shared_ptr<Solenoid> rearAxleSolenoid;
+
 };
