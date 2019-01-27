@@ -40,7 +40,6 @@ void ZeroGyro::Initialize() {
 void ZeroGyro::Execute() {
 
 }
-
 // Make this return true when this Command no longer needs to run execute()
 bool ZeroGyro::IsFinished() {
     return IsTimedOut();

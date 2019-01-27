@@ -28,12 +28,17 @@ void Robot::RobotInit() {
 	std::cout << "Robot::TeleopInit <=\n";
 }
 
+void Robot::DisabledPeriodic() {
+	frc::Scheduler::GetInstance()->Run();
+}
+
 void Robot::AutonomousInit() {
 	cout << "AutonomousInit => TeleopInit\n";
 	TeleopInit();
 }
 void Robot::AutonomousPeriodic() {
 	cout << "AutonomousPeriodic => TeleopPeriodic\n";
+	// if teleop call removed add frc::Scheduler::GetInstance()->Run();
 	TeleopPeriodic();
 }
 
@@ -47,9 +52,8 @@ void Robot::TeleopInit() {
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
-	
     double startTime = frc::Timer::GetFPGATimestamp();
-	// frc::Scheduler::GetInstance()->Run();
+	frc::Scheduler::GetInstance()->Run();
 	double threshold = 0.1;
 	const bool lockWheels = oi->DL6->Pressed();
 
