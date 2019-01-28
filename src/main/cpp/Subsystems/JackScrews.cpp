@@ -6,72 +6,82 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Subsystems/JackScrews.h"
-#include <robot.h>
+#include "Robot.h"
+#include "RobotMap.h"
 #include "Subsystems/Drive/DriveBase.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <iostream>
 
-  void JackScrews::Run() {
-    std::cout << "Jackscrews::Run(running = " << running << ") =>\n";
-    Preferences *prefs = Preferences::GetInstance();
-    if (!prefs->ContainsKey("ProtoScrewSpeed")) {
-      prefs->PutLong("ProtoScrewSpeed", 500);
-    } 
-    double rpm = prefs->GetLong("ProtoScrewSpeed");
+JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearAxleSolenoid(RobotMap::rearAxleSolenoid)
+{
+}
 
-    if (running) {
-      for (auto const& wheel : Robot::driveBase->wheels) {
-          std::cout << "Open Loop Speed: " << openLoopSpeed << "\n";
-          wheel->UseOpenLoopDrive(openLoopSpeed);
-      }
-    }
-    //     double speed = 0.0;
-    // if (running) {
-    //   speed = rpm * direction;
-    // }
-
-    // for (auto const& wheel : Robot::driveBase->wheels) {
-    //   cout << "  Setting speed: " << speed << "\n";
-    //   wheel->UseClosedLoopDrive(speed);
-    // }
-
-    frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
-    frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
-
-    std::cout << "Jackscrews::Run <=\n\n";
+void JackScrews::Run()
+{
+  std::cout << "Jackscrews::Run(running = " << running << ") =>\n";
+  Preferences *prefs = Preferences::GetInstance();
+  if (!prefs->ContainsKey("JackscrewSpeed"))
+  {
+    prefs->PutLong("JackscrewSpeed", 500);
   }
+  double rpm = prefs->GetLong("JackscrewSpeed");
 
-  void JackScrews::SetAllSolenoidState(bool extend) {
-    SetFrontSolenoidState(extend);
-    SetRearSolenoidState(extend);
-  }
-  void JackScrews::SetFrontSolenoidState(bool extend) {
-    frontAxleSolenoid->Set(extend);
-    if (!extend) {
-      running = false;
+  if (running)
+  {
+    for (auto const &wheel : Robot::driveBase->wheels)
+    {
+      std::cout << "Open Loop Speed: " << openLoopSpeed << "\n";
+      wheel->UseOpenLoopDrive(openLoopSpeed);
     }
   }
-  void JackScrews::SetRearSolenoidState(bool extend) { 
-    rearAxleSolenoid->Set(extend);
-    if (!extend) {
-      running = false;
-    }
-   }
-  // void JackScrews::SetExtendFL(bool extend) {
-  //   if 
+  //     double speed = 0.0;
+  // if (running) {
+  //   speed = rpm * direction;
   // }
-  // void JackScrews::SetExtendFR(bool extend) {
-  // }
-  // void JackScrews::SetExtendRL(bool extend) {
-  // }
-  // void JackScrews::SetExtendRR(bool extend) {
-  // }
-  
-  void JackScrews::SetExtendScrews(bool extend, bool running_) {
-    direction = extend ? 1 : -1;
-    running = running_;
-  }
 
-  void JackScrews::RunOpenLoop(double speed) {
-    openLoopSpeed = speed;
-    running = true;
+  // for (auto const& wheel : Robot::driveBase->wheels) {
+  //   cout << "  Setting speed: " << speed << "\n";
+  //   wheel->UseClosedLoopDrive(speed);
+  // }
+
+  frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
+  frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
+
+  std::cout << "Jackscrews::Run <=\n\n";
+}
+
+void JackScrews::SetAllSolenoidState(bool extend)
+{
+  SetFrontSolenoidState(extend);
+  SetRearSolenoidState(extend);
+}
+
+void JackScrews::SetFrontSolenoidState(bool extend)
+{
+  frontAxleSolenoid->Set(extend);
+  if (!extend)
+  {
+    running = false;
   }
+}
+
+void JackScrews::SetRearSolenoidState(bool extend)
+{
+  rearAxleSolenoid->Set(extend);
+  if (!extend)
+  {
+    running = false;
+  }
+}
+
+void JackScrews::SetExtendScrews(bool extend, bool running_)
+{
+  direction = extend ? 1 : -1;
+  running = running_;
+}
+
+void JackScrews::RunOpenLoop(double speed)
+{
+  openLoopSpeed = speed;
+  running = true;
+}

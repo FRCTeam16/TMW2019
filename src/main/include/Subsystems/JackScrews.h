@@ -9,34 +9,29 @@
 #include <frc/WPILib.h>
 #include <frc/Solenoid.h>
 
+#include "SubsystemManager.h"
+
 using namespace frc;
 
-class JackScrews {
+class JackScrews : public SubsystemManager {
  private:
     std::shared_ptr<Solenoid> frontAxleSolenoid;
     std::shared_ptr<Solenoid> rearAxleSolenoid;
 
     bool running = false;
     bool direction = 1.0;
-
     double openLoopSpeed = 0.0;
 
- public:
-  JackScrews(std::shared_ptr<Solenoid> frontAxleSolenoid, std::shared_ptr<Solenoid> rearAxleSolenoid) : 
-    frontAxleSolenoid(frontAxleSolenoid), rearAxleSolenoid(rearAxleSolenoid) {}
 
-  void Run();
+ public:
+  JackScrews();
+
+  void Run() override;
 
   void SetAllSolenoidState(bool extend);
   void SetFrontSolenoidState(bool extend);
   void SetRearSolenoidState(bool extend);
 
-  // void SetExtendFL(bool extend);
-  // void SetExtendFR(bool extend);
-  // void SetExtendRL(bool extend);
-  // void SetExtendRR(bool extend);
-
   void SetExtendScrews(bool extend, bool running);
-
   void RunOpenLoop(double speed);
 };

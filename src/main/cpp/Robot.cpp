@@ -18,7 +18,7 @@ void Robot::RobotInit() {
 	oi.reset(new OI());
     driveBase.reset(new DriveBase());
 
-	jackScrews.reset(new JackScrews(RobotMap::frontAxleSolenoid, RobotMap::rearAxleSolenoid));
+	jackScrews.reset(new JackScrews());
 	runningScrews = false;
 	jackScrews->SetAllSolenoidState(false);
 
@@ -144,6 +144,7 @@ void Robot::TestPeriodic() {}
 
 void Robot::InitSubsystems() {
     std::cout << "Robot::InitSubsystems =>\n";
+	Robot::jackScrews->Init();
 	std::cout << "Robot::InitSubsystems <=\n";
 }
 
@@ -155,7 +156,7 @@ void Robot::RunSubsystems() {
 }
 
 void Robot::InstrumentSubsystems() {
-    // Robot::elevator->Instrument();
+    Robot::jackScrews->Instrument();
 }
 
 #ifndef RUNNING_FRC_TESTS
