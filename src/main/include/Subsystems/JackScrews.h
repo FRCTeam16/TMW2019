@@ -13,25 +13,32 @@
 
 using namespace frc;
 
-class JackScrews : public SubsystemManager {
+class JackScrews : public SubsystemManager
+{
  private:
-    std::shared_ptr<Solenoid> frontAxleSolenoid;
-    std::shared_ptr<Solenoid> rearAxleSolenoid;
+   std::shared_ptr<Solenoid> frontAxleSolenoid;
+   std::shared_ptr<Solenoid> rearAxleSolenoid;
 
-    bool running = false;
-    bool direction = 1.0;
-    double openLoopSpeed = 0.0;
+   enum class RunMode
+   {
+      kOpenLoop,
+      kClosedLoop
+   };
 
+   enum RunMode currentRunMode = RunMode::kOpenLoop;
+   bool running = false;
+   bool direction = 1.0;
+   double openLoopSpeed = 0.0;
 
  public:
-  JackScrews();
+   JackScrews();
 
-  void Run() override;
+   void Run() override;
 
-  void SetAllSolenoidState(bool extend);
-  void SetFrontSolenoidState(bool extend);
-  void SetRearSolenoidState(bool extend);
+   void SetAllSolenoidState(bool extend);
+   void SetFrontSolenoidState(bool extend);
+   void SetRearSolenoidState(bool extend);
 
-  void SetExtendScrews(bool extend, bool running);
-  void RunOpenLoop(double speed);
+   void SetExtendScrews(bool extend, bool running);
+   void RunOpenLoop(double speed);
 };

@@ -14,38 +14,35 @@
 
 JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearAxleSolenoid(RobotMap::rearAxleSolenoid)
 {
+  Preferences *prefs = Preferences::GetInstance();
+  if (!prefs->ContainsKey("JackscrewSpeed")) {
+    prefs->PutLong("JackscrewSpeed", 500);
+  }
 }
 
 void JackScrews::Run()
 {
   std::cout << "Jackscrews::Run(running = " << running << ") =>\n";
-  Preferences *prefs = Preferences::GetInstance();
-  if (!prefs->ContainsKey("JackscrewSpeed"))
-  {
-    prefs->PutLong("JackscrewSpeed", 500);
-  }
-  double rpm = prefs->GetLong("JackscrewSpeed");
 
-  if (running)
-  {
-    for (auto const &wheel : Robot::driveBase->wheels)
-    {
-      std::cout << "Open Loop Speed: " << openLoopSpeed << "\n";
-      wheel->UseOpenLoopDrive(openLoopSpeed);
+  if (running) {
+    if (RunMode::kOpenLoop == currentRunMode) {
+      for (auto const &wheel : Robot::driveBase->wheels) {
+        wheel->UseOpenLoopDrive(openLoopSpeed);
+      }
+    }
+    else {
+      double rpm = Preferences::GetInstance()->GetLong("JackscrewSpeed");
+      double speed = rpm * direction;
+      cout << "  Setting jackscrew rpm speed: " << speed << "\n";
+      
+      for (auto const &wheel : Robot::driveBase->wheels) {
+        wheel->UseClosedLoopDrive(speed);
+      }
     }
   }
-  //     double speed = 0.0;
-  // if (running) {
-  //   speed = rpm * direction;
-  // }
-
-  // for (auto const& wheel : Robot::driveBase->wheels) {
-  //   cout << "  Setting speed: " << speed << "\n";
-  //   wheel->UseClosedLoopDrive(speed);
-  // }
 
   frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
-  frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
+  frc::SmartDashboard::PutNumber("FL Outpuft Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
 
   std::cout << "Jackscrews::Run <=\n\n";
 }
@@ -83,5 +80,6 @@ void JackScrews::SetExtendScrews(bool extend, bool running_)
 void JackScrews::RunOpenLoop(double speed)
 {
   openLoopSpeed = speed;
+  currentRunMode = RunMode::kOpenLoop;
   running = true;
 }
