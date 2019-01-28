@@ -41,40 +41,36 @@ void JackScrews::Run()
     }
   }
 
+  // TODO: These should be in drivebase instrument?
   frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
-  frc::SmartDashboard::PutNumber("FL Outpuft Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
+  frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
 
   std::cout << "Jackscrews::Run <=\n\n";
 }
 
-void JackScrews::SetAllSolenoidState(bool extend)
+void JackScrews::SetAllSolenoidState(ShiftMode shiftMode)
 {
-  SetFrontSolenoidState(extend);
-  SetRearSolenoidState(extend);
-}
+  SetFrontSolenoidState(shiftMode);
+  SetRearSolenoidState(shiftMode);
 
-void JackScrews::SetFrontSolenoidState(bool extend)
-{
-  frontAxleSolenoid->Set(extend);
-  if (!extend)
-  {
-    running = false;
+  if (ShiftMode::kDrive == shiftMode) {
+    this->Stop();
   }
 }
 
-void JackScrews::SetRearSolenoidState(bool extend)
+void JackScrews::SetFrontSolenoidState(ShiftMode shiftMode)
 {
-  rearAxleSolenoid->Set(extend);
-  if (!extend)
-  {
-    running = false;
-  }
+  frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
 }
 
-void JackScrews::SetExtendScrews(bool extend, bool running_)
+void JackScrews::SetRearSolenoidState(ShiftMode shiftMode)
 {
-  direction = extend ? 1 : -1;
-  running = running_;
+  rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
+}
+
+void JackScrews::ExtendClosedLoop(bool direction_)
+{
+  direction = direction_ ? 1 : -1;
 }
 
 void JackScrews::RunOpenLoop(double speed)

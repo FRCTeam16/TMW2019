@@ -20,7 +20,9 @@ void Robot::RobotInit() {
 
 	jackScrews.reset(new JackScrews());
 	runningScrews = false;
-	jackScrews->SetAllSolenoidState(false);
+	jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
+
+	visionSystem.reset(new VisionSystem());
 
     statusReporter.reset(new StatusReporter());
     statusReporter->Launch();
@@ -48,7 +50,7 @@ void Robot::TeleopInit() {
 	driveBase->InitTeleop();
 	assert(oi.get() != nullptr);
 	runningScrews = false;
-	jackScrews->SetAllSolenoidState(false);
+	jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
@@ -59,44 +61,48 @@ void Robot::TeleopPeriodic() {
 
 	/**********************************************************/
 	// Jackscrew Test code
-
+	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
 		//Jackscrew shifter->Next();
-		std::cout << "Shifting true\n";
-		jackScrews->SetAllSolenoidState(true);
+		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kJackscrews);
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
 		//Jackscrew shifter->Previous();
-		std::cout << "Shifting false\n";
-		jackScrews->SetAllSolenoidState(false);
+		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
 		runningScrews = false;
 	} 
 
 	if (runningScrews) {
 		if (oi->GetGamepadRT() > 0.10) {
-			jackScrews->SetExtendScrews(true, true);
+			jackScrews->ExtendClosedLoop(true);
 		} else if (oi->GetGamepadLT() > .10) {
-			jackScrews->SetExtendScrews(false, true);
+			jackScrews->ExtendClosedLoop(false);
 		} else {
-			jackScrews->SetExtendScrews(false, false);
+			jackScrews->Stop();
 		}
 	}
-	
 
-	/**********************************************************/
+	/**********************************************************
+	 * Vision Testing
+	**********************************************************/
+	const bool visionMode = oi->DL8->Pressed();	// controls drive
+	if (oi->DR11->RisingEdge()) {
+		visionSystem->ToggleCameraMode();
+	}
+
 	
-	/**
+	/**********************************************************
 	 * Testing and Diagnostics
-	 */
+	**********************************************************/
 	const bool speedModeTest = oi->DL7->Pressed();
 	const bool distanceMode = oi->DL8->Pressed();
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
 	
 
-	/* -----------------------------------------------------------------------
-		Drive Control
-	   ---------------------------------------------------------------------*/
+	/**********************************************************
+	 * Drive Control
+	**********************************************************/
 	double twistInput = oi->GetJoystickTwist(threshold);
 	
 	if (oi->DL4->Pressed()) {
@@ -113,8 +119,13 @@ void Robot::TeleopPeriodic() {
 		driveBase->SetConstantVelocity(twistInput, 0.60);
 		driveBase->Diagnostics();
 	} else if (dmsMode) {
-		// DriveBase input handled via DMS
-	} else if (!runningScrews) {
+		// DriveBase input handled via DMS->Run()
+	} else if (runningScrews) {
+		jackScrews->RunOpenLoop(-oi->GetJoystickY(threshold));
+		jackScrews->Run();
+	} else if (visionMode) {
+		visionSystem->Run();
+	} else {
 		if (!lockWheels) {
 			driveBase->Crab(
 				twistInput,
@@ -124,10 +135,8 @@ void Robot::TeleopPeriodic() {
 		} else {
 			driveBase->Crab(0, 0, 0, true);
 		}
-	} else if (runningScrews) {
-		jackScrews->RunOpenLoop(-oi->GetJoystickY(threshold));
-		jackScrews->Run();
 	}
+	
 
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("DriveBaseRun", (now-start) * 1000);

@@ -86,6 +86,8 @@
     "fstream": "cpp",
     "future": "cpp",
     "numeric": "cpp",
-    "*.inc": "cpp"
+    "*.inc": "cpp",
+    "queue": "cpp",
+    "stack": "cpp"
   }
 }

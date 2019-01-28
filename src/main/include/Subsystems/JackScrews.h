@@ -15,30 +15,31 @@ using namespace frc;
 
 class JackScrews : public SubsystemManager
 {
- private:
-   std::shared_ptr<Solenoid> frontAxleSolenoid;
-   std::shared_ptr<Solenoid> rearAxleSolenoid;
+public:
+  enum class ShiftMode { kDrive = false, kJackscrews = true };
 
-   enum class RunMode
-   {
-      kOpenLoop,
-      kClosedLoop
-   };
+  JackScrews();
 
-   enum RunMode currentRunMode = RunMode::kOpenLoop;
-   bool running = false;
-   bool direction = 1.0;
-   double openLoopSpeed = 0.0;
+  void Run() override;
 
- public:
-   JackScrews();
+  void SetAllSolenoidState(ShiftMode shiftMode);
 
-   void Run() override;
+  void ExtendClosedLoop(bool extend);
+  void Stop() { running = false; }
+  void RunOpenLoop(double speed);
 
-   void SetAllSolenoidState(bool extend);
-   void SetFrontSolenoidState(bool extend);
-   void SetRearSolenoidState(bool extend);
+private:
+  std::shared_ptr<Solenoid> frontAxleSolenoid;
+  std::shared_ptr<Solenoid> rearAxleSolenoid;
 
-   void SetExtendScrews(bool extend, bool running);
-   void RunOpenLoop(double speed);
+  enum class RunMode { kOpenLoop, kClosedLoop };
+
+  enum RunMode currentRunMode = RunMode::kOpenLoop;
+  bool running = false;
+  bool direction = 1.0;
+  double openLoopSpeed = 0.0;
+
+  // TODO: Make public once axle control in place
+  void SetFrontSolenoidState(ShiftMode shiftMode);
+  void SetRearSolenoidState(ShiftMode shiftMode);
 };
