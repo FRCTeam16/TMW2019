@@ -13,15 +13,20 @@ Intake::Intake() {
     
     rotateRight.reset(RobotMap::rotateRightMotor.get());
 
-    beaterTop.reset(RobotMap::)
+    beaterTop.reset(RobotMap::beaterTopMotor.get());
+
+    beaterBottom.reset(RobotMap::beaterBottomMotor.get());
 }
 
 void Intake::Init() {
+    bottomBeaterSpeed = 0.0;
+    topBeaterSpeed = 0.0;
 
 }
 
 void Intake::Run() {
-
+    beaterBottom->Set(bottomBeaterSpeed);
+    beaterTop->Set(topBeaterSpeed);
 }
 
 void Intake::IntakeCargo() {
@@ -50,6 +55,12 @@ void Intake::SetIntakePosition(IntakePosition position) {
 // Testing Methods
 
 void Intake::SetBottomBeaterSpeed(double speed) {
-    beaterBottom->Set(speed);
+    bottomBeaterSpeed = speed;
 }
+
+void Intake::SetTopBeaterSpeed(double speed) {
+    topBeaterSpeed = speed;
+}
+
+
 

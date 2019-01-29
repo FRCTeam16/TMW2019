@@ -31,6 +31,7 @@ public:
   void SetIntakePositionOpenLoop(double speed);
   // testing
   void SetBottomBeaterSpeed(double speed);
+  void SetTopBeaterSpeed(double speed);
 
 
 private:
@@ -38,6 +39,10 @@ private:
   std::shared_ptr<WPI_VictorSPX> rotateRight;
   std::shared_ptr<WPI_VictorSPX> beaterTop;
   std::shared_ptr<WPI_VictorSPX> beaterBottom;
+
+  double bottomBeaterSpeed = 0.0;
+
+  double topBeaterSpeed = 0.0;
 
 };
 
