@@ -12,18 +12,11 @@
 using namespace frc;
 
 class JackScrews {
- private:
-    std::shared_ptr<Solenoid> frontAxleSolenoid;
-    std::shared_ptr<Solenoid> rearAxleSolenoid;
-
-    bool running = false;
-    bool direction = 1.0;
-
-    double openLoopSpeed = 0.0;
-
- public:
+  public:
   JackScrews(std::shared_ptr<Solenoid> frontAxleSolenoid, std::shared_ptr<Solenoid> rearAxleSolenoid) : 
     frontAxleSolenoid(frontAxleSolenoid), rearAxleSolenoid(rearAxleSolenoid) {}
+
+  enum class LiftMode { kAll, kFront };
 
   void Run();
 
@@ -38,5 +31,16 @@ class JackScrews {
 
   void SetExtendScrews(bool extend, bool running);
 
+  void SetLiftMode(LiftMode liftMode);
   void RunOpenLoop(double speed);
+
+ private:
+    std::shared_ptr<Solenoid> frontAxleSolenoid;
+    std::shared_ptr<Solenoid> rearAxleSolenoid;
+
+    bool running = false;
+    bool direction = 1.0;
+
+    LiftMode currentLiftMode = LiftMode::kAll;
+    double openLoopSpeed = 0.0;
 };

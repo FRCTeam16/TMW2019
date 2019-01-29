@@ -72,14 +72,20 @@ void Robot::TeleopPeriodic() {
 		runningScrews = false;
 	} 
 
-	if (runningScrews) {
-		if (oi->GetGamepadRT() > 0.10) {
-			jackScrews->SetExtendScrews(true, true);
-		} else if (oi->GetGamepadLT() > .10) {
-			jackScrews->SetExtendScrews(false, true);
-		} else {
-			jackScrews->SetExtendScrews(false, false);
-		}
+	// if (runningScrews) {
+	// 	if (oi->GetGamepadRT() > 0.10) {
+	// 		jackScrews->SetExtendScrews(true, true);
+	// 	} else if (oi->GetGamepadLT() > .10) {
+	// 		jackScrews->SetExtendScrews(false, true);
+	// 	} else {
+	// 		jackScrews->SetExtendScrews(false, false);
+	// 	}
+	// }
+
+	if (oi->GPY->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
+	} else if (oi->GPA->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
 	}
 	
 

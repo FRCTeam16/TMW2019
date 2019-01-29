@@ -19,21 +19,19 @@
     double rpm = prefs->GetLong("ProtoScrewSpeed");
 
     if (running) {
-      for (auto const& wheel : Robot::driveBase->wheels) {
+      // All wheels
+      if (LiftMode::kAll == currentLiftMode) {
+          for (auto const& wheel : Robot::driveBase->wheels) {
           std::cout << "Open Loop Speed: " << openLoopSpeed << "\n";
           wheel->UseOpenLoopDrive(openLoopSpeed);
+         }
+      } else {
+          // Front Axis only
+          Robot::driveBase->wheels[0]->UseOpenLoopDrive(openLoopSpeed);
+          Robot::driveBase->wheels[1]->UseOpenLoopDrive(openLoopSpeed);
       }
     }
-    //     double speed = 0.0;
-    // if (running) {
-    //   speed = rpm * direction;
-    // }
-
-    // for (auto const& wheel : Robot::driveBase->wheels) {
-    //   cout << "  Setting speed: " << speed << "\n";
-    //   wheel->UseClosedLoopDrive(speed);
-    // }
-
+    
     frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
     frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
 
@@ -69,6 +67,11 @@
   void JackScrews::SetExtendScrews(bool extend, bool running_) {
     direction = extend ? 1 : -1;
     running = running_;
+  }
+
+
+  void JackScrews::SetLiftMode(LiftMode liftMode) {
+    currentLiftMode = liftMode;
   }
 
   void JackScrews::RunOpenLoop(double speed) {
