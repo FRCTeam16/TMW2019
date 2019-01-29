@@ -22,6 +22,8 @@ void Robot::RobotInit() {
 	runningScrews = false;
 	jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
 
+	intake.reset(new Intake());
+
 	visionSystem.reset(new VisionSystem());
 
     statusReporter.reset(new StatusReporter());
@@ -98,7 +100,7 @@ void Robot::TeleopPeriodic() {
 	const bool distanceMode = oi->DL8->Pressed();
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
-	
+
 
 	/**********************************************************
 	 * Drive Control

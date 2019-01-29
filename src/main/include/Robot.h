@@ -19,6 +19,7 @@
 #include "DMS/StatusReporter.h"
 #include "Subsystems/JackScrews.h"
 #include "Subsystems/Vision/VisionSystem.h"
+#include "Subsystems/Intake.h"
 
 
 
@@ -51,6 +52,7 @@ private:
   std::shared_ptr<StatusReporter> statusReporter;
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
   std::unique_ptr<VisionSystem> visionSystem;
+  std::unique_ptr<Intake> intake;
 
   std::shared_ptr<JackScrews> jackScrews;
   bool runningScrews = false;	// true when running jackscrews
