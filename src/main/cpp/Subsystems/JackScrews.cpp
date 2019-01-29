@@ -25,10 +25,13 @@
           std::cout << "Open Loop Speed: " << openLoopSpeed << "\n";
           wheel->UseOpenLoopDrive(openLoopSpeed);
          }
-      } else {
+      } else if (LiftMode::kFront == currentLiftMode) {
           // Front Axis only
           Robot::driveBase->wheels[0]->UseOpenLoopDrive(openLoopSpeed);
           Robot::driveBase->wheels[1]->UseOpenLoopDrive(openLoopSpeed);
+      } else {
+          Robot::driveBase->wheels[2]->UseOpenLoopDrive(openLoopSpeed);
+          Robot::driveBase->wheels[3]->UseOpenLoopDrive(openLoopSpeed);
       }
     }
     

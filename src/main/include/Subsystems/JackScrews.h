@@ -16,7 +16,7 @@ class JackScrews {
   JackScrews(std::shared_ptr<Solenoid> frontAxleSolenoid, std::shared_ptr<Solenoid> rearAxleSolenoid) : 
     frontAxleSolenoid(frontAxleSolenoid), rearAxleSolenoid(rearAxleSolenoid) {}
 
-  enum class LiftMode { kAll, kFront };
+  enum class LiftMode { kAll, kFront, kBack };
 
   void Run();
 

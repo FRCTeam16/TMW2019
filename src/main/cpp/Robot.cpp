@@ -83,8 +83,10 @@ void Robot::TeleopPeriodic() {
 	// }
 
 	if (oi->GPY->RisingEdge()) {
-		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kBack);
 	} else if (oi->GPA->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
+	} else if (oi->GPB->RisingEdge()) {
 		jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
 	}
 	
