@@ -65,23 +65,19 @@ void Robot::TeleopPeriodic() {
 	// Jackscrew Test code
 	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
-		//Jackscrew shifter->Next();
 		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kJackscrews);
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
-		//Jackscrew shifter->Previous();
 		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
 		runningScrews = false;
 	} 
 
-	if (runningScrews) {
-		if (oi->GetGamepadRT() > 0.10) {
-			jackScrews->ExtendClosedLoop(true);
-		} else if (oi->GetGamepadLT() > .10) {
-			jackScrews->ExtendClosedLoop(false);
-		} else {
-			jackScrews->Stop();
-		}
+	if (oi->GPY->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kBack);
+	} else if (oi->GPA->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
+	} else if (oi->GPB->RisingEdge()) {
+		jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
 	}
 
 	/**********************************************************

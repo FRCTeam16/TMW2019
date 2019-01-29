@@ -8,8 +8,9 @@
 #pragma once
 #include <frc/WPILib.h>
 #include <frc/Solenoid.h>
-
 #include "SubsystemManager.h"
+#include "Subsystems/Drive/SwerveWheel.h"
+#include <vector>
 
 using namespace frc;
 
@@ -17,29 +18,28 @@ class JackScrews : public SubsystemManager
 {
 public:
   enum class ShiftMode { kDrive = false, kJackscrews = true };
-
+  enum class LiftMode { kAll, kFront, kBack };
+  
   JackScrews();
-
   void Run() override;
 
   void SetAllSolenoidState(ShiftMode shiftMode);
-
-  void ExtendClosedLoop(bool extend);
-  void Stop() { running = false; }
-  void RunOpenLoop(double speed);
-
-private:
-  std::shared_ptr<Solenoid> frontAxleSolenoid;
-  std::shared_ptr<Solenoid> rearAxleSolenoid;
-
-  enum class RunMode { kOpenLoop, kClosedLoop };
-
-  enum RunMode currentRunMode = RunMode::kOpenLoop;
-  bool running = false;
-  bool direction = 1.0;
-  double openLoopSpeed = 0.0;
-
-  // TODO: Make public once axle control in place
   void SetFrontSolenoidState(ShiftMode shiftMode);
   void SetRearSolenoidState(ShiftMode shiftMode);
+
+  void SetLiftMode(LiftMode liftMode);
+  void RunOpenLoop(double speed);
+
+ private:
+    std::shared_ptr<Solenoid> frontAxleSolenoid;
+    std::shared_ptr<Solenoid> rearAxleSolenoid;
+    std::vector<std::shared_ptr<SwerveWheel>> allWheels;
+    std::vector<std::shared_ptr<SwerveWheel>> frontAxis;
+    std::vector<std::shared_ptr<SwerveWheel>> rearAxis;
+
+    bool running = false;
+    bool direction = 1.0;
+
+    LiftMode currentLiftMode = LiftMode::kAll;
+    double openLoopSpeed = 0.0;
 };

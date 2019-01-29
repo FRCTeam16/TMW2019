@@ -14,68 +14,60 @@
 
 JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearAxleSolenoid(RobotMap::rearAxleSolenoid)
 {
-  Preferences *prefs = Preferences::GetInstance();
-  if (!prefs->ContainsKey("JackscrewSpeed")) {
-    prefs->PutLong("JackscrewSpeed", 500);
-  }
+  frontAxis.push_back(Robot::driveBase->wheels[0]);
+  frontAxis.push_back(Robot::driveBase->wheels[1]);
+  rearAxis.push_back(Robot::driveBase->wheels[2]);
+  rearAxis.push_back(Robot::driveBase->wheels[3]);
+
+  allWheels.reserve(frontAxis.size() + rearAxis.size());
+  allWheels.insert(allWheels.end(), frontAxis.begin(), frontAxis.end());
+  allWheels.insert(allWheels.end(), rearAxis.begin(), rearAxis.end());
 }
 
 void JackScrews::Run()
 {
   std::cout << "Jackscrews::Run(running = " << running << ") =>\n";
 
-  if (running) {
-    if (RunMode::kOpenLoop == currentRunMode) {
-      for (auto const &wheel : Robot::driveBase->wheels) {
-        wheel->UseOpenLoopDrive(openLoopSpeed);
-      }
+  if (running)
+  {
+    std::vector<std::shared_ptr<SwerveWheel>> wheels;
+    switch(currentLiftMode) {
+      case LiftMode::kFront:
+        wheels = frontAxis;
+        break;
+      case LiftMode::kBack:
+        wheels = rearAxis;
+        break;
+      default:
+        wheels = allWheels;
     }
-    else {
-      double rpm = Preferences::GetInstance()->GetLong("JackscrewSpeed");
-      double speed = rpm * direction;
-      cout << "  Setting jackscrew rpm speed: " << speed << "\n";
-      
-      for (auto const &wheel : Robot::driveBase->wheels) {
-        wheel->UseClosedLoopDrive(speed);
-      }
+
+    for (auto const &wheel : wheels) {
+      wheel->UseOpenLoopDrive(openLoopSpeed);
     }
   }
-
-  // TODO: These should be in drivebase instrument?
-  frc::SmartDashboard::PutNumber("FL Velocity", Robot::driveBase->wheels[0]->GetDriveVelocity());
-  frc::SmartDashboard::PutNumber("FL Output Current", Robot::driveBase->wheels[0]->GetDriveOutputCurrent());
-
   std::cout << "Jackscrews::Run <=\n\n";
 }
 
-void JackScrews::SetAllSolenoidState(ShiftMode shiftMode)
-{
+void JackScrews::SetAllSolenoidState(ShiftMode shiftMode) {
   SetFrontSolenoidState(shiftMode);
   SetRearSolenoidState(shiftMode);
-
-  if (ShiftMode::kDrive == shiftMode) {
-    this->Stop();
-  }
+  running = static_cast<bool>(shiftMode);
 }
 
-void JackScrews::SetFrontSolenoidState(ShiftMode shiftMode)
-{
+void JackScrews::SetFrontSolenoidState(ShiftMode shiftMode) {
   frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
 }
 
-void JackScrews::SetRearSolenoidState(ShiftMode shiftMode)
-{
+void JackScrews::SetRearSolenoidState(ShiftMode shiftMode) {
   rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
 }
 
-void JackScrews::ExtendClosedLoop(bool direction_)
-{
-  direction = direction_ ? 1 : -1;
+void JackScrews::SetLiftMode(LiftMode liftMode) {
+  currentLiftMode = liftMode;
 }
 
-void JackScrews::RunOpenLoop(double speed)
-{
+void JackScrews::RunOpenLoop(double speed) {
   openLoopSpeed = speed;
-  currentRunMode = RunMode::kOpenLoop;
   running = true;
 }
