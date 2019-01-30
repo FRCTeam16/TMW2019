@@ -10,6 +10,7 @@
 
 std::unique_ptr<OI> Robot::oi;
 std::shared_ptr<DriveBase> Robot::driveBase;
+std::shared_ptr<JackScrews> Robot::jackScrews;
 
 
 void Robot::RobotInit() {
@@ -20,7 +21,7 @@ void Robot::RobotInit() {
 
 	jackScrews.reset(new JackScrews());
 	runningScrews = false;
-	jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
+	jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 
 	intake.reset(new Intake());
 
@@ -52,7 +53,7 @@ void Robot::TeleopInit() {
 	driveBase->InitTeleop();
 	assert(oi.get() != nullptr);
 	runningScrews = false;
-	jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
+	jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
@@ -65,10 +66,10 @@ void Robot::TeleopPeriodic() {
 	// Jackscrew Test code
 	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
-		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kJackscrews);
+		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
-		jackScrews->SetAllSolenoidState(JackScrews::ShiftMode::kDrive);
+		jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 		runningScrews = false;
 	} 
 

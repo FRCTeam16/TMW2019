@@ -38,11 +38,11 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  /* TODO: Make private, adjust access */
+  // Subsytems
   static std::shared_ptr<DriveBase> driveBase; 
   static std::unique_ptr<OI> oi;
+  static std::shared_ptr<JackScrews> jackScrews;
 
-  
 private:
   void InitSubsystems();
 	void RunSubsystems();
@@ -54,7 +54,6 @@ private:
   std::unique_ptr<VisionSystem> visionSystem;
   std::unique_ptr<Intake> intake;
 
-  std::shared_ptr<JackScrews> jackScrews;
   bool runningScrews = false;	// true when running jackscrews
 
 };

@@ -26,40 +26,44 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
 
 void JackScrews::Run()
 {
-  std::cout << "Jackscrews::Run(running = " << running << ") =>\n";
+  if (!enabled) { return; }
 
-  if (running)
-  {
-    std::vector<std::shared_ptr<SwerveWheel>> wheels;
-    switch(currentLiftMode) {
-      case LiftMode::kFront:
-        wheels = frontAxis;
-        break;
-      case LiftMode::kBack:
-        wheels = rearAxis;
-        break;
-      default:
-        wheels = allWheels;
-    }
+  std::cout << "Jackscrews::Run() =>\n";
+  
+  std::vector<std::shared_ptr<SwerveWheel>> wheels;
+  switch(currentLiftMode) {
+    case LiftMode::kFront:
+      wheels = frontAxis;
+      break;
+    case LiftMode::kBack:
+      wheels = rearAxis;
+      break;
+    default:
+      wheels = allWheels;
+  }
 
+  if (Position::kNone == targetPosition) {
     for (auto const &wheel : wheels) {
       wheel->UseOpenLoopDrive(openLoopSpeed);
     }
+  } else {
+
   }
+  
   std::cout << "Jackscrews::Run <=\n\n";
 }
 
-void JackScrews::SetAllSolenoidState(ShiftMode shiftMode) {
-  SetFrontSolenoidState(shiftMode);
-  SetRearSolenoidState(shiftMode);
-  running = static_cast<bool>(shiftMode);
+void JackScrews::ShiftAll(ShiftMode shiftMode) {
+  ShiftFront(shiftMode);
+  ShiftRear(shiftMode);
+  enabled = static_cast<bool>(shiftMode);
 }
 
-void JackScrews::SetFrontSolenoidState(ShiftMode shiftMode) {
+void JackScrews::ShiftFront(ShiftMode shiftMode) {
   frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
 }
 
-void JackScrews::SetRearSolenoidState(ShiftMode shiftMode) {
+void JackScrews::ShiftRear(ShiftMode shiftMode) {
   rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
 }
 
@@ -68,6 +72,11 @@ void JackScrews::SetLiftMode(LiftMode liftMode) {
 }
 
 void JackScrews::RunOpenLoop(double speed) {
+  targetPosition = Position::kNone;
   openLoopSpeed = speed;
-  running = true;
+}
+
+void JackScrews::RunControlled(LiftMode liftMode, Position targetPosition) {
+  this->SetLiftMode(liftMode);
+  targetPosition = targetPosition;
 }

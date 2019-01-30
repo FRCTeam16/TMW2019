@@ -88,6 +88,13 @@
     "numeric": "cpp",
     "*.inc": "cpp",
     "queue": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "locale": "cpp",
+    "optional": "cpp",
+    "random": "cpp",
+    "shared_mutex": "cpp",
+    "string_view": "cpp",
+    "xlocbuf": "cpp",
+    "xlocmes": "cpp"
   }
 }

@@ -19,16 +19,18 @@ class JackScrews : public SubsystemManager
 public:
   enum class ShiftMode { kDrive = false, kJackscrews = true };
   enum class LiftMode { kAll, kFront, kBack };
+  enum class Position { kNone, kUp, kDown };
   
   JackScrews();
   void Run() override;
 
-  void SetAllSolenoidState(ShiftMode shiftMode);
-  void SetFrontSolenoidState(ShiftMode shiftMode);
-  void SetRearSolenoidState(ShiftMode shiftMode);
+  void ShiftAll(ShiftMode shiftMode);
+  void ShiftFront(ShiftMode shiftMode);
+  void ShiftRear(ShiftMode shiftMode);
 
   void SetLiftMode(LiftMode liftMode);
   void RunOpenLoop(double speed);
+  void RunControlled(LiftMode liftMode, Position targetPosition);
 
  private:
     std::shared_ptr<Solenoid> frontAxleSolenoid;
@@ -37,9 +39,8 @@ public:
     std::vector<std::shared_ptr<SwerveWheel>> frontAxis;
     std::vector<std::shared_ptr<SwerveWheel>> rearAxis;
 
-    bool running = false;
-    bool direction = 1.0;
-
+    bool enabled = false;
     LiftMode currentLiftMode = LiftMode::kAll;
+    Position targetPosition = Position::kNone;
     double openLoopSpeed = 0.0;
 };
