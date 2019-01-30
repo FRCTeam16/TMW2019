@@ -10,10 +10,20 @@
 #include <frc/Solenoid.h>
 #include "SubsystemManager.h"
 #include "Subsystems/Drive/SwerveWheel.h"
+#include "Subsystems/JackScrewCalculator.h"
 #include <vector>
 
 using namespace frc;
 
+/**
+ * JackScrew Controller
+ * 
+ * 1.75 motor turns per rotation 
+ * 42 rotations
+ * 73.5 per revolution
+ * 0.2" revolution
+ * 19" ~ 6700
+ */
 class JackScrews : public SubsystemManager
 {
 public:
@@ -43,4 +53,11 @@ public:
     LiftMode currentLiftMode = LiftMode::kAll;
     Position targetPosition = Position::kNone;
     double openLoopSpeed = 0.0;
+    double controlTimeStart = -1;
+
+    DriveInfo<bool> enabledCalculators;
+    std::unique_ptr<DriveInfo<JackScrewCalculator>> calculators;
+    void DoOpenLoop();
+    void DoControlled();
+
 };

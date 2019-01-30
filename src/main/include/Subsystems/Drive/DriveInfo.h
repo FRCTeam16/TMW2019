@@ -17,6 +17,13 @@ struct DriveInfo {
 
 	DriveInfo() {}
 	DriveInfo(T value) : FL(value), FR(value), RL(value), RR(value) {}
+	DriveInfo(T val1, T val2, T val3, T val4): FL(val1), FR(val2), RL(val3), RR(val4) {}
+	friend DriveInfo<T> operator-(DriveInfo<T> lhs, const DriveInfo<T>& rhs) {
+		return DriveInfo<T> {lhs.FL-rhs.FL, lhs.FR-rhs.FR, lhs.RL-rhs.RL, lhs.RR-rhs.RR};
+	}
+	friend DriveInfo<T> operator+(DriveInfo<T> lhs, const DriveInfo<T>& rhs) {
+		return DriveInfo<T> {lhs.FL+rhs.FL, lhs.FR+rhs.FR, lhs.RL+rhs.RL, lhs.RR+rhs.RR};
+	}
 };
 
 

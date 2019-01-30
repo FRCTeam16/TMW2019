@@ -38,7 +38,7 @@ class Robot : public frc::TimedRobot {
   void TestInit() override;
   void TestPeriodic() override;
 
-  // Subsytems
+  // Subsystems
   static std::shared_ptr<DriveBase> driveBase; 
   static std::unique_ptr<OI> oi;
   static std::shared_ptr<JackScrews> jackScrews;

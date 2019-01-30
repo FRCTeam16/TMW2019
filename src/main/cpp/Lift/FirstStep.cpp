@@ -7,21 +7,21 @@
 
 #include "Lift/FirstStep.h"
 #include "Robot.h"
+#include "Subsystems/JackScrews.h"
 
-FirstStep::FirstStep() : jackScrews(Robot::jackScrews) {
+FirstStep::FirstStep() {
 }
 
 void FirstStep::Execute() {
-
     if (IsFirstRun()) {
-        jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
+        // Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
     } else {
         const double now = frc::Timer::GetFPGATimestamp();
         const double delta = (now - startTime);
         const double shiftDelay = 250;                  // delay for dog
 
         if (delta > shiftDelay) {
-            jackScrews->RunControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
+            // Robot::jackScrews->RunControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
         }
     }
 }

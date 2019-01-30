@@ -11,6 +11,6 @@ class RampUtil {
 public:
 	RampUtil() {}
     virtual ~RampUtil() {}
-    double RampUp(double value, double elapsedTime, double rampTime, double minSpeed = 0.10);
-    double RampDown(double baseSpeed, double currentPosition, double target, double threshold, double minSpeed = 0.10);
+    static double RampUp(double value, double elapsedTime, double rampTime, double minSpeed = 0.10);
+    static double RampDown(double baseSpeed, double currentPosition, double target, double threshold, double minSpeed = 0.10);
 };

@@ -25,8 +25,8 @@ OI::OI() {
     SmartDashboard::PutData("SetWheelOffsets111", new SetWheelOffsets());
     SmartDashboard::PutData("ZeroGyro111", new ZeroGyro());
     SmartDashboard::PutData("Zero BSGyro Offset", new ZeroGyroOffset());
-    SmartDashboard::PutData("Calibrate JackScrews Up", new CalibrateJackScrewsUpPosition());
-    SmartDashboard::PutData("Calibrate JackScrews Down", new CalibrateJackScrewsDownPosition());
+    SmartDashboard::PutData("Calibrate JackScrews Baseline", new CalibrateJackScrewsUpPosition());
+    SmartDashboard::PutData("Calibrate JackScrews Distance", new CalibrateJackScrewsDownPosition());
 
     GPX.reset(new BSButton(gamepad, 3));
     GPY.reset(new BSButton(gamepad, 4));

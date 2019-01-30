@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
@@ -7,12 +7,14 @@
 
 #pragma once
 
-#include "Action.h"
-#include "Subsystems/JackScrews.h"
+#include <frc/commands/Command.h>
 
-class FirstStep : public Action {
+class CalibrateJackScrewsDownPosition : public frc::Command {
  public:
-  FirstStep();
+  CalibrateJackScrewsDownPosition();
+  void Initialize() override;
   void Execute() override;
- private:
+  bool IsFinished() override;
+  void End() override;
+  void Interrupted() override;
 };
