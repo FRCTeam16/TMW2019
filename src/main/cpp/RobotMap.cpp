@@ -27,7 +27,9 @@
 
   std::shared_ptr<Solenoid> RobotMap::frontAxleSolenoid;
   std::shared_ptr<Solenoid> RobotMap::rearAxleSolenoid;
-
+  std::shared_ptr<Solenoid> ejectorSolenoid;
+  std::shared_ptr<Solenoid> hatchCatchSolenoid;
+  
   std::shared_ptr<Compressor> RobotMap::compressor;
 
 
@@ -54,6 +56,9 @@ RobotMap::RobotMap() {
 
   frontAxleSolenoid.reset(new Solenoid{0});
   rearAxleSolenoid.reset(new Solenoid{1});
+  ejectorSolenoid.reset(new Solenoid{2});
+  hatchCatchSolenoid.reset(new Solenoid{3});
+
 
   compressor.reset(new Compressor{0});
   compressor->SetClosedLoopControl(true);
