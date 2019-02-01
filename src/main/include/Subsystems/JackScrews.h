@@ -23,13 +23,18 @@ using namespace frc;
  * 73.5 per revolution
  * 0.2" revolution
  * 19" ~ 6700
+ * 
+ * 2/1/2019
+ *  restart lift
+    exit first step when all locked
+    When one enters threshold all quit
  */
 class JackScrews : public SubsystemManager
 {
 public:
   enum class ShiftMode { kDrive = false, kJackscrews = true };
   enum class LiftMode { kAll, kFront, kBack };
-  enum class Position { kNone, kUp, kDown };
+  enum class Position { kNone = 0, kUp = -1, kDown = 1 };
   
   JackScrews();
   void Run() override;
@@ -56,7 +61,7 @@ public:
     double controlTimeStart = -1;
 
     DriveInfo<bool> enabledCalculators;
-    std::unique_ptr<DriveInfo<JackScrewCalculator>> calculators;
+    std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewCalculator>>> calculators;
     void DoOpenLoop();
     void DoControlled();
 

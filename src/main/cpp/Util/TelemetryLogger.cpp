@@ -68,7 +68,7 @@ void TelemetryLogger::Log() {
 	imu->GetBiasedAccelerometer(xyz);
 	imu->GetYawPitchRoll(ypr);
 
-	DriveInfo<int> encoders = Robot::driveBase->GetDriveControlEncoderPosition();
+	DriveInfo<double> encoders = Robot::driveBase->GetDriveControlEncoderPosition();
 
 	const char delimiter = ',';
 	logFile << Timer::GetFPGATimestamp() << delimiter

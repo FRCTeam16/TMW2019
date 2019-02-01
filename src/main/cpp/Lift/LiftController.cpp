@@ -11,7 +11,7 @@
 LiftController::LiftController() {}
 
 void LiftController::Next() {
-    if (currentAction->IsFinished()) {
+    if (currentAction.get() == nullptr || currentAction->IsFinished()) {
         switch (currentState) {
             case LiftState::kNone:
                 currentAction.reset(new FirstStep());

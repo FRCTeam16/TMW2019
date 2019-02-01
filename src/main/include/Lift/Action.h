@@ -15,9 +15,12 @@ class Action {
   void Run() {
     if (firstRun) {
       startTime = frc::Timer::GetFPGATimestamp();
-      firstRun = false;
     }
     this->Execute();
+    
+    if (firstRun) {
+      firstRun = false;
+    }
   }
 
  protected:

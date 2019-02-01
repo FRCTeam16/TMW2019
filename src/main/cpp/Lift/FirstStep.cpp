@@ -14,14 +14,20 @@ FirstStep::FirstStep() {
 
 void FirstStep::Execute() {
     if (IsFirstRun()) {
-        // Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
+        std::cout << "JackScrew First Step Shifting\n";
+        Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
+        Robot::jackScrews->RunControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
     } else {
         const double now = frc::Timer::GetFPGATimestamp();
         const double delta = (now - startTime);
-        const double shiftDelay = 250;                  // delay for dog
+        const double shiftDelay = 0.250;                  // delay for dog
 
         if (delta > shiftDelay) {
-            // Robot::jackScrews->RunControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
+            std::cout << "JackScrew First Step Running Controlled\n";
+            Robot::jackScrews->Run();
+        } else {
+            std::cout << "now: " << now << " | startTime: " << startTime << " | delta: " << delta << "\n";
         }
     }
 }
+

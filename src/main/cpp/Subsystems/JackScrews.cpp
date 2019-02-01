@@ -42,10 +42,11 @@ void JackScrews::Run()
       break;
 
     case Position::kUp:
+      DoControlled();      
       break;
   }
   
-  std::cout << "Jackscrews::Run <=\n\n";
+  // std::cout << "Jackscrews::Run <=\n\n";
 }
 
 void JackScrews::ShiftAll(ShiftMode shiftMode) {
@@ -77,12 +78,17 @@ void JackScrews::RunControlled(LiftMode liftMode, Position targetPosition_) {
   controlTimeStart = frc::Timer::GetFPGATimestamp();
 
   frc::Preferences *prefs = frc::Preferences::GetInstance();
-  calculators.reset(new DriveInfo<JackScrewCalculator> {
-    JackScrewCalculator(Robot::driveBase->wheels[0], prefs->GetInt("JackScrew.FL.base"), controlTimeStart),
-    JackScrewCalculator(Robot::driveBase->wheels[1], prefs->GetInt("JackScrew.FR.base"), controlTimeStart),
-    JackScrewCalculator(Robot::driveBase->wheels[2], prefs->GetInt("JackScrew.RL.base"), controlTimeStart),
-    JackScrewCalculator(Robot::driveBase->wheels[3], prefs->GetInt("JackScrew.RR.base"), controlTimeStart)
-  });
+  auto fl = new JackScrewCalculator(Robot::driveBase->wheels[0], prefs->GetInt("JackScrew.FL.dist"), controlTimeStart);
+  auto fr = new JackScrewCalculator(Robot::driveBase->wheels[1], prefs->GetInt("JackScrew.FR.dist"), controlTimeStart);
+  auto rl = new JackScrewCalculator(Robot::driveBase->wheels[2], prefs->GetInt("JackScrew.RL.dist"), controlTimeStart);
+  auto rr = new JackScrewCalculator(Robot::driveBase->wheels[3], prefs->GetInt("JackScrew.RR.dist"), controlTimeStart);
+
+  auto di = new DriveInfo<std::shared_ptr<JackScrewCalculator>>();
+  di->FL.reset(fl);
+  di->FR.reset(fr);
+  di->RL.reset(rl);
+  di->RR.reset(rr);
+  calculators.reset(di);
 
   enabledCalculators = DriveInfo<bool>{true};
   if (LiftMode::kFront == liftMode) {
@@ -91,7 +97,17 @@ void JackScrews::RunControlled(LiftMode liftMode, Position targetPosition_) {
   } else if (LiftMode::kBack == liftMode) {
     enabledCalculators.FL = false;
     enabledCalculators.FR = false;
+  } else {
+    enabledCalculators.FL = true;
+    enabledCalculators.FR = true;
+    enabledCalculators.RL = true;
+    enabledCalculators.RR = true;
   }
+
+  std::cout << "Enabled FL: " << enabledCalculators.FL << "\n"
+            << "        FR: " << enabledCalculators.FR << "\n"
+            << "        RL: " << enabledCalculators.RL << "\n"
+            << "        RR: " << enabledCalculators.RR << "\n";
 }
 
 /**
@@ -117,45 +133,78 @@ void JackScrews::DoOpenLoop() {
 }
 
 void JackScrews::DoControlled() {
-  std::vector<JackScrewCalculator> activeCalcs;
+  std::vector<std::shared_ptr<JackScrewCalculator>> activeCalcs;
   if (enabledCalculators.FL) {
     activeCalcs.push_back(calculators->FL);
-  } else if (enabledCalculators.FR) {
+  }
+  if (enabledCalculators.FR) {
     activeCalcs.push_back(calculators->FR);
-  } else if (enabledCalculators.RL) {
+  }
+  if (enabledCalculators.RL) {
     activeCalcs.push_back(calculators->RL);
-  } else if (enabledCalculators.RR) {
+  }
+  if (enabledCalculators.RR) {
     activeCalcs.push_back(calculators->RR);
   }
+  std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
+  if (activeCalcs.empty()) {
+    std::cout << "No active jackscrews\n";
+    return;
+  }
+  
 
   // Capture accumulated positions
-  const double maximumDisplacementThreshold = 50;
-  std::vector<int> accumulatedPositions;
-  std::transform(activeCalcs.begin(), activeCalcs.end(), std::back_inserter(accumulatedPositions),
-    [](JackScrewCalculator &c) -> int { c.GetAccumulatedPosition(); });
-  int minAccumulatedPositions = *std::min_element(std::begin(accumulatedPositions), std::end(accumulatedPositions));
+  auto lowest = activeCalcs[0].get();
+  for (int i=1; i < activeCalcs.size(); i++) {
+    if (activeCalcs[i]->GetAccumulatedPosition() < lowest->GetAccumulatedPosition()) {
+      lowest = activeCalcs[i].get();
+    }
+  }
+  std::cout << "Configured lowest\n";
 
-  auto slowest = *std::find_if(activeCalcs.begin(), activeCalcs.end(),
-    [minAccumulatedPositions](JackScrewCalculator &c) -> bool { c.GetAccumulatedPosition() == minAccumulatedPositions; });
+  const double MAX_SPEED = 1.0;
+  const double kMinAccumulatedPosition = lowest->GetAccumulatedPosition();
+  const int speedDir = static_cast<int>(targetPosition);
+  if (fabs(lowest->GetControlSpeed()) != MAX_SPEED) {
+    lowest->SetControlSpeed(MAX_SPEED * speedDir);
+  }
+  std::cout << "Set lowest control speed to: " << (MAX_SPEED * speedDir) << "\n";
 
-  bool isSlowestMaxed = slowest.GetControlSpeed() == 1.0;
 
-  // May not need this condition
-  if (isSlowestMaxed) {
-    // check wheels outside of threshold, slow them down
-    for (int i=0; i<activeCalcs.size(); i++) {
-      // TODO: Check calc not in position control already
-      JackScrewCalculator currentCalc = activeCalcs[i];
-      const int diff = abs(accumulatedPositions[i] - minAccumulatedPositions);
-      if (diff >= maximumDisplacementThreshold) {
-        if (currentCalc.GetLastChange() > slowest.GetLastChange()) {
-          currentCalc.SetControlSpeed(currentCalc.GetControlSpeed() - 0.01);  // alternate do ratio?
-        }
+  // check wheels outside of threshold, slow them down
+  const double kMaximumDisplacementThreshold = 1;
+
+  for (int i=0; i<activeCalcs.size(); i++) {
+    // TODO: Check calc not in position control already? currently handled in calc
+    auto currentCalc = activeCalcs[i].get();
+    const int diff = abs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
+    // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".diff", diff );
+    if (diff >= kMaximumDisplacementThreshold) {
+      if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
+        const double delta = speedDir * 0.02; // alternate do ratio?
+        const double newSpeed = currentCalc->GetControlSpeed() - delta;
+        currentCalc->SetControlSpeed(newSpeed);
+        // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".speed", newSpeed );
       }
     }
-    // If any of the motors were out of the threshold we will bump slowest here?
-  } else {
-    // Slowest is not maxed
-    slowest.SetControlSpeed(1.0); // FIXME: Direction, make sure in threshold
+    // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".accum", currentCalc->GetAccumulatedPosition() );
+    std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed() 
+              << " | change = " << currentCalc->GetLastChange()
+              << " | accum = " << currentCalc->GetAccumulatedPosition() 
+              << "\n";
+    currentCalc->Run();
+    if (currentCalc->IsClosedLoop()) {
+      std::cout << "Closed Loop detected, exiting loop\n";
+      enabledCalculators.FL = false;
+      enabledCalculators.FR = false;
+      enabledCalculators.RL = false;
+      enabledCalculators.RR = false;
+      break;
+    }
   }
+  // FIXME: Hack
+  if (!enabledCalculators.FL && !enabledCalculators.FR && !enabledCalculators.RL && !enabledCalculators.RR) {
+    
+  }
+    
 }

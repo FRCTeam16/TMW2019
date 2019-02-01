@@ -133,10 +133,10 @@ public:
 	void Instrument();
 	void Diagnostics();	// used for more detailed diagnostics displayed on smart dashboard
 
-	DriveInfo<int> GetDriveEncoderPositions();
+	DriveInfo<double> GetDriveEncoderPositions();
 	DriveInfo<double> GetDriveCurrent();
 	DriveInfo<int> GetDMSDriveVelocity();
-	DriveInfo<int> GetSteerEncoderPositions();
+	DriveInfo<int> GetSteerEncoderPositions();	// FIXME?
 	DriveInfo<double> GetSteerCurrent();
 	DriveInfo<int> GetDMSSteerVelocity();
 

@@ -53,7 +53,9 @@ void Robot::TeleopInit() {
 	driveBase->InitTeleop();
 	assert(oi.get() != nullptr);
 	runningScrews = false;
+	runningLiftSequence = false;
 	jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
@@ -79,6 +81,15 @@ void Robot::TeleopPeriodic() {
 		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
 	} else if (oi->GPB->RisingEdge()) {
 		jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
+	}
+
+	if (oi->GPStart->RisingEdge()) {
+		runningLiftSequence = true;
+		if (liftController.get() == nullptr) {
+			liftController.reset(new LiftController());
+			std::cout << "Constructed new LiftController\n";
+		}
+		liftController->Next();
 	}
 
 	/**********************************************************
@@ -112,6 +123,14 @@ void Robot::TeleopPeriodic() {
 		twistInput = driveBase->GetCrabTwistOutput();
 	}
 
+	// FIXME: Crawler needs to go somewhere
+	const double crawlSpeed = oi->GetGamepadLeftStick();
+	if (fabs(crawlSpeed > 0.03)) {
+		RobotMap::crawlMotor->Set(crawlSpeed);
+	} else {
+		RobotMap::crawlMotor->Set(0.0);
+	}
+
 
 	double start = frc::Timer::GetFPGATimestamp();
 	if (speedModeTest) {
@@ -119,6 +138,8 @@ void Robot::TeleopPeriodic() {
 		driveBase->Diagnostics();
 	} else if (dmsMode) {
 		// DriveBase input handled via DMS->Run()
+	} else if (runningLiftSequence) {
+		liftController->Run();	// currently calls jackscrews -run
 	} else if (runningScrews) {
 		jackScrews->RunOpenLoop(-oi->GetJoystickY(threshold));
 		jackScrews->Run();
@@ -165,6 +186,24 @@ void Robot::RunSubsystems() {
 
 void Robot::InstrumentSubsystems() {
     Robot::jackScrews->Instrument();
+	frc::SmartDashboard::PutNumber("FL Encoder", driveBase->wheels[0]->GetDriveEncoderPosition() );
+	frc::SmartDashboard::PutNumber("FR Encoder", driveBase->wheels[1]->GetDriveEncoderPosition() );
+	frc::SmartDashboard::PutNumber("RL Encoder", driveBase->wheels[2]->GetDriveEncoderPosition() );
+	frc::SmartDashboard::PutNumber("RR Encoder", driveBase->wheels[3]->GetDriveEncoderPosition() );
+
+	frc::SmartDashboard::PutNumber("FL Out Amps", driveBase->wheels[0]->GetDriveOutputCurrent() );
+	frc::SmartDashboard::PutNumber("FR Out Amps", driveBase->wheels[1]->GetDriveOutputCurrent() );
+	frc::SmartDashboard::PutNumber("RL Out Amps", driveBase->wheels[2]->GetDriveOutputCurrent() );
+	frc::SmartDashboard::PutNumber("RR Out Amps", driveBase->wheels[3]->GetDriveOutputCurrent() );
+
+	frc::SmartDashboard::PutNumber("FL Vel", driveBase->wheels[0]->GetDriveVelocity() );
+	frc::SmartDashboard::PutNumber("FR Vel", driveBase->wheels[1]->GetDriveVelocity() );
+	frc::SmartDashboard::PutNumber("RL Vel", driveBase->wheels[2]->GetDriveVelocity() );
+	frc::SmartDashboard::PutNumber("RR Vel", driveBase->wheels[3]->GetDriveVelocity() );
+
+	DriveInfo<double> sanity = driveBase->GetDriveEncoderPositions();
+	frc::SmartDashboard::PutNumber("Sanity", sanity.RL);
+	
 }
 
 #ifndef RUNNING_FRC_TESTS

@@ -493,8 +493,8 @@ void DriveBase::Diagnostics() {
 	frc::SmartDashboard::PutNumber("RR A", rearRight->GetDriveOutputCurrent());
 }
 
-DriveInfo<int> DriveBase::GetDriveEncoderPositions() {
-	DriveInfo<int> info;
+DriveInfo<double> DriveBase::GetDriveEncoderPositions() {
+	DriveInfo<double> info;
 	info.FL = frontLeft->GetDriveEncoderPosition();
 	info.FR = frontRight->GetDriveEncoderPosition();
 	info.RR = rearRight->GetDriveEncoderPosition();

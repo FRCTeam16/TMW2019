@@ -20,7 +20,7 @@
 #include "Subsystems/JackScrews.h"
 #include "Subsystems/Vision/VisionSystem.h"
 #include "Subsystems/Intake.h"
-
+#include "Lift/LiftController.h"
 
 
 class Robot : public frc::TimedRobot {
@@ -55,5 +55,7 @@ private:
   std::unique_ptr<Intake> intake;
 
   bool runningScrews = false;	// true when running jackscrews
+  bool runningLiftSequence = false; // true when running lift sequence
+  std::unique_ptr<LiftController> liftController;
 
 };

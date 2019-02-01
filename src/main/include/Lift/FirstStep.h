@@ -14,5 +14,7 @@ class FirstStep : public Action {
  public:
   FirstStep();
   void Execute() override;
+  bool IsFinished() override { return finished; }
  private:
+  bool finished = false;
 };
