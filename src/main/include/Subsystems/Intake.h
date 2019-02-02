@@ -9,12 +9,12 @@
 #include "ctre/Phoenix.h"
 #include <memory>
 #include "SubsystemManager.h"
-
+#include "frc/Solenoid.h"
 
 class Intake: SubsystemManager {
 
 public:
-  enum class IntakePosition { kStarting, kCargo, kHatch };
+  enum class IntakePosition { kStarting, kcargoPickup, kFloor, kLevelOne };
 
   Intake();
 
@@ -40,10 +40,17 @@ private:
   std::shared_ptr<WPI_VictorSPX> beaterTop;
   std::shared_ptr<WPI_VictorSPX> beaterBottom;
 
+  std::shared_ptr<Solenoid> ejectorSolenoid;
+  std::shared_ptr<Solenoid> hatchCatchSolenoid;
+
   double bottomBeaterSpeed = 0.0;
 
   double topBeaterSpeed = 0.0;
 
+  enum class IntakeState{kNone,kIntakeCargo,kEjectCargo,kIntakeHatch,kEjectHatch};
+  IntakeState currentState = IntakeState::kNone;
+
+  void SetState(IntakeState state);
 };
 
 
