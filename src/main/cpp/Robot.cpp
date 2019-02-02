@@ -75,12 +75,15 @@ void Robot::TeleopPeriodic() {
 		runningScrews = false;
 	} 
 
-	if (oi->GPY->RisingEdge()) {
-		jackScrews->SetLiftMode(JackScrews::LiftMode::kBack);
-	} else if (oi->GPA->RisingEdge()) {
-		jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
-	} else if (oi->GPB->RisingEdge()) {
-		jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
+	const bool gamepadLTPressed = oi->GetGamepadLT() > 0.75;
+	if (gamepadLTPressed) {
+		if (oi->GPY->RisingEdge()) {
+			jackScrews->SetLiftMode(JackScrews::LiftMode::kBack);
+		} else if (oi->GPA->RisingEdge()) {
+			jackScrews->SetLiftMode(JackScrews::LiftMode::kFront);
+		} else if (oi->GPB->RisingEdge()) {
+			jackScrews->SetLiftMode(JackScrews::LiftMode::kAll);
+		}
 	}
 
 	if (oi->GPStart->RisingEdge()) {
@@ -90,6 +93,23 @@ void Robot::TeleopPeriodic() {
 			std::cout << "Constructed new LiftController\n";
 		}
 		liftController->Next();
+	}
+
+	/**********************************************************
+	 * Intake 
+	**********************************************************/
+	if (!gamepadLTPressed) {
+		if (oi->DR2->Pressed()) {
+			intake->IntakeCargo();
+		} else if (oi->DR1->Pressed()) {
+			intake->EjectCargo();
+		} else if (oi->DL2->Pressed()) {
+			intake->IntakeHatch();
+		} else if (oi->DL1->Pressed()) {
+			intake->EjectHatch();
+		} else {
+			//intake->Halt();
+		}
 	}
 
 	/**********************************************************
