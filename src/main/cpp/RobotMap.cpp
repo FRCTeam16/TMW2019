@@ -27,8 +27,8 @@
 
   std::shared_ptr<Solenoid> RobotMap::frontAxleSolenoid;
   std::shared_ptr<Solenoid> RobotMap::rearAxleSolenoid;
-  std::shared_ptr<Solenoid> ejectorSolenoid;
-  std::shared_ptr<Solenoid> hatchCatchSolenoid;
+  std::shared_ptr<Solenoid> RobotMap::ejectorSolenoid;
+  std::shared_ptr<Solenoid> RobotMap::hatchCatchSolenoid;
   
   std::shared_ptr<Compressor> RobotMap::compressor;
 

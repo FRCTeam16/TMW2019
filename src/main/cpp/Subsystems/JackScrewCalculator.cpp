@@ -9,7 +9,7 @@ void JackScrewCalculator::Run() {
     currentPosition = wheel->GetDriveEncoderPosition();
     lastChange = abs(currentPosition - lastPosition);
     accumulatedPosition += lastChange;
-    int remaining = abs(targetDistance - currentPosition);      // TODO: Sign problem here
+    int remaining = abs(targetDistance - accumulatedPosition);      // TODO: Sign problem here
 
     if (remaining < rotationCloseLoopThreshold) {
         std::cout << " *** CLOSED LOOP ***\n";

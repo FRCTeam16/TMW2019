@@ -14,6 +14,7 @@ class LiftController {
   LiftController();
   void Next();
   void Run();
+  bool isActive();
 
  private:
   enum class LiftState { kNone, kLiftUp, kFirstDrive, kLastDrive, kFinished };

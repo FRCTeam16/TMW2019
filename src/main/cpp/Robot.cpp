@@ -21,12 +21,10 @@ void Robot::RobotInit() {
 
 	jackScrews.reset(new JackScrews());
 	runningScrews = false;
-	jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 
 	intake.reset(new Intake());
 
 	visionSystem.reset(new VisionSystem());
-
     statusReporter.reset(new StatusReporter());
     statusReporter->Launch();
     dmsProcessManager.reset(new DmsProcessManager(statusReporter));
@@ -50,18 +48,20 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
     std::cout << "Robot::TeleopInit =>\n";
     InitSubsystems();
+
 	driveBase->InitTeleop();
-	assert(oi.get() != nullptr);
+	liftController.reset();
+
 	runningScrews = false;
 	runningLiftSequence = false;
-	jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
     double startTime = frc::Timer::GetFPGATimestamp();
 	frc::Scheduler::GetInstance()->Run();
-	double threshold = 0.1;
+
+	double threshold = 0.1;	// Used as general joystick deadband default
 	const bool lockWheels = oi->DL6->Pressed();
 
 	/**********************************************************/
@@ -125,7 +125,7 @@ void Robot::TeleopPeriodic() {
 
 	// FIXME: Crawler needs to go somewhere
 	const double crawlSpeed = oi->GetGamepadLeftStick();
-	if (fabs(crawlSpeed > 0.03)) {
+	if (fabs(crawlSpeed) > 0.03) {
 		RobotMap::crawlMotor->Set(crawlSpeed);
 	} else {
 		RobotMap::crawlMotor->Set(0.0);
@@ -167,13 +167,13 @@ void Robot::TeleopPeriodic() {
 	SmartDashboard::PutNumber("Teleop Period (ms)", elapsed);
 }
 
-void Robot::TestInit() {}
-void Robot::TestPeriodic() {}
-
 
 void Robot::InitSubsystems() {
     std::cout << "Robot::InitSubsystems =>\n";
-	Robot::jackScrews->Init();
+	jackScrews->Init();
+	visionSystem->Init();
+	intake->Init();
+	// status & dms currently don't have init
 	std::cout << "Robot::InitSubsystems <=\n";
 }
 
@@ -205,6 +205,10 @@ void Robot::InstrumentSubsystems() {
 	frc::SmartDashboard::PutNumber("Sanity", sanity.RL);
 	
 }
+
+
+void Robot::TestInit() {}
+void Robot::TestPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() { return frc::StartRobot<Robot>(); }

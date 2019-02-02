@@ -38,6 +38,7 @@ public:
   
   JackScrews();
   void Run() override;
+  void Init() override;
 
   void ShiftAll(ShiftMode shiftMode);
   void ShiftFront(ShiftMode shiftMode);
@@ -54,7 +55,7 @@ public:
     std::vector<std::shared_ptr<SwerveWheel>> frontAxis;
     std::vector<std::shared_ptr<SwerveWheel>> rearAxis;
 
-    bool enabled = false;
+    bool enabled = false;  // true when we are shifted and performing jackscrew manipulation
     LiftMode currentLiftMode = LiftMode::kAll;
     Position targetPosition = Position::kNone;
     double openLoopSpeed = 0.0;
@@ -62,6 +63,8 @@ public:
 
     DriveInfo<bool> enabledCalculators;
     std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewCalculator>>> calculators;
+    bool controlHoldMode = false;
+    
     void DoOpenLoop();
     void DoControlled();
 

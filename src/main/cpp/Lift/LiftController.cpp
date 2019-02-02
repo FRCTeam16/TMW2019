@@ -17,13 +17,11 @@ void LiftController::Next() {
                 currentAction.reset(new FirstStep());
                 break;
             case LiftState::kLiftUp:
-                break;
             case LiftState::kFirstDrive:
-                break;
             case LiftState::kLastDrive:
-                break;
             case LiftState::kFinished:
-                break;
+            default:
+                currentAction.reset();
         }
     }
 }
@@ -32,4 +30,8 @@ void LiftController::Run() {
     if (!currentAction->IsFinished()) {
         currentAction->Run();
     }
+}
+
+bool LiftController::isActive() {
+    
 }

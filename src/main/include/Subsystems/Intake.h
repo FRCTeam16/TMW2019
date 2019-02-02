@@ -40,8 +40,8 @@ private:
   std::shared_ptr<WPI_VictorSPX> beaterTop;
   std::shared_ptr<WPI_VictorSPX> beaterBottom;
 
-  std::shared_ptr<Solenoid> ejectorSolenoid;
-  std::shared_ptr<Solenoid> hatchCatchSolenoid;
+  std::shared_ptr<frc::Solenoid> ejectorSolenoid;
+  std::shared_ptr<frc::Solenoid> hatchCatchSolenoid;
 
   double bottomBeaterSpeed = 0.0;
 

@@ -26,6 +26,10 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
   allWheels.insert(allWheels.end(), rearAxis.begin(), rearAxis.end());
 }
 
+void JackScrews::Init() {
+  this->ShiftAll(JackScrews::ShiftMode::kDrive);
+}
+
 void JackScrews::Run()
 {
   if (!enabled) { return; }
@@ -90,24 +94,7 @@ void JackScrews::RunControlled(LiftMode liftMode, Position targetPosition_) {
   di->RR.reset(rr);
   calculators.reset(di);
 
-  enabledCalculators = DriveInfo<bool>{true};
-  if (LiftMode::kFront == liftMode) {
-    enabledCalculators.RL = false;
-    enabledCalculators.RR = false;
-  } else if (LiftMode::kBack == liftMode) {
-    enabledCalculators.FL = false;
-    enabledCalculators.FR = false;
-  } else {
-    enabledCalculators.FL = true;
-    enabledCalculators.FR = true;
-    enabledCalculators.RL = true;
-    enabledCalculators.RR = true;
-  }
-
-  std::cout << "Enabled FL: " << enabledCalculators.FL << "\n"
-            << "        FR: " << enabledCalculators.FR << "\n"
-            << "        RL: " << enabledCalculators.RL << "\n"
-            << "        RR: " << enabledCalculators.RR << "\n";
+  controlHoldMode = false;  // Allow open loop to position
 }
 
 /**
@@ -132,27 +119,33 @@ void JackScrews::DoOpenLoop() {
   }
 }
 
+/**
+ * Called from Run()
+ */
 void JackScrews::DoControlled() {
   std::vector<std::shared_ptr<JackScrewCalculator>> activeCalcs;
-  if (enabledCalculators.FL) {
+  if (LiftMode::kFront == currentLiftMode) {
     activeCalcs.push_back(calculators->FL);
-  }
-  if (enabledCalculators.FR) {
     activeCalcs.push_back(calculators->FR);
-  }
-  if (enabledCalculators.RL) {
+  } else if (LiftMode::kBack == currentLiftMode) {
     activeCalcs.push_back(calculators->RL);
-  }
-  if (enabledCalculators.RR) {
+    activeCalcs.push_back(calculators->RR);
+  } else {
+    activeCalcs.push_back(calculators->FL);
+    activeCalcs.push_back(calculators->FR);
+    activeCalcs.push_back(calculators->RL);
     activeCalcs.push_back(calculators->RR);
   }
   std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
-  if (activeCalcs.empty()) {
-    std::cout << "No active jackscrews\n";
+
+  if (controlHoldMode) {
+    std::cout << "JackScrews::DoControlled Holding Position\n";
+    for (auto const &calc : activeCalcs) {
+      calc->Hold();
+    }
     return;
   }
   
-
   // Capture accumulated positions
   auto lowest = activeCalcs[0].get();
   for (int i=1; i < activeCalcs.size(); i++) {
@@ -178,33 +171,25 @@ void JackScrews::DoControlled() {
     // TODO: Check calc not in position control already? currently handled in calc
     auto currentCalc = activeCalcs[i].get();
     const int diff = abs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
-    // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".diff", diff );
+
     if (diff >= kMaximumDisplacementThreshold) {
       if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
         const double delta = speedDir * 0.02; // alternate do ratio?
         const double newSpeed = currentCalc->GetControlSpeed() - delta;
         currentCalc->SetControlSpeed(newSpeed);
-        // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".speed", newSpeed );
       }
     }
-    // frc::SmartDashboard::PutNumber("JS." + std::to_string(i) + ".accum", currentCalc->GetAccumulatedPosition() );
+
     std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed() 
               << " | change = " << currentCalc->GetLastChange()
               << " | accum = " << currentCalc->GetAccumulatedPosition() 
               << "\n";
+
     currentCalc->Run();
     if (currentCalc->IsClosedLoop()) {
       std::cout << "Closed Loop detected, exiting loop\n";
-      enabledCalculators.FL = false;
-      enabledCalculators.FR = false;
-      enabledCalculators.RL = false;
-      enabledCalculators.RR = false;
+      controlHoldMode = true;
       break;
     }
-  }
-  // FIXME: Hack
-  if (!enabledCalculators.FL && !enabledCalculators.FR && !enabledCalculators.RL && !enabledCalculators.RR) {
-    
-  }
-    
+  } 
 }
