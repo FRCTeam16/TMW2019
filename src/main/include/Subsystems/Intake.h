@@ -7,6 +7,7 @@
 
 #pragma once
 #include "ctre/Phoenix.h"
+#include <map>
 #include <memory>
 #include "SubsystemManager.h"
 #include "frc/Solenoid.h"
@@ -14,12 +15,13 @@
 class Intake: SubsystemManager {
 
 public:
-  enum class IntakePosition { kStarting, kcargoPickup, kFloor, kLevelOne };
+  enum class IntakePosition { kStarting, kCargoPickup, kFloor, kLevelOne };
 
   Intake();
 
   void Init() override;
   void Run() override;
+  void Instrument() override;
 
   void IntakeCargo();
   void EjectCargo();
@@ -27,11 +29,18 @@ public:
   void IntakeHatch();
   void EjectHatch();
 
+  /**
+   * Stops motors, resets state
+   */
+  void Stop();
+
   void SetIntakePosition(IntakePosition position);
   void SetIntakePositionOpenLoop(double speed);
+
   // testing
   void SetBottomBeaterSpeed(double speed);
   void SetTopBeaterSpeed(double speed);
+  void SetPositionSpeed(double speed);
 
 
 private:
@@ -44,11 +53,17 @@ private:
   std::shared_ptr<frc::Solenoid> hatchCatchSolenoid;
 
   double bottomBeaterSpeed = 0.0;
-
   double topBeaterSpeed = 0.0;
+  bool ejectSolenoidState = false;
+  bool hatchSolenoidState = false;
 
-  enum class IntakeState{kNone,kIntakeCargo,kEjectCargo,kIntakeHatch,kEjectHatch};
+  enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kEjectHatch};
   IntakeState currentState = IntakeState::kNone;
+  double startTime = -1;  // state activity start time
+
+  std::map<Intake::IntakePosition, int> positionLookup;
+  int targetPosition = 0;
+  double positionSpeed = 0.0; // testing
 
   void SetState(IntakeState state);
 };

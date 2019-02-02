@@ -201,8 +201,7 @@ void Robot::InstrumentSubsystems() {
 	frc::SmartDashboard::PutNumber("RL Vel", driveBase->wheels[2]->GetDriveVelocity() );
 	frc::SmartDashboard::PutNumber("RR Vel", driveBase->wheels[3]->GetDriveVelocity() );
 
-	DriveInfo<double> sanity = driveBase->GetDriveEncoderPositions();
-	frc::SmartDashboard::PutNumber("Sanity", sanity.RL);
+	intake->Instrument();
 	
 }
 
