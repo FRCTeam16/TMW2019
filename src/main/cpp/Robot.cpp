@@ -7,6 +7,7 @@
 
 #include "Robot.h"
 #include "OI.h"
+#include "Util/PrefUtil.h" 
 
 std::unique_ptr<OI> Robot::oi;
 std::shared_ptr<DriveBase> Robot::driveBase;
@@ -98,19 +99,37 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************
 	 * Intake 
 	**********************************************************/
+	if (oi->DR2->Pressed()) {
+		intake->IntakeCargo();
+	} else if (oi->DR1->Pressed()) {
+		intake->EjectCargo();
+	} else if (oi->DL2->Pressed()) {
+		intake->IntakeHatch();
+	} else if (oi->DL1->Pressed()) {
+		intake->EjectHatch();
+	} else {
+		intake->Stop();
+	}
+
 	if (!gamepadLTPressed) {
-		if (oi->DR2->Pressed()) {
-			intake->IntakeCargo();
-		} else if (oi->DR1->Pressed()) {
-			intake->EjectCargo();
-		} else if (oi->DL2->Pressed()) {
-			intake->IntakeHatch();
-		} else if (oi->DL1->Pressed()) {
-			intake->EjectHatch();
-		} else {
-			//intake->Halt();
+		if (oi->GPY->RisingEdge()) {
+			intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
+		} else if (oi->GPA->RisingEdge()) {
+			intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
+		} else if (oi->GPX->RisingEdge()) {
+			intake->SetIntakePosition(Intake::IntakePosition::kStarting);
+		} else if (oi->GPB->RisingEdge()) {
+			intake->SetIntakePosition(Intake::IntakePosition::kFloor);
 		}
 	}
+
+	const double leftStickAmt = oi->GetGamepadLeftStick();
+	if (fabs(leftStickAmt) > threshold) {
+		intake->SetPositionSpeed(leftStickAmt);
+	} else {
+		intake->SetPositionSpeed(0.0);
+	}
+	
 
 	/**********************************************************
 	 * Vision Testing
@@ -143,10 +162,12 @@ void Robot::TeleopPeriodic() {
 		twistInput = driveBase->GetCrabTwistOutput();
 	}
 
-	// FIXME: Crawler needs to go somewhere
-	const double crawlSpeed = oi->GetGamepadLeftStick();
-	if (fabs(crawlSpeed) > 0.03) {
+	// FIXME: Should crawler go somewhere else?somewhere
+	const double crawlSpeed = PrefUtil::getSet("crawl.speed", 1.0);
+	if (oi->GetGamepadDPad() == OI::DPad::kDown) {
 		RobotMap::crawlMotor->Set(crawlSpeed);
+	} else if (oi->GetGamepadDPad() == OI::DPad::kUp) {
+		RobotMap::crawlMotor->Set(-crawlSpeed);
 	} else {
 		RobotMap::crawlMotor->Set(0.0);
 	}
@@ -200,6 +221,7 @@ void Robot::InitSubsystems() {
 void Robot::RunSubsystems() {
     double start = frc::Timer::GetFPGATimestamp();
     dmsProcessManager->Run();
+	intake->Run();
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("DMS Time", (now-start) * 1000);
 }

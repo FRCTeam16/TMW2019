@@ -15,7 +15,7 @@
 class Intake: SubsystemManager {
 
 public:
-  enum class IntakePosition { kStarting, kCargoPickup, kFloor, kLevelOne };
+  enum class IntakePosition { kStarting, kCargoShot, kLevelOne, kFloor };
 
   Intake();
 
@@ -35,7 +35,6 @@ public:
   void Stop();
 
   void SetIntakePosition(IntakePosition position);
-  void SetIntakePositionOpenLoop(double speed);
 
   // testing
   void SetBottomBeaterSpeed(double speed);
@@ -51,18 +50,22 @@ private:
 
   std::shared_ptr<frc::Solenoid> ejectorSolenoid;
   std::shared_ptr<frc::Solenoid> hatchCatchSolenoid;
+  std::shared_ptr<frc::Solenoid> gripperSolenoid;
 
   double bottomBeaterSpeed = 0.0;
   double topBeaterSpeed = 0.0;
-  bool ejectSolenoidState = false;
+  bool ejectorSolenoidState = false;
   bool hatchSolenoidState = false;
+  bool gripperSolenoidState = false;
 
   enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kEjectHatch};
   IntakeState currentState = IntakeState::kNone;
   double startTime = -1;  // state activity start time
+  bool runningSequence = false; // whether we are in a timed sequence
 
   std::map<Intake::IntakePosition, int> positionLookup;
-  int targetPosition = 0;
+  IntakePosition targetPosition = IntakePosition::kStarting;
+  int targetPositionValue = 0;
   double positionSpeed = 0.0; // testing
 
   void SetState(IntakeState state);
