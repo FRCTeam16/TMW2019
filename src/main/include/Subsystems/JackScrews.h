@@ -45,8 +45,10 @@ public:
   void ShiftRear(ShiftMode shiftMode);
 
   void SetLiftMode(LiftMode liftMode);
-  void RunOpenLoop(double speed);
-  void RunControlled(LiftMode liftMode, Position targetPosition);
+  void ConfigureOpenLoop(double speed);
+  void ConfigureControlled(LiftMode liftMode, Position targetPosition);
+
+  bool InPosition();
 
  private:
     std::shared_ptr<Solenoid> frontAxleSolenoid;

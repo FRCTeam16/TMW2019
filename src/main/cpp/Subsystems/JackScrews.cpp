@@ -16,10 +16,11 @@
 
 JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearAxleSolenoid(RobotMap::rearAxleSolenoid)
 {
-  frontAxis.push_back(Robot::driveBase->wheels[0]);
-  frontAxis.push_back(Robot::driveBase->wheels[1]);
-  rearAxis.push_back(Robot::driveBase->wheels[2]);
-  rearAxis.push_back(Robot::driveBase->wheels[3]);
+  auto wheels = Robot::driveBase->GetWheels();
+  frontAxis.push_back(wheels.FL);
+  frontAxis.push_back(wheels.FR);
+  rearAxis.push_back(wheels.RL);
+  rearAxis.push_back(wheels.RR);
 
   allWheels.reserve(frontAxis.size() + rearAxis.size());
   allWheels.insert(allWheels.end(), frontAxis.begin(), frontAxis.end());
@@ -34,7 +35,7 @@ void JackScrews::Run()
 {
   if (!enabled) { return; }
 
-  std::cout << "Jackscrews::Run() =>\n";
+  // std::cout << "Jackscrews::Run() =>\n";
   
   switch (targetPosition) {
     case Position::kNone:
@@ -71,21 +72,28 @@ void JackScrews::SetLiftMode(LiftMode liftMode) {
   currentLiftMode = liftMode;
 }
 
-void JackScrews::RunOpenLoop(double speed) {
+bool JackScrews::InPosition() {
+  if (targetPosition != Position::kNone) {
+    return controlHoldMode; // TODO: Check screw calculators?
+  }
+}
+
+void JackScrews::ConfigureOpenLoop(double speed) {
   targetPosition = Position::kNone;
   openLoopSpeed = speed;
 }
 
-void JackScrews::RunControlled(LiftMode liftMode, Position targetPosition_) {
+void JackScrews::ConfigureControlled(LiftMode liftMode, Position targetPosition_) {
   this->SetLiftMode(liftMode);
   targetPosition = targetPosition_;
   controlTimeStart = frc::Timer::GetFPGATimestamp();
 
   frc::Preferences *prefs = frc::Preferences::GetInstance();
-  auto fl = new JackScrewCalculator(Robot::driveBase->wheels[0], prefs->GetInt("JackScrew.FL.dist"), controlTimeStart);
-  auto fr = new JackScrewCalculator(Robot::driveBase->wheels[1], prefs->GetInt("JackScrew.FR.dist"), controlTimeStart);
-  auto rl = new JackScrewCalculator(Robot::driveBase->wheels[2], prefs->GetInt("JackScrew.RL.dist"), controlTimeStart);
-  auto rr = new JackScrewCalculator(Robot::driveBase->wheels[3], prefs->GetInt("JackScrew.RR.dist"), controlTimeStart);
+  auto wheels = Robot::driveBase->GetWheels();
+  auto fl = new JackScrewCalculator(wheels.FL, prefs->GetInt("JackScrew.FL.dist"), controlTimeStart);
+  auto fr = new JackScrewCalculator(wheels.FR, prefs->GetInt("JackScrew.FR.dist"), controlTimeStart);
+  auto rl = new JackScrewCalculator(wheels.RL, prefs->GetInt("JackScrew.RL.dist"), controlTimeStart);
+  auto rr = new JackScrewCalculator(wheels.RR, prefs->GetInt("JackScrew.RR.dist"), controlTimeStart);
 
   auto di = new DriveInfo<std::shared_ptr<JackScrewCalculator>>();
   di->FL.reset(fl);
@@ -142,6 +150,11 @@ void JackScrews::DoControlled() {
     std::cout << "JackScrews::DoControlled Holding Position\n";
     for (auto const &calc : activeCalcs) {
       calc->Hold();
+      // Debug
+      frc::SmartDashboard::PutNumber("FL Target", calculators->FL->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("FR Target", calculators->FR->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("RL Target", calculators->RL->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("RR Target", calculators->RR->GetTargetDistance());
     }
     return;
   }
@@ -179,6 +192,8 @@ void JackScrews::DoControlled() {
         currentCalc->SetControlSpeed(newSpeed);
       }
     }
+    std::string label = "calc[" + std::to_string(i) + "] Speed";
+    frc::SmartDashboard::PutNumber(label, currentCalc->GetControlSpeed());
 
     std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed() 
               << " | change = " << currentCalc->GetLastChange()

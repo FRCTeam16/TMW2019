@@ -16,7 +16,7 @@ void FirstStep::Execute() {
     if (IsFirstRun()) {
         std::cout << "JackScrew First Step Shifting\n";
         Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
-        Robot::jackScrews->RunControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
+        Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
     } else {
         const double now = frc::Timer::GetFPGATimestamp();
         const double delta = (now - startTime);

@@ -6,17 +6,15 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-#include "Subsystems/JackScrews.h"
-#include "Action.h"
+#include "Lift/Action.h"
 
-class LiftController {
+class SecondStep : public Action {
  public:
-  LiftController();
-  void Next();
-  void Run();
-
+  SecondStep();
+  void Execute() override;
+  bool IsFinished() override { return finished; }
  private:
-  enum class LiftState { kNone, kFirstStep, kSecondStep, kFinished };
-  LiftState currentState = LiftState::kNone;
-  std::unique_ptr<Action> currentAction;
+  bool finished = false;
+  bool liftFinished = false;
+  double positionStartTime = -1.0;
 };

@@ -7,6 +7,7 @@
 
 #include "Lift/LiftController.h"
 #include "Lift/FirstStep.h"
+#include "Lift/SecondStep.h"
 
 LiftController::LiftController() {}
 
@@ -16,9 +17,9 @@ void LiftController::Next() {
             case LiftState::kNone:
                 currentAction.reset(new FirstStep());
                 break;
-            case LiftState::kLiftUp:
-            case LiftState::kFirstDrive:
-            case LiftState::kLastDrive:
+            case LiftState::kFirstStep:
+                currentAction.reset(new SecondStep());
+            case LiftState::kSecondStep:
             case LiftState::kFinished:
             default:
                 currentAction.reset();
@@ -30,8 +31,4 @@ void LiftController::Run() {
     if (!currentAction->IsFinished()) {
         currentAction->Run();
     }
-}
-
-bool LiftController::isActive() {
-    
 }

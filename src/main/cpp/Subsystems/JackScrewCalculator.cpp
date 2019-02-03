@@ -13,7 +13,7 @@ void JackScrewCalculator::Run() {
 
     if (remaining < rotationCloseLoopThreshold) {
         std::cout << " *** CLOSED LOOP ***\n";
-        wheel->UseClosedLoopDrive((startPosition + targetDistance)); 
+        wheel->UseClosedLoopDrive(GetTargetDistance()); 
         closedLoop = true;
     } else {
         wheel->UseOpenLoopDrive(speed);
@@ -22,5 +22,6 @@ void JackScrewCalculator::Run() {
 }
 
 void JackScrewCalculator::Hold() {
-    wheel->UseClosedLoopDrive((startPosition + targetDistance)); 
+    wheel->UseClosedLoopDrive(GetTargetDistance()); 
+    closedLoop = true;
 }

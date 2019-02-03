@@ -55,9 +55,9 @@ void Intake::Init() {
     PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
     PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
     PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
-    PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", 1.0);
+    PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
     PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
-    PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
+    PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", 1.0);
     PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
 
     targetPositionValue = rotateLeft->GetSelectedSensorPosition(0);
@@ -111,12 +111,17 @@ void Intake::Run() {
                 currentState = IntakeState::kNone; // TODO: internal switch?
             }
             break;
+        
+        case IntakeState::kOpen:
+            std::cout << "in kOpen: ";
+            bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
+            topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
+            break;
     }
 
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
-
 
     rotateLeft->Set(positionSpeed); // TODO: replace with position control targetPosition
     // rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, targetPosition);
@@ -155,6 +160,7 @@ void Intake::SetIntakePosition(IntakePosition position) {
 
 void Intake::SetState(IntakeState state) {
     startTime = frc::Timer::GetFPGATimestamp();
+    currentState = state;
 }
 
 void Intake::Instrument() {
@@ -175,5 +181,5 @@ void Intake::SetTopBeaterSpeed(double speed) {
 }
 
 void Intake::SetPositionSpeed(double speed) {
-    positionSpeed = 0.0;
+    positionSpeed = speed;
 }

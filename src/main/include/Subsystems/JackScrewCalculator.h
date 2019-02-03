@@ -26,12 +26,13 @@ public:
     void SetControlSpeed(double speed) { controlSpeed = speed; }
     bool IsFinished() const { return abs(currentPosition - targetDistance) <= finishedThreshold; }
     bool IsClosedLoop() const { return closedLoop; }
+    double GetTargetDistance() const { return startPosition + targetDistance; }
 
 private:
     const double controlTimeStart;
     const std::shared_ptr<SwerveWheel> wheel;
     const double targetDistance;
-    double startPosition = -1;
+    double startPosition = -1.0;
     double lastPosition = 0;
     double currentPosition = -1;
     double lastChange = 0;

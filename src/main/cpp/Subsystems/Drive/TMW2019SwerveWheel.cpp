@@ -97,7 +97,7 @@ void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
 
 void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
     // driveMotor->Set(ControlMode::Velocity, 0);
-    std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ")\n";
+    // std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ")\n";
 
     frc::Preferences *prefs = frc::Preferences::GetInstance();
     const double driveP = prefs->GetFloat("DriveP");
@@ -114,7 +114,7 @@ void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
     pid.SetIZone(driveIZone);
     pid.SetOutputRange(-1.0, 1.0);
 
-    pid.SetReference(value, rev::ControlType::kVelocity);
+    pid.SetReference(value, rev::ControlType::kPosition);
     isOpenLoop = false;
 }
 
