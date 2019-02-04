@@ -24,6 +24,7 @@ void Robot::RobotInit() {
 	runningScrews = false;
 
 	intake.reset(new Intake());
+	crawler.reset(new Crawler());
 
 	visionSystem.reset(new VisionSystem());
     statusReporter.reset(new StatusReporter());
@@ -166,14 +167,13 @@ void Robot::TeleopPeriodic() {
 		twistInput = driveBase->GetCrabTwistOutput();
 	}
 
-	// FIXME: Should crawler go somewhere else?somewhere
-	const double crawlSpeed = PrefUtil::getSet("crawl.speed", 1.0);
+		
 	if (oi->GetGamepadDPad() == OI::DPad::kDown) {
-		RobotMap::crawlMotor->Set(-crawlSpeed);
+		crawler->Back();
 	} else if (oi->GetGamepadDPad() == OI::DPad::kUp) {
-		RobotMap::crawlMotor->Set(crawlSpeed);
+		crawler->Forward();
 	} else {
-		RobotMap::crawlMotor->Set(0.0);
+		crawler->Stop();
 	}
 
 
@@ -218,6 +218,7 @@ void Robot::InitSubsystems() {
 	jackScrews->Init();
 	visionSystem->Init();
 	intake->Init();
+	crawler->Init();
 	// status & dms currently don't have init
 	std::cout << "Robot::InitSubsystems <=\n";
 }
@@ -226,12 +227,12 @@ void Robot::RunSubsystems() {
     double start = frc::Timer::GetFPGATimestamp();
     dmsProcessManager->Run();
 	intake->Run();
+	crawler->Run();
 	double now = frc::Timer::GetFPGATimestamp();
-	SmartDashboard::PutNumber("DMS Time", (now-start) * 1000);
+	SmartDashboard::PutNumber("Subsystem Times", (now-start) * 1000);
 }
 
 void Robot::InstrumentSubsystems() {
-    Robot::jackScrews->Instrument();
 	auto wheels = driveBase->GetWheels();
 	frc::SmartDashboard::PutNumber("FL Encoder", wheels.FL->GetDriveEncoderPosition() );
 	frc::SmartDashboard::PutNumber("FR Encoder", wheels.FR->GetDriveEncoderPosition() );
@@ -248,8 +249,9 @@ void Robot::InstrumentSubsystems() {
 	frc::SmartDashboard::PutNumber("RL Vel", wheels.RL->GetDriveVelocity() );
 	frc::SmartDashboard::PutNumber("RR Vel", wheels.RR->GetDriveVelocity() );
 
+	jackScrews->Instrument();
 	intake->Instrument();
-	
+	crawler->Instrument();
 }
 
 
