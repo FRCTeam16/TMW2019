@@ -104,13 +104,13 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************
 	 * Intake 
 	**********************************************************/
-	if (oi->DR2->Pressed()) {
+	if (oi->DR1->Pressed()) {
 		intake->IntakeCargo();
-	} else if (oi->DR1->Pressed()) {
+	} else if (oi->DR2->Pressed()) {
 		intake->EjectCargo();
-	} else if (oi->DL2->Pressed()) {
-		intake->IntakeHatch();
 	} else if (oi->DL1->Pressed()) {
+		intake->IntakeHatch();
+	} else if (oi->DL2->Pressed()) {
 		intake->EjectHatch();
 	} else {
 		intake->Stop();

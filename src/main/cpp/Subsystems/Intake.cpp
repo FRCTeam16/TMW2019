@@ -14,7 +14,7 @@ Intake::Intake() {
     rotateLeft = RobotMap::rotateLeftMotor;
     rotateLeft->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Absolute);
     rotateRight = RobotMap::rotateRightMotor;
-    rotateRight->Set(ctre::phoenix::motorcontrol::ControlMode::Follower, rotateLeft->GetDeviceID());
+    // rotateRight->Set(ctre::phoenix::motorcontrol::ControlMode::Follower, 11);     /* rotateLeft->GetDeviceID() */
 
     std::vector<std::shared_ptr<ctre::phoenix::motorcontrol::can::BaseMotorController>> motors {rotateLeft, rotateRight};
     for (auto const& motor : motors) {
@@ -27,6 +27,8 @@ Intake::Intake() {
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+
+    
 
 
     beaterTop = RobotMap::beaterTopMotor;
@@ -123,7 +125,13 @@ void Intake::Run() {
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
 
+    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
+    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
+    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+
     rotateLeft->Set(positionSpeed); // TODO: replace with position control targetPosition
+    rotateRight->Set(positionSpeed);     /* rotateLeft->GetDeviceID() */
+
     // rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, targetPosition);
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
@@ -166,6 +174,7 @@ void Intake::SetState(IntakeState state) {
 void Intake::Instrument() {
     frc::SmartDashboard::PutNumber("Intake Pos", rotateLeft->GetSelectedSensorPosition(0));
     frc::SmartDashboard::PutNumber("Intake Target", targetPositionValue);
+    frc::SmartDashboard::PutNumber("RotateLeft Amps", rotateLeft->GetOutputCurrent());
 }
 
 // Testing Methods
