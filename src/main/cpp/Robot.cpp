@@ -75,6 +75,7 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
+		jackScrews->ConfigureOpenLoop(0.0);
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);

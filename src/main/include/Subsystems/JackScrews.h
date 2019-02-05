@@ -50,6 +50,8 @@ public:
 
   bool InPosition();
 
+  DriveInfo<std::shared_ptr<JackScrewControl>>* GetJackScrewControls() { return jackScrews.get(); }
+
  private:
     std::shared_ptr<Solenoid> frontAxleSolenoid;
     std::shared_ptr<Solenoid> rearAxleSolenoid;

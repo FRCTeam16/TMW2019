@@ -15,38 +15,14 @@ SecondStep::SecondStep() {}
 
 void SecondStep::Execute() {
     const double kThreshold = 0.1;
+    auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+
 
     if (IsFirstRun()) {
         std::cout << "Lift Second Step\n";
-    } else {
         Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kFront, JackScrews::Position::kUp);
+    } else {
+        finished =  (jackScrewControls->FL->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop) &&
+                    (jackScrewControls->FR->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop);
     }
-    if (Robot::jackScrews->InPosition()) {
-        const double now = frc::Timer::GetFPGATimestamp();
-        if (positionStartTime == -1) {
-            positionStartTime = now;
-        }
-        const double delta = (now - positionStartTime);
-        // Wait for real position from caller, we want to know we are in a good position
-        // Begin driving tank
-        if (delta > 0.25) {
-            double flSpeed = 0.0;
-            double frSpeed = 0.0;
-            auto wheels = Robot::driveBase->GetWheels();
-            double value = Robot::oi->getDriverLeft()->GetY();
-            if (value > kThreshold) {
-                flSpeed = value;
-            }
-            value = Robot::oi->getDriverRight()->GetY();
-            if (value > kThreshold) {
-                frSpeed = value;
-            }
-
-            Robot::driveBase->SetTargetAngle(0.0);
-    		double twistInput = Robot::driveBase->GetCrabTwistOutput();
-            wheels.FL->UseOpenLoopDrive(flSpeed);
-            wheels.FR->UseOpenLoopDrive(frSpeed);
-        }
-    }
-    Robot::jackScrews->Run();
 }
