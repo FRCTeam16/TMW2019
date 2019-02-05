@@ -13,10 +13,12 @@ FirstStep::FirstStep() {
 }
 
 void FirstStep::Execute() {
+    auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+
     if (IsFirstRun()) {
         std::cout << "JackScrew First Step Shifting\n";
         Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
-        Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);
+        Robot::jackScrews->ConfigureOpenLoop(0.25);
     } else {
         const double now = frc::Timer::GetFPGATimestamp();
         const double delta = (now - startTime);
@@ -24,10 +26,30 @@ void FirstStep::Execute() {
 
         if (delta > shiftDelay) {
             std::cout << "JackScrew First Step Running Controlled\n";
-            Robot::jackScrews->Run();
+            if (firstAfterShifting) {
+                firstAfterShifting = false;
+                Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);    // 
+                std::cout << "Configured wheels for control\n";
+                jackScrewControls->FL->SetControlSpeed(1.0);
+                jackScrewControls->FR->SetControlSpeed(1.0);
+                jackScrewControls->RL->SetControlSpeed(1.0);
+                jackScrewControls->RR->SetControlSpeed(1.0);
+            }
         } else {
             std::cout << "now: " << now << " | startTime: " << startTime << " | delta: " << delta << "\n";
+            jackScrewControls->FL->SetControlSpeed(0.0);
+            jackScrewControls->FR->SetControlSpeed(0.0);
+            jackScrewControls->RL->SetControlSpeed(0.0);
+            jackScrewControls->RR->SetControlSpeed(0.0);
         }
+    }
+
+    finished =  (jackScrewControls->FL->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop) &&
+                (jackScrewControls->FR->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop) &&
+                (jackScrewControls->RL->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop) &&
+                (jackScrewControls->RR->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop);
+    if (finished) {
+        std::cout << "First Step detected step finished\n";
     }
 }
 

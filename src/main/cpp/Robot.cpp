@@ -75,6 +75,7 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
+		jackScrews->ConfigureOpenLoop(0.0);
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
@@ -205,8 +206,9 @@ void Robot::TeleopPeriodic() {
 	} else if (dmsMode) {
 		// DriveBase input handled via DMS->Run()
 	} else if (runningLiftSequence) {
-		liftController->Run();	// currently calls jackscrews -run
+		liftController->Run();
 	} else if (runningScrews) {
+		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
 		jackScrews->Run();
 	} else if (visionMode) {

@@ -17,4 +17,5 @@ class FirstStep : public Action {
   bool IsFinished() override { return finished; }
  private:
   bool finished = false;
+  bool firstAfterShifting = true;
 };
