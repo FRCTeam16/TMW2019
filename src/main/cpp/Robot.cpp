@@ -184,8 +184,9 @@ void Robot::TeleopPeriodic() {
 	} else if (dmsMode) {
 		// DriveBase input handled via DMS->Run()
 	} else if (runningLiftSequence) {
-		liftController->Run();	// currently calls jackscrews -run
+		liftController->Run();
 	} else if (runningScrews) {
+		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
 		jackScrews->Run();
 	} else if (visionMode) {

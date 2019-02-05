@@ -10,7 +10,7 @@
 #include <frc/Solenoid.h>
 #include "SubsystemManager.h"
 #include "Subsystems/Drive/SwerveWheel.h"
-#include "Subsystems/JackScrewCalculator.h"
+#include "Subsystems/JackScrewControl.h"
 #include <vector>
 
 using namespace frc;
@@ -64,7 +64,7 @@ public:
     double controlTimeStart = -1;
 
     DriveInfo<bool> enabledCalculators;
-    std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewCalculator>>> calculators;
+    std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewControl>>> jackScrews;
     bool controlHoldMode = false;
     
     void DoOpenLoop();

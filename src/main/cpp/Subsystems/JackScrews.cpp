@@ -25,6 +25,13 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
   allWheels.reserve(frontAxis.size() + rearAxis.size());
   allWheels.insert(allWheels.end(), frontAxis.begin(), frontAxis.end());
   allWheels.insert(allWheels.end(), rearAxis.begin(), rearAxis.end());
+
+  auto di = new DriveInfo<std::shared_ptr<JackScrewControl>>();
+  di->FL.reset(new JackScrewControl(wheels.FL));
+  di->FR.reset(new JackScrewControl(wheels.FR));
+  di->RL.reset(new JackScrewControl(wheels.RL));
+  di->RR.reset(new JackScrewControl(wheels.RR));
+  jackScrews.reset(di);
 }
 
 void JackScrews::Init() {
@@ -43,9 +50,6 @@ void JackScrews::Run()
       break;
 
     case Position::kDown:
-      DoControlled();      
-      break;
-
     case Position::kUp:
       DoControlled();      
       break;
@@ -62,10 +66,22 @@ void JackScrews::ShiftAll(ShiftMode shiftMode) {
 
 void JackScrews::ShiftFront(ShiftMode shiftMode) {
   frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
+  JackScrewControl::JackScrewState newState = JackScrewControl::JackScrewState::kSwerve;
+  if (ShiftMode::kJackscrews == shiftMode) {
+    newState = JackScrewControl::JackScrewState::kOpenLoop;
+  }
+  jackScrews->FL->SetCurrentState(newState);
+  jackScrews->FR->SetCurrentState(newState);
 }
 
 void JackScrews::ShiftRear(ShiftMode shiftMode) {
   rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
+   JackScrewControl::JackScrewState newState = JackScrewControl::JackScrewState::kSwerve;
+  if (ShiftMode::kJackscrews == shiftMode) {
+    newState = JackScrewControl::JackScrewState::kOpenLoop;
+  }
+  jackScrews->RL->SetCurrentState(newState);
+  jackScrews->RR->SetCurrentState(newState);
 }
 
 void JackScrews::SetLiftMode(LiftMode liftMode) {
@@ -90,19 +106,34 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Position targetPosition_
 
   frc::Preferences *prefs = frc::Preferences::GetInstance();
   auto wheels = Robot::driveBase->GetWheels();
-  auto fl = new JackScrewCalculator(wheels.FL, prefs->GetInt("JackScrew.FL.dist"), controlTimeStart);
-  auto fr = new JackScrewCalculator(wheels.FR, prefs->GetInt("JackScrew.FR.dist"), controlTimeStart);
-  auto rl = new JackScrewCalculator(wheels.RL, prefs->GetInt("JackScrew.RL.dist"), controlTimeStart);
-  auto rr = new JackScrewCalculator(wheels.RR, prefs->GetInt("JackScrew.RR.dist"), controlTimeStart);
 
-  auto di = new DriveInfo<std::shared_ptr<JackScrewCalculator>>();
-  di->FL.reset(fl);
-  di->FR.reset(fr);
-  di->RL.reset(rl);
-  di->RR.reset(rr);
-  calculators.reset(di);
+  // Initialize jackscrews we will be controlling
+  DriveInfo<bool> toInit {false};
+  if (LiftMode::kFront == currentLiftMode) {
+    toInit.FL = true;
+    toInit.FR = true;
+  } else if (LiftMode::kBack == currentLiftMode) {
+    toInit.RL = true;
+    toInit.RR = true;
+  } else {
+    toInit.FL = true;
+    toInit.FR = true;
+    toInit.RL = true;
+    toInit.RR = true;
+  }
 
-  controlHoldMode = false;  // Allow open loop to position
+  if (toInit.FL) {
+    jackScrews->FL->Init(prefs->GetDouble("JackScrew.FL.dist"), controlTimeStart);  
+  }
+  if (toInit.FR) {
+    jackScrews->FR->Init(prefs->GetDouble("JackScrew.FR.dist"), controlTimeStart);
+  }
+  if (toInit.RL) {
+    jackScrews->RL->Init(prefs->GetDouble("JackScrew.RL.dist"), controlTimeStart);
+  }
+  if (toInit.RR) {
+    jackScrews->RR->Init(prefs->GetDouble("JackScrew.RR.dist"), controlTimeStart);
+  }
 }
 
 /**
@@ -131,19 +162,20 @@ void JackScrews::DoOpenLoop() {
  * Called from Run()
  */
 void JackScrews::DoControlled() {
-  std::vector<std::shared_ptr<JackScrewCalculator>> activeCalcs;
+  std::vector<std::shared_ptr<JackScrewControl>> activeCalcs;
   if (LiftMode::kFront == currentLiftMode) {
-    activeCalcs.push_back(calculators->FL);
-    activeCalcs.push_back(calculators->FR);
+    activeCalcs.push_back(jackScrews->FL);
+    activeCalcs.push_back(jackScrews->FR);
   } else if (LiftMode::kBack == currentLiftMode) {
-    activeCalcs.push_back(calculators->RL);
-    activeCalcs.push_back(calculators->RR);
+    activeCalcs.push_back(jackScrews->RL);
+    activeCalcs.push_back(jackScrews->RR);
   } else {
-    activeCalcs.push_back(calculators->FL);
-    activeCalcs.push_back(calculators->FR);
-    activeCalcs.push_back(calculators->RL);
-    activeCalcs.push_back(calculators->RR);
+    activeCalcs.push_back(jackScrews->FL);
+    activeCalcs.push_back(jackScrews->FR);
+    activeCalcs.push_back(jackScrews->RL);
+    activeCalcs.push_back(jackScrews->RR);
   }
+
   std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
 
   if (controlHoldMode) {
@@ -151,10 +183,10 @@ void JackScrews::DoControlled() {
     for (auto const &calc : activeCalcs) {
       calc->Hold();
       // Debug
-      frc::SmartDashboard::PutNumber("FL Target", calculators->FL->GetTargetDistance());
-      frc::SmartDashboard::PutNumber("FR Target", calculators->FR->GetTargetDistance());
-      frc::SmartDashboard::PutNumber("RL Target", calculators->RL->GetTargetDistance());
-      frc::SmartDashboard::PutNumber("RR Target", calculators->RR->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("FL Target", jackScrews->FL->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("FR Target", jackScrews->FR->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("RL Target", jackScrews->RL->GetTargetDistance());
+      frc::SmartDashboard::PutNumber("RR Target", jackScrews->RR->GetTargetDistance());
     }
     return;
   }
@@ -179,7 +211,7 @@ void JackScrews::DoControlled() {
 
   // check wheels outside of threshold, slow them down
   const double kMaximumDisplacementThreshold = 1;
-
+  bool exitOpenLoop = false;
   for (int i=0; i<activeCalcs.size(); i++) {
     // TODO: Check calc not in position control already? currently handled in calc
     auto currentCalc = activeCalcs[i].get();
@@ -203,8 +235,14 @@ void JackScrews::DoControlled() {
     currentCalc->Run();
     if (currentCalc->IsClosedLoop()) {
       std::cout << "Closed Loop detected, exiting loop\n";
-      controlHoldMode = true;
+      exitOpenLoop = true;
       break;
     }
-  } 
+  } // end active calc
+
+  if (exitOpenLoop) {
+    for (auto const& control : activeCalcs) {
+      control->Hold();
+    }
+  }
 }
