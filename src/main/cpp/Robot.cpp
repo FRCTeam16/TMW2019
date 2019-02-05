@@ -116,15 +116,36 @@ void Robot::TeleopPeriodic() {
 		intake->Stop();
 	}
 
+	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
 	if (!gamepadLTPressed) {
-		if (oi->GPY->RisingEdge()) {
-			intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
-		} else if (oi->GPA->RisingEdge()) {
-			intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
-		} else if (oi->GPX->RisingEdge()) {
-			intake->SetIntakePosition(Intake::IntakePosition::kStarting);
-		} else if (oi->GPB->RisingEdge()) {
-			intake->SetIntakePosition(Intake::IntakePosition::kFloor);
+		// if (oi->GPY->RisingEdge()) {
+		// 	intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
+		// } else if (oi->GPA->RisingEdge()) {
+		// 	intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
+		// } else if (oi->GPX->RisingEdge()) {
+		// 	intake->SetIntakePosition(Intake::IntakePosition::kStarting);
+		// } else if (oi->GPB->RisingEdge()) {
+		// 	intake->SetIntakePosition(Intake::IntakePosition::kFloor);
+		// }
+
+		if (gamepadRTPressed) {
+			if (oi->GPY->RisingEdge()) {
+				std::cout << "Ejector True\n";
+				RobotMap::ejectorSolenoid->Set(true);
+			} else if (oi->GPA->RisingEdge()) {
+				RobotMap::hatchCatchSolenoid->Set(true);
+			} else if (oi->GPX->RisingEdge()) {
+				RobotMap::gripperSolenoid->Set(true);
+			}
+		} else {
+			if (oi->GPY->RisingEdge()) {
+				std::cout << "Ejector False\n";
+				RobotMap::ejectorSolenoid->Set(false);
+			} else if (oi->GPA->RisingEdge()) {
+				RobotMap::hatchCatchSolenoid->Set(false);
+			} else if (oi->GPX->RisingEdge()) {
+				RobotMap::gripperSolenoid->Set(false);
+			}
 		}
 	}
 

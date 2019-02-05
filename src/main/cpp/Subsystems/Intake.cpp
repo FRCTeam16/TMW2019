@@ -135,9 +135,10 @@ void Intake::Run() {
     // rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, targetPosition);
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
-    ejectorSolenoid->Set(ejectorSolenoidState);
-    hatchCatchSolenoid->Set(hatchSolenoidState);
-    gripperSolenoid->Set(gripperSolenoidState);
+    // FIXME
+    // ejectorSolenoid->Set(ejectorSolenoidState);
+    // hatchCatchSolenoid->Set(hatchSolenoidState);
+    // gripperSolenoid->Set(gripperSolenoidState);
 }
 
 void Intake::IntakeCargo() {

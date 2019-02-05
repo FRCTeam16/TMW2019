@@ -56,11 +56,11 @@ RobotMap::RobotMap() {
 
   gyro.reset(new BSGyro(crawlMotor.get()));
 
-  frontAxleSolenoid.reset(new Solenoid{0});
-  rearAxleSolenoid.reset(new Solenoid{1});
-  ejectorSolenoid.reset(new Solenoid{2});
-  hatchCatchSolenoid.reset(new Solenoid{3});
-  gripperSolenoid.reset(new Solenoid{4});
+  frontAxleSolenoid.reset(new Solenoid{0});   // TBD Double
+  rearAxleSolenoid.reset(new Solenoid{1});    // TBD Double
+  ejectorSolenoid.reset(new Solenoid{2});     // extender
+  gripperSolenoid.reset(new Solenoid{3});
+  hatchCatchSolenoid.reset(new Solenoid{4}); // TBD Single
 
 
   compressor.reset(new Compressor{0});

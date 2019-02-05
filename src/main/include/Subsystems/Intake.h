@@ -10,7 +10,9 @@
 #include <map>
 #include <memory>
 #include "SubsystemManager.h"
-#include "frc/Solenoid.h"
+#include <frc/Solenoid.h>
+#include <frc/DoubleSolenoid.h>
+
 
 class Intake: SubsystemManager {
 
