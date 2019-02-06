@@ -28,7 +28,7 @@ void Robot::RobotInit() {
 
 	visionSystem.reset(new VisionSystem());
     statusReporter.reset(new StatusReporter());
-    statusReporter->Launch();
+    // statusReporter->Launch();
     dmsProcessManager.reset(new DmsProcessManager(statusReporter));
 	std::cout << "Robot::TeleopInit <=\n";
 }
@@ -50,23 +50,18 @@ void Robot::AutonomousPeriodic() {
 void Robot::TeleopInit() {
     std::cout << "Robot::TeleopInit =>\n";
     InitSubsystems();
-
 	driveBase->InitTeleop();
 	liftController.reset();
 
-	std::string label = "Sanity String[" + std::to_string(42) + "] Speed";
-    frc::SmartDashboard::PutNumber(label, 999);
-
-
-	runningScrews = false;
-	runningLiftSequence = false;
+	runningScrews = false;				// flag for when jackscrew control is manual
+	runningLiftSequence = false;		// flag for when jackscrew control is automatic
 
     std::cout << "Robot::TeleopInit <=\n";
 }
 void Robot::TeleopPeriodic() {
     double startTime = frc::Timer::GetFPGATimestamp();
 	frc::Scheduler::GetInstance()->Run();
-
+	
 	double threshold = 0.1;	// Used as general joystick deadband default
 	const bool lockWheels = oi->DL6->Pressed();
 
@@ -190,6 +185,7 @@ void Robot::TeleopPeriodic() {
 	}
 
 		
+	// Crawler control
 	if (oi->GetGamepadDPad() == OI::DPad::kDown) {
 		crawler->Back();
 	} else if (oi->GetGamepadDPad() == OI::DPad::kUp) {
@@ -227,13 +223,16 @@ void Robot::TeleopPeriodic() {
 	
 
 	double now = frc::Timer::GetFPGATimestamp();
+	double driveBaseTime = (now-start) * 1000;
 	SmartDashboard::PutNumber("DriveBaseRun", (now-start) * 1000);
 	RunSubsystems();
 	InstrumentSubsystems();
 
-	long elapsed = (frc::Timer::GetFPGATimestamp() - startTime) * 1000.0;
+	now = frc::Timer::GetFPGATimestamp();
+	double elapsed = (frc::Timer::GetFPGATimestamp() - startTime) * 1000.0;
 	SmartDashboard::PutNumber("Teleop Period (ms)", elapsed);
-}
+	SmartDashboard::PutNumber("Non-DriveBase Time (ms)", (elapsed - driveBaseTime));
+}	
 
 
 void Robot::InitSubsystems() {

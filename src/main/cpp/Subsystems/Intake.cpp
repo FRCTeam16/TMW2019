@@ -128,7 +128,6 @@ void Intake::Run() {
     rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
 
     rotateLeft->Set(positionSpeed); // TODO: replace with position control targetPosition
-    // rotateRight->Set(positionSpeed); 
 
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
