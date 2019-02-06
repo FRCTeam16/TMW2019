@@ -9,8 +9,7 @@
 #include "Robot.h"
 #include "Subsystems/JackScrews.h"
 
-FirstStep::FirstStep() {
-}
+FirstStep::FirstStep() = default;
 
 void FirstStep::Execute() {
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();

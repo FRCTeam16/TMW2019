@@ -5,8 +5,8 @@
 #include "Commands/SetWheelOffsets.h"
 #include "Commands/ZeroGyro.h"
 #include "Commands/ZeroGyroOffset.h"
-#include "Commands/CalibratejackScrewsDownPosition.h"
-#include "Commands/CalibratejackScrewsUpPosition.h"
+#include "Commands/CalibrateJackScrewsDownPosition.h"
+#include "Commands/CalibrateJackScrewsUpPosition.h"
 
 # define M_PI		3.14159265358979323846	/* pi */
 

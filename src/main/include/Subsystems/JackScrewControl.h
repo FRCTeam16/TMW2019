@@ -10,13 +10,13 @@
 
 class JackScrewControl {
 public:
-    JackScrewControl(std::shared_ptr<SwerveWheel> wheel) : wheel(wheel) {
+    explicit JackScrewControl(std::shared_ptr<SwerveWheel> wheel) : wheel(wheel) {
         std::cout << "********************* JackScrewControl *********************\n";
         currentState = JackScrewState::kSwerve;
     }
     enum class JackScrewState { kSwerve, kOpenLoop, kClosedLoop };
 
-    void Init(int targetDistance, int controlTimeStart);
+    void Init(double targetDistance, double controlTimeStart);
     void InitOpenLoop(double speed);
     void Run();
     void Hold();

@@ -166,7 +166,7 @@ void Robot::TeleopPeriodic() {
 	 * Testing and Diagnostics
 	**********************************************************/
 	const bool speedModeTest = oi->DL7->Pressed();
-	const bool distanceMode = oi->DL8->Pressed();
+//	const bool distanceMode = oi->DL8->Pressed();
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
 
@@ -228,7 +228,6 @@ void Robot::TeleopPeriodic() {
 	RunSubsystems();
 	InstrumentSubsystems();
 
-	now = frc::Timer::GetFPGATimestamp();
 	double elapsed = (frc::Timer::GetFPGATimestamp() - startTime) * 1000.0;
 	SmartDashboard::PutNumber("Teleop Period (ms)", elapsed);
 	SmartDashboard::PutNumber("Non-DriveBase Time (ms)", (elapsed - driveBaseTime));

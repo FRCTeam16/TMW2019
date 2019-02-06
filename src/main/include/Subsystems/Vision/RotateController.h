@@ -6,7 +6,7 @@
 
 class RotateController : public frc::PIDSource, public frc::PIDOutput {  
 public:
-  RotateController(std::shared_ptr<Limelight> limelight)
+    explicit RotateController(std::shared_ptr<Limelight> limelight)
     :  limelight(limelight) {}
   
   double PIDGet() override {

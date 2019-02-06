@@ -7,7 +7,6 @@
 
 class Crawler : public SubsystemManager {
 private:
-    std::shared_ptr<WPI_TalonSRX> motor;
     double startTime = -1.0;        // time drive move starts (for ramping)
     double crawlSpeed = -1.0;       // default speed
     double targetSpeed = 0.0;       // speed target (fwd/rev) 
@@ -21,7 +20,7 @@ private:
     }
 
 public:
-    Crawler() : motor(RobotMap::crawlMotor) {}
+    Crawler() = default;
 
     void Init() override {
         crawlSpeed = PrefUtil::getSet("crawl.speed", 1.0);
@@ -34,7 +33,7 @@ public:
             const int direction = targetSpeed < 0 ? -1 : 1;
             speed = RampUtil::RampUp(fabs(targetSpeed), (now - startTime), kRampTime, 0.0) * direction;
         }
-        motor->Set(speed);
+        RobotMap::crawlMotor->Set(speed);
     }
 
     void Forward() {

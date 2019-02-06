@@ -13,8 +13,7 @@ DistanceControl::DistanceControl(std::shared_ptr<AnalogInput> _ultrasonic, doubl
 	pid->Enable();
 }
 
-DistanceControl::~DistanceControl() {
-}
+DistanceControl::~DistanceControl() = default;
 
 void DistanceControl::SetTarget(double _target) {
 	pid->SetSetpoint(_target);

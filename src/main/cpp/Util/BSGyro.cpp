@@ -16,8 +16,7 @@ BSGyro::BSGyro(int canID) : pigeon(new PigeonIMU(canID)) {
 	std::cout << "Constructed BSGyro with device ID " << canID << "\n";
 }
 
-BSGyro::~BSGyro() {
-}
+BSGyro::~BSGyro() = default;
 
 float BSGyro::GetOffset() {
 	return offset;

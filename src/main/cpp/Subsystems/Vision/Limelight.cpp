@@ -17,7 +17,7 @@ Limelight::Limelight() {
 SceneInfo Limelight::GetScene() const {
     SceneInfo si;
 
-    si.hasTarget = dataTable->GetNumber("tv", 0) == 1 ? true : false;  // 0 or 1
+    si.hasTarget = dataTable->GetNumber("tv", 0) == 1;  // 0 or 1
     si.xOffset = dataTable->GetNumber("tx", 0.0);       // -27 - 27 degrees
     si.yOffset = dataTable->GetNumber("ty", 0.0);       // -20.5 - 20.5 degrees
     si.targetArea = dataTable->GetNumber("ta", 0.0);    // 0 - 100%
@@ -27,7 +27,7 @@ SceneInfo Limelight::GetScene() const {
 }
 
 int Limelight::GetCurrentPipeline() const {
-    return dataTable->GetNumber("pipeline", -1);
+    return static_cast<int>(dataTable->GetNumber("pipeline", -1));
 }
 
 void Limelight::SelectPipeline(const int pipelineNumber) {
@@ -52,7 +52,7 @@ void Limelight::SetCameraMode(CameraMode cameraMode) {
             dataTable->PutNumber("ledMode", 0);
             break;
     }
-    const int value = static_cast<int>(cameraMode);
+    const auto value = static_cast<int>(cameraMode);
     dataTable->PutNumber("camMode", value);
 }
 

@@ -212,8 +212,8 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	const double startTime = frc::Timer::GetFPGATimestamp();
 	lastSpeedX = x;
 	lastSpeedY = y;
-	float FWD = y;
-	float STR = x;
+	double FWD = y;
+	double STR = x;
 
 	if (useGyro) {
 		assert(RobotMap::gyro.get() != nullptr);
