@@ -12,24 +12,22 @@
 
 Intake::Intake() {
     rotateLeft = RobotMap::rotateLeftMotor;
-    rotateLeft->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Absolute);
     rotateRight = RobotMap::rotateRightMotor;
-    // rotateRight->Set(ctre::phoenix::motorcontrol::ControlMode::Follower, 11);     /* rotateLeft->GetDeviceID() */
+    rotateRight->SetInverted(true);
+    rotateRight->Follow(*rotateLeft.get());
 
+    // rotateLeft->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Absolute);
     std::vector<std::shared_ptr<ctre::phoenix::motorcontrol::can::BaseMotorController>> motors {rotateLeft, rotateRight};
     for (auto const& motor : motors) {
         motor->SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
-        motor->ConfigPeakOutputForward(1.0);
-        motor->ConfigPeakOutputReverse(-1.0);
+        // motor->ConfigPeakOutputForward(1.0);
+        // motor->ConfigPeakOutputReverse(-1.0);
     }
     // TODO: limit constraints?
 
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
     rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
-
-    
-
 
     beaterTop = RobotMap::beaterTopMotor;
     beaterBottom = RobotMap::beaterBottomMotor;
@@ -130,12 +128,11 @@ void Intake::Run() {
     rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
 
     rotateLeft->Set(positionSpeed); // TODO: replace with position control targetPosition
-    rotateRight->Set(positionSpeed);     /* rotateLeft->GetDeviceID() */
+    // rotateRight->Set(positionSpeed); 
 
-    // rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::MotionMagic, targetPosition);
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
-    // FIXME
+    // FIXME: handling solenoid testing in Robot::TeleopPeriodic
     // ejectorSolenoid->Set(ejectorSolenoidState);
     // hatchCatchSolenoid->Set(hatchSolenoidState);
     // gripperSolenoid->Set(gripperSolenoidState);
