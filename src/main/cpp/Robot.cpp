@@ -250,6 +250,8 @@ void Robot::RunSubsystems() {
     dmsProcessManager->Run();
 	intake->Run();
 	crawler->Run();
+	// vision takes over driving so is in teleop loop
+	// liftController takes over driving so is in teleop loop
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("Subsystem Times", (now-start) * 1000);
 }
