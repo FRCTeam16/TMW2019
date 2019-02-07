@@ -9,8 +9,7 @@ CollisionDetector::CollisionDetector(std::shared_ptr<BSGyro> imu_, double thresh
 	imu(imu_), threshold(threshold_) {
 }
 
-CollisionDetector::~CollisionDetector() {
-}
+CollisionDetector::~CollisionDetector() = default;
 
 const double UNIT_SCALE = 16384.0; //  = 1G  http://www.ctr-electronics.com/downloads/api/cpp/html/classctre_1_1phoenix_1_1sensors_1_1_pigeon_i_m_u.html#a211525ea83d9728416661238a2a5402a
 

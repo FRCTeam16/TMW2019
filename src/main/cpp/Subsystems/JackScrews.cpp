@@ -95,7 +95,6 @@ void JackScrews::ShiftFront(ShiftMode shiftMode) {
 
 void JackScrews::ShiftRear(ShiftMode shiftMode) {
   rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
-   JackScrewControl::JackScrewState newState = JackScrewControl::JackScrewState::kSwerve;
   if (ShiftMode::kJackscrews == shiftMode) {
     std::cout << "Shifted rear to open\n";
     jackScrews->RL->InitOpenLoop(0.0);
@@ -280,7 +279,7 @@ void JackScrews::DoControlled() {
 
   const double MAX_SPEED = 1.0;
   const double kMinAccumulatedPosition = lowest->GetAccumulatedPosition();
-  const int speedDir = static_cast<int>(targetPosition);
+  const auto speedDir = static_cast<int>(targetPosition);
   if (fabs(lowest->GetControlSpeed()) != MAX_SPEED) {
     lowest->SetControlSpeed(MAX_SPEED * speedDir);
   }
@@ -298,7 +297,7 @@ void JackScrews::DoControlled() {
       break;
     }
 
-    const int diff = abs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
+    const double diff = fabs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
     if (diff >= kMaximumDisplacementThreshold) {
       if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
         const double delta = speedDir * 0.02; // alternate do ratio?

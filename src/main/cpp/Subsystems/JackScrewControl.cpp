@@ -1,6 +1,6 @@
 #include "Subsystems/JackScrewControl.h"
 
-void JackScrewControl::Init(int targetDistance_, int controlTimeStart_) {
+void JackScrewControl::Init(double targetDistance_, double controlTimeStart_) {
     std::cout << "JackScrewControl::Init()\n";
     targetDistance = targetDistance_;
     controlTimeStart = controlTimeStart_;
@@ -29,7 +29,7 @@ void JackScrewControl::Run() {
     currentPosition = wheel->GetDriveEncoderPosition();
     lastChange = abs(currentPosition - lastPosition);
     accumulatedPosition += lastChange;
-    int remaining = abs(targetDistance - accumulatedPosition);      // TODO: Sign problem here
+    double remaining = fabs(targetDistance - accumulatedPosition);      // TODO: Sign problem here
 
     if (autoSwitchToControl && (currentState != JackScrewState::kClosedLoop) && (remaining < rotationCloseLoopThreshold)) {
         std::cout << " JackScrewControl::Run flipping to closed loop\n";

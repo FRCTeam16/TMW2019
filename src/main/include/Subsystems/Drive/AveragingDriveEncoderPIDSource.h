@@ -15,9 +15,11 @@
 
 class AveragingDriveEncoderPIDSource : public frc::PIDSource {
 public:
-	AveragingDriveEncoderPIDSource(DriveInfo<std::shared_ptr<WPI_TalonSRX>> _motor);
-	virtual ~AveragingDriveEncoderPIDSource();
-	virtual double PIDGet();
+    explicit AveragingDriveEncoderPIDSource(DriveInfo<std::shared_ptr<WPI_TalonSRX>> _motor);
+
+	~AveragingDriveEncoderPIDSource() override;
+
+	double PIDGet() override;
 	void SetInitialEncoderValue();
 	void SetShowDebug(bool _showDebug);
 private:

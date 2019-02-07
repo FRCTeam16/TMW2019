@@ -10,8 +10,9 @@
 
 class Action {
  public:
-  virtual ~Action() {}
-  virtual bool IsFinished() { return finished; }
+  virtual ~Action() = default;
+
+    virtual bool IsFinished() { return finished; }
   void Run() {
     if (firstRun) {
       startTime = frc::Timer::GetFPGATimestamp();

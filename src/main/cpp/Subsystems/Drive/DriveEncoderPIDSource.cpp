@@ -6,8 +6,7 @@ DriveEncoderPIDSource::DriveEncoderPIDSource(std::shared_ptr<WPI_TalonSRX> _moto
 	PIDSource::SetPIDSourceType(frc::PIDSourceType::kDisplacement);
 }
 
-DriveEncoderPIDSource::~DriveEncoderPIDSource() {
-}
+DriveEncoderPIDSource::~DriveEncoderPIDSource() = default;
 
 void DriveEncoderPIDSource::SetInitialEncoderValue() {
 	initialEncoderValue = motor->GetSelectedSensorPosition(0);

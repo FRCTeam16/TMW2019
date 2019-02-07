@@ -19,8 +19,9 @@ private:
 	float GetOffset();
 	float offset = 0.0;
 public:
-	BSGyro(WPI_TalonSRX *talon);
-	BSGyro(int canId);
+    explicit BSGyro(WPI_TalonSRX *talon);
+
+	explicit BSGyro(int canId);
 	virtual ~BSGyro();
 	double PIDGet();
 	PigeonIMU* GetPigeon();
