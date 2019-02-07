@@ -1,6 +1,8 @@
+#include <Robot.h>
 #include "Subsystems/JackScrewControl.h"
 
-void JackScrewControl::Init(double targetDistance_, double controlTimeStart_) {
+
+void JackScrewControl::ConfigureControlled(double targetDistance_, double controlTimeStart_, EndStateAction action) {
     std::cout << "JackScrewControl::Init()\n";
     targetDistance = targetDistance_;
     controlTimeStart = controlTimeStart_;
@@ -8,14 +10,15 @@ void JackScrewControl::Init(double targetDistance_, double controlTimeStart_) {
     accumulatedPosition = 0.0;
     SetCurrentState(JackScrewState::kOpenLoop);
     controlSpeed = 0.0;
-    autoSwitchToControl = true;
-    std::cout << "jackScrews->FL: " << this << " : " << static_cast<int>(GetCurrentState()) << "\n";
+    endStateAction = action;
+    firstThresholdRun = true;
+    ampDetector.Reset();
 }
 
-void JackScrewControl::InitOpenLoop(double speed) {
+void JackScrewControl::InitOpenLoop(double speed, EndStateAction action) {
     SetCurrentState(JackScrewState::kOpenLoop);
     controlSpeed = speed;
-    autoSwitchToControl = false;
+    endStateAction = action;
 }
 
 void JackScrewControl::Run() {
@@ -29,11 +32,33 @@ void JackScrewControl::Run() {
     currentPosition = wheel->GetDriveEncoderPosition();
     lastChange = abs(currentPosition - lastPosition);
     accumulatedPosition += lastChange;
-    double remaining = fabs(targetDistance - accumulatedPosition);      // TODO: Sign problem here
+    const double remaining = fabs(targetDistance - accumulatedPosition);
+    const bool inThreshold = remaining < rotationCloseLoopThreshold;
 
-    if (autoSwitchToControl && (currentState != JackScrewState::kClosedLoop) && (remaining < rotationCloseLoopThreshold)) {
-        std::cout << " JackScrewControl::Run flipping to closed loop\n";
-        SetCurrentState(JackScrewState::kClosedLoop);
+    switch (endStateAction) {
+        case EndStateAction::kNone:
+            break;
+        case EndStateAction::kSwitchToAmpDetect:
+            if (inThreshold) {
+                if (firstThresholdRun) {
+                    Robot::jackScrews->ConfigureOpenLoop(0.25, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
+                    firstThresholdRun = false;
+                }
+                if (!ampDetector.Check()) {
+                    ampDetector.AddValue(wheel->GetDriveOutputCurrent());
+                } else {
+                    controlSpeed = 0.0;
+                    finished = true;
+                }
+            }
+            break;
+        case EndStateAction::kSwitchToControl:
+            if (!IsClosedLoop() && inThreshold) {
+                std::cout << " JackScrewControl::Run flipping to closed loop\n";
+                SetCurrentState(JackScrewState::kClosedLoop);
+                finished = true;
+            }
+            break;
     }
 
     switch (GetCurrentState()) {
@@ -41,7 +66,7 @@ void JackScrewControl::Run() {
             wheel->UseOpenLoopDrive(speed);
             break;
         case JackScrewState::kClosedLoop:
-            wheel->UseClosedLoopDrive(GetTargetDistance()); 
+            wheel->UseClosedLoopDrive(GetTargetDistance());     // FIXME? only works positive direction
             break;
         default:
             std::cout << "!!! Warning : JackScrew in swerve state but run() reaching control !!!\n";

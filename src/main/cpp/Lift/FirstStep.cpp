@@ -27,7 +27,7 @@ void FirstStep::Execute() {
             std::cout << "JackScrew First Step Running Controlled\n";
             if (firstAfterShifting) {
                 firstAfterShifting = false;
-                Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Position::kDown);    // 
+                Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Direction::kDown, JackScrewControl::EndStateAction::kSwitchToControl);    //
                 std::cout << "Configured wheels for control\n";
                 jackScrewControls->FL->SetControlSpeed(1.0);
                 jackScrewControls->FR->SetControlSpeed(1.0);
