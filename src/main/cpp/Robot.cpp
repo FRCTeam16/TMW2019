@@ -114,42 +114,36 @@ void Robot::TeleopPeriodic() {
 
 	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
 	if (!gamepadLTPressed) {
-		// if (oi->GPY->RisingEdge()) {
-		// 	intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
-		// } else if (oi->GPA->RisingEdge()) {
-		// 	intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
-		// } else if (oi->GPX->RisingEdge()) {
-		// 	intake->SetIntakePosition(Intake::IntakePosition::kStarting);
-		// } else if (oi->GPB->RisingEdge()) {
-		// 	intake->SetIntakePosition(Intake::IntakePosition::kFloor);
-		// }
-
 		if (gamepadRTPressed) {
 			if (oi->GPY->RisingEdge()) {
-				std::cout << "Ejector True\n";
-				RobotMap::ejectorSolenoid->Set(true);
+				solenoidState.ejector = !solenoidState.ejector;
+				RobotMap::ejectorSolenoid->Set(solenoidState.ejector);
 			} else if (oi->GPA->RisingEdge()) {
-				RobotMap::hatchCatchSolenoid->Set(true);
+				solenoidState.hatchChatch = !solenoidState.hatchChatch;
+				RobotMap::hatchCatchSolenoid->Set(solenoidState.hatchChatch);
 			} else if (oi->GPX->RisingEdge()) {
-				RobotMap::gripperSolenoid->Set(true);
+				solenoidState.gripper = !solenoidState.gripper;
+				RobotMap::gripperSolenoid->Set(solenoidState.gripper);
 			}
 		} else {
 			if (oi->GPY->RisingEdge()) {
-				std::cout << "Ejector False\n";
-				RobotMap::ejectorSolenoid->Set(false);
+				intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
 			} else if (oi->GPA->RisingEdge()) {
-				RobotMap::hatchCatchSolenoid->Set(false);
+				intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
 			} else if (oi->GPX->RisingEdge()) {
-				RobotMap::gripperSolenoid->Set(false);
+				intake->SetIntakePosition(Intake::IntakePosition::kStarting);
+			} else if (oi->GPB->RisingEdge()) {
+				intake->SetIntakePosition(Intake::IntakePosition::kFloor);
 			}
 		}
 	}
 
 	const double leftStickAmt = oi->GetGamepadLeftStick();
 	if (fabs(leftStickAmt) > threshold) {
-		intake->SetPositionSpeed(leftStickAmt);
+		intake->SetPositionSpeed(leftStickAmt, true);
 	} else {
-		intake->SetPositionSpeed(0.0);
+		// will not trigger switch to open loop mode
+		intake->SetPositionSpeed(0.0, false);
 	}
 	
 

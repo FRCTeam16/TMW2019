@@ -7,6 +7,7 @@
 #include "Commands/ZeroGyroOffset.h"
 #include "Commands/CalibratejackScrewsDownPosition.h"
 #include "Commands/CalibratejackScrewsUpPosition.h"
+#include "Commands/CalibrateIntakeRotate.h"
 
 # define M_PI		3.14159265358979323846	/* pi */
 
@@ -27,6 +28,7 @@ OI::OI() {
     SmartDashboard::PutData("Zero BSGyro Offset", new ZeroGyroOffset());
     SmartDashboard::PutData("Calibrate JackScrews Baseline", new CalibrateJackScrewsUpPosition());
     SmartDashboard::PutData("Calibrate JackScrews Distance", new CalibrateJackScrewsDownPosition());
+    SmartDashboard::PutData("Calibrate Intake Rotate", new CalibrateIntakeRotate());
 
     GPX.reset(new BSButton(gamepad, 3));
     GPY.reset(new BSButton(gamepad, 4));

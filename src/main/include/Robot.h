@@ -24,6 +24,12 @@
 #include "Subsystems/Crawler.h"
 
 
+struct ManualSolenoidState {
+  bool ejector = false;
+  bool hatchChatch = false;
+  bool gripper = false;
+};
+
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -59,5 +65,7 @@ private:
   bool runningLiftSequence = false; // true when running lift sequence
   std::unique_ptr<LiftController> liftController;
   std::unique_ptr<Crawler> crawler;
+
+  ManualSolenoidState solenoidState;
 
 };

@@ -10,13 +10,16 @@
 #include "frc/Preferences.h"
 #include "Util/PrefUtil.h"
 
+#define M_PI		3.14159265358979323846	/* pi */
+#define TWO_PI 6.28318530718
+
 Intake::Intake() {
     rotateLeft = RobotMap::rotateLeftMotor;
     rotateRight = RobotMap::rotateRightMotor;
     rotateRight->SetInverted(true);
     rotateRight->Follow(*rotateLeft.get());
 
-    // rotateLeft->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Absolute);
+    rotateLeft->ConfigSelectedFeedbackSensor(ctre::phoenix::motorcontrol::FeedbackDevice::CTRE_MagEncoder_Absolute);
     std::vector<std::shared_ptr<ctre::phoenix::motorcontrol::can::BaseMotorController>> motors {rotateLeft, rotateRight};
     for (auto const& motor : motors) {
         motor->SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
@@ -25,22 +28,16 @@ Intake::Intake() {
     }
     // TODO: limit constraints?
 
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
+    rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
+    rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    rotateLeft->Config_kF(0, 0.0);
 
     beaterTop = RobotMap::beaterTopMotor;
     beaterBottom = RobotMap::beaterBottomMotor;
     ejectorSolenoid = RobotMap::ejectorSolenoid;
     hatchCatchSolenoid = RobotMap::hatchCatchSolenoid;
     gripperSolenoid = RobotMap::gripperSolenoid;
-
-    positionLookup[IntakePosition::kStarting] = PrefUtil::getSetInt("Intake.Positition.starting", 100);
-    positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
-    positionLookup[IntakePosition::kLevelOne] = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
-    positionLookup[IntakePosition::kFloor] = PrefUtil::getSetInt("Intake.Positition.floor", 400);
-    
-    targetPositionValue = positionLookup[IntakePosition::kStarting];
 }
 
 void Intake::Init() {
@@ -60,7 +57,21 @@ void Intake::Init() {
     PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", 1.0);
     PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
 
-    targetPositionValue = rotateLeft->GetSelectedSensorPosition(0);
+    positionLookup[IntakePosition::kStarting] = PrefUtil::getSetInt("Intake.Positition.starting", 100);
+    positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
+    positionLookup[IntakePosition::kLevelOne] = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kFloor] = PrefUtil::getSetInt("Intake.Positition.floor", 400);
+    // todo: guess initial position?
+
+    const int base = PrefUtil::getSetInt("Intake.position.base", 0);
+    const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
+
+    if (currentPositionValue < base) {
+        std::cout << "!!! Intake - current positionless than base, removing loop !!!\n";
+        rotateOffset = -4096;
+    }
+    targetPositionValue = currentPositionValue;
+    positionControl = false;
 }
 
 void Intake::Run() {
@@ -119,15 +130,30 @@ void Intake::Run() {
             break;
     }
 
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    const int base = PrefUtil::getSetInt("Intake.position.base", 0);
+    const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);
+    const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);
 
-    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.125));
-    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-    rotateRight->Config_kP(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
+    if (currentPosition < base) {
+        currentPosition += 4096;
+    }
+    double theta = ((currentPosition - (base + feedForwardZeroPos)) / 4096.0) * TWO_PI;
+    double k = feedForwardZero * cos(theta);
+    frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
 
-    rotateLeft->Set(positionSpeed); // TODO: replace with position control targetPosition
+    if (positionControl) {
+        
+
+        rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
+        rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
+        rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+        rotateLeft->Config_kF(0, k);
+
+        rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::Position, targetPositionValue + base + rotateOffset);
+    } else {
+        rotateLeft->Set(positionSpeed);
+    }
 
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
@@ -161,6 +187,7 @@ void Intake::Stop() {
 void Intake::SetIntakePosition(IntakePosition position) {
     targetPosition = position;
     targetPositionValue = positionLookup[targetPosition];
+    positionControl = true;
 }
 
 void Intake::SetState(IntakeState state) {
@@ -186,6 +213,9 @@ void Intake::SetTopBeaterSpeed(double speed) {
     topBeaterSpeed = speed;
 }
 
-void Intake::SetPositionSpeed(double speed) {
+void Intake::SetPositionSpeed(double speed, bool flipMode) {
     positionSpeed = speed;
+    if (flipMode) {
+        positionControl = false;
+    }
 }

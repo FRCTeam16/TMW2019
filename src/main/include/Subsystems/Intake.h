@@ -41,7 +41,7 @@ public:
   // testing
   void SetBottomBeaterSpeed(double speed);
   void SetTopBeaterSpeed(double speed);
-  void SetPositionSpeed(double speed);
+  void SetPositionSpeed(double speed, bool flipMode);
 
 
 private:
@@ -62,13 +62,17 @@ private:
 
   enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kEjectHatch};
   IntakeState currentState = IntakeState::kNone;
+
   double startTime = -1;  // state activity start time
   bool runningSequence = false; // whether we are in a timed sequence
 
   std::map<Intake::IntakePosition, int> positionLookup;
   IntakePosition targetPosition = IntakePosition::kStarting;
+
+  int rotateOffset = 0;   // how much hadditional offset to account for if passed a full turn and power cycled
   int targetPositionValue = 0;
   double positionSpeed = 0.0; // testing
+  bool positionControl = true;
 
   void SetState(IntakeState state);
 };
