@@ -35,6 +35,7 @@ public:
         currentState = newState; 
     }
     bool IsFinished() { return finished; }
+    EndStateAction GetEndStateAction() { return endStateAction; }
 
 private:
     const std::shared_ptr<SwerveWheel> wheel;

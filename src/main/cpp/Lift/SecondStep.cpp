@@ -24,10 +24,14 @@ void SecondStep::Execute() {
     } else {
         if (!liftFinished) {
             // Waiting for front jackscrew amp detection to kickout
-            liftFinished =  jackScrewControls->FL->IsFinished() && (jackScrewControls->FR->IsFinished());
+            bool leftFinished = jackScrewControls->FL->IsFinished();
+            bool rightFinished = jackScrewControls->FR->IsFinished();
+            liftFinished = leftFinished && rightFinished;
         } else {
-            Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
-            // TODO: Tank control
+            if (!shiftedFrontToSwerve) {
+                Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
+                std::cout << "TODO: Start Tanking\n";
+            }
         }
     }
 }

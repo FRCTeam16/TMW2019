@@ -41,17 +41,18 @@ void JackScrewControl::Run() {
         case EndStateAction::kSwitchToAmpDetect:
             if (inThreshold) {
                 if (firstThresholdRun) {
-                    Robot::jackScrews->ConfigureOpenLoop(0.25, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
+                    Robot::jackScrews->ConfigureOpenLoop(-0.40, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
                     firstThresholdRun = false;
                 }
                 if (!ampDetector.Check()) {
                     ampDetector.AddValue(wheel->GetDriveOutputCurrent());
                 } else {
-                    controlSpeed = 0.0;
+                    SetControlSpeed(0.0);
                     finished = true;
                 }
             }
             break;
+
         case EndStateAction::kSwitchToControl:
             if (!IsClosedLoop() && inThreshold) {
                 std::cout << " JackScrewControl::Run flipping to closed loop\n";

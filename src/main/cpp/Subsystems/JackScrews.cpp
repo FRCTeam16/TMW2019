@@ -47,7 +47,9 @@ void JackScrews::Run()
     DoControlled();
   }
 
+  std::cout << "FL | ";
   jackScrews->FL->Run();
+  std::cout << "FR | ";
   jackScrews->FR->Run();
   jackScrews->RL->Run();
   jackScrews->RR->Run();
