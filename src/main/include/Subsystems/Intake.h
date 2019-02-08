@@ -43,6 +43,10 @@ public:
   void SetTopBeaterSpeed(double speed);
   void SetPositionSpeed(double speed, bool flipMode);
 
+  void SetEjectorState(bool state) { ejectorSolenoidState = state; }
+  void SetHatchState(bool state) { hatchSolenoidState = state; }
+  void SetGripperState(bool state) { gripperSolenoidState = state; }
+
 
 private:
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
@@ -60,7 +64,7 @@ private:
   bool hatchSolenoidState = false;
   bool gripperSolenoidState = false;
 
-  enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kEjectHatch};
+  enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kIntakeHatch2, kEjectHatch};
   IntakeState currentState = IntakeState::kNone;
 
   double startTime = -1;  // state activity start time

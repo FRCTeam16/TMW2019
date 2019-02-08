@@ -75,11 +75,15 @@ void Intake::Init() {
 }
 
 void Intake::Run() {
-    const double elapsed = frc::Timer::GetFPGATimestamp() - startTime;
+    double elapsed = 0.0;
+    if (startTime > 0) {
+        elapsed = frc::Timer::GetFPGATimestamp() - startTime;
+    }
     switch(currentState) {
+
         case IntakeState::kNone:
-            bottomBeaterSpeed = 0.0;
-            topBeaterSpeed = 0.0;
+            //bottomBeaterSpeed = 0.0;
+            //topBeaterSpeed = 0.0;
             // positionSpeed = 0.0;
         break;
 
@@ -94,37 +98,42 @@ void Intake::Run() {
             break;
 
         case IntakeState::kIntakeHatch:
-            if (IntakePosition::kLevelOne == targetPosition) {
-                runningSequence = true;
-                ejectorSolenoidState = true;
-                if (elapsed > 0.25) {
-                    gripperSolenoidState = true;
-                } else if (elapsed > 0.5) {
-                    ejectorSolenoidState = false;
-                    runningSequence = false;
-                    currentState = IntakeState::kNone;
-                } 
-            } else {
-                bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", 1.0);
-                topBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
+            // std::cout << "IntakeState::Run() -> kIntakeHatch (elapsed = " << elapsed << ")\n";
+            runningSequence = true;
+            ejectorSolenoidState = true;
+            hatchSolenoidState = true;
+            gripperSolenoidState = true;
+            runningSequence = false;
+            // currentState = IntakeState::kNone; // human will tigger next state
+            break;
+
+        case IntakeState::kIntakeHatch2:
+            // std::cout << "IntakeState::Run() -> kIntakeHatch2 (elapsed = " << elapsed << ")\n";
+            runningSequence = true;
+            gripperSolenoidState = false;
+            if (elapsed > 0.25) {
+                ejectorSolenoidState = false;
+                runningSequence = false;
+                currentState = IntakeState::kNone;
             }
             break;
 
         case IntakeState::kEjectHatch:
+            // std::cout << "IntakeState::Run() -> kEjectHatch (elapsed = " << elapsed << ") " << ejectorSolenoidState << " - ";
             runningSequence = true;
-            bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
-            topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
-            hatchSolenoidState = true;
-            if (elapsed > 0.25) {
-                ejectorSolenoidState = true;
-            } else if (elapsed > 0.5) {
+            hatchSolenoidState = false;
+            ejectorSolenoidState = true;
+            if (elapsed > 0.25 && elapsed < 0.5) {
+                gripperSolenoidState = true;
+            } else if (elapsed > 0.5 ) {
+                hatchSolenoidState = true;
                 runningSequence = false;
-                currentState = IntakeState::kNone; // TODO: internal switch?
+                currentState = IntakeState::kNone;
             }
             break;
         
         case IntakeState::kOpen:
-            std::cout << "in kOpen: ";
+            // std::cout << "in kOpen: ";
             bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
             topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
             break;
@@ -143,8 +152,6 @@ void Intake::Run() {
     frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
 
     if (positionControl) {
-        
-
         rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
         rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
         rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
@@ -158,9 +165,10 @@ void Intake::Run() {
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
     // FIXME: handling solenoid testing in Robot::TeleopPeriodic
-    // ejectorSolenoid->Set(ejectorSolenoidState);
-    // hatchCatchSolenoid->Set(hatchSolenoidState);
-    // gripperSolenoid->Set(gripperSolenoidState);
+    // std::cout << "---- Ejector set = " << ejectorSolenoidState << "\n";
+    ejectorSolenoid->Set(ejectorSolenoidState);
+    hatchCatchSolenoid->Set(hatchSolenoidState);
+    gripperSolenoid->Set(gripperSolenoidState);
 }
 
 void Intake::IntakeCargo() {
@@ -172,15 +180,24 @@ void Intake::EjectCargo() {
 }
 
 void Intake::IntakeHatch() {
-    SetState(IntakeState::kIntakeHatch);
+    if (IntakeState::kIntakeHatch == currentState) {
+        std::cout << "Intake::InjectHatch\n";
+        SetState(IntakeState::kIntakeHatch2);
+    } else {
+        std::cout << "Intake::InjectHatch\n";
+        SetState(IntakeState::kIntakeHatch);
+    }
 }
 
 void Intake::EjectHatch() {
+    std::cout << "Intake::EjectHatch\n";
     SetState(IntakeState::kEjectHatch);
 }
 
 void Intake::Stop() {
-    SetState(IntakeState::kNone);
+    // SetState(IntakeState::kNone);
+    bottomBeaterSpeed = 0.0;
+    topBeaterSpeed = 0.0;
 }
 
 
@@ -204,12 +221,12 @@ void Intake::Instrument() {
 // Testing Methods
 
 void Intake::SetBottomBeaterSpeed(double speed) {
-    currentState = IntakeState::kOpen;
+    // currentState = IntakeState::kOpen;
     bottomBeaterSpeed = speed;
 }
 
 void Intake::SetTopBeaterSpeed(double speed) {
-    currentState = IntakeState::kOpen;
+    // currentState = IntakeState::kOpen;
     topBeaterSpeed = speed;
 }
 

@@ -44,4 +44,5 @@ private:
   std::shared_ptr<rev::CANSparkMax> driveMotor;
   std::shared_ptr<WPI_TalonSRX> steerMotor;
   bool isOpenLoop = true;
+  double kSteerP = 5.0; // was 10
 };

@@ -15,7 +15,7 @@ void TMW2019SwerveWheel::InitializeSteering() {
     steerMotor->Set(ControlMode::Position, 0);
     steerMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
     steerMotor->SetInverted(false);
-    steerMotor->Config_kP(0, 1.0, 0);
+    steerMotor->Config_kP(0, kSteerP, 0);
     steerMotor->ConfigPeakOutputForward(0.75, 0);
     steerMotor->ConfigPeakOutputReverse(-0.75, 0);
 }
@@ -82,7 +82,7 @@ double TMW2019SwerveWheel::GetDriveOutputCurrent() {
 }
 
 void TMW2019SwerveWheel::InitTeleop() {
-    steerMotor->Config_kP(0, 1.0, 0);
+    steerMotor->Config_kP(0, kSteerP, 0);
 }
 
 void TMW2019SwerveWheel::InitAuto() {

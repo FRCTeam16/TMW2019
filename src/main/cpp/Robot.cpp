@@ -101,13 +101,29 @@ void Robot::TeleopPeriodic() {
 	 * Intake 
 	**********************************************************/
 	if (oi->DR1->Pressed()) {
-		intake->IntakeCargo();
+		// intake->IntakeCargo();
+		double bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
+		double topBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
+		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
+		intake->SetTopBeaterSpeed(topBeaterSpeed);
 	} else if (oi->DR2->Pressed()) {
-		intake->EjectCargo();
+		// intake->EjectCargo();
+		double bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
+		double topBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
+		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
+		intake->SetTopBeaterSpeed(topBeaterSpeed);
 	} else if (oi->DL1->Pressed()) {
-		intake->IntakeHatch();
+		// intake->IntakeHatch();
+		double bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
+		double topBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
+		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
+		intake->SetTopBeaterSpeed(topBeaterSpeed);
 	} else if (oi->DL2->Pressed()) {
-		intake->EjectHatch();
+		// intake->EjectHatchManual();
+		double bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
+		double topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
+		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
+		intake->SetTopBeaterSpeed(topBeaterSpeed);
 	} else {
 		intake->Stop();
 	}
@@ -116,24 +132,30 @@ void Robot::TeleopPeriodic() {
 	if (!gamepadLTPressed) {
 		if (gamepadRTPressed) {
 			if (oi->GPY->RisingEdge()) {
+				std::cout << "Running ejector manually\n";
 				solenoidState.ejector = !solenoidState.ejector;
-				RobotMap::ejectorSolenoid->Set(solenoidState.ejector);
+				intake->SetEjectorState(solenoidState.ejector);
 			} else if (oi->GPA->RisingEdge()) {
 				solenoidState.hatchChatch = !solenoidState.hatchChatch;
-				RobotMap::hatchCatchSolenoid->Set(solenoidState.hatchChatch);
+				intake->SetHatchState(solenoidState.hatchChatch);
 			} else if (oi->GPX->RisingEdge()) {
 				solenoidState.gripper = !solenoidState.gripper;
-				RobotMap::gripperSolenoid->Set(solenoidState.gripper);
+				intake->SetGripperState(solenoidState.gripper);
 			}
 		} else {
+			// if (oi->GPY->RisingEdge()) {
+			// 	intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
+			// } else if (oi->GPA->RisingEdge()) {
+			// 	intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
+			// } else if (oi->GPX->RisingEdge()) {
+			// 	intake->SetIntakePosition(Intake::IntakePosition::kStarting);
+			// } else if (oi->GPB->RisingEdge()) {
+			// 	intake->SetIntakePosition(Intake::IntakePosition::kFloor);
+			// }
 			if (oi->GPY->RisingEdge()) {
-				intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
+				intake->EjectHatch();
 			} else if (oi->GPA->RisingEdge()) {
-				intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
-			} else if (oi->GPX->RisingEdge()) {
-				intake->SetIntakePosition(Intake::IntakePosition::kStarting);
-			} else if (oi->GPB->RisingEdge()) {
-				intake->SetIntakePosition(Intake::IntakePosition::kFloor);
+				intake->IntakeHatch();
 			}
 		}
 	}
