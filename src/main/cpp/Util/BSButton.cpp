@@ -14,8 +14,7 @@ BSButton::BSButton(std::shared_ptr<Joystick> joystick, int button) {
 	unpressed = true;
 }
 
-BSButton::~BSButton() {
-}
+BSButton::~BSButton() = default;
 
 bool BSButton::Pressed() {
 	return joy->GetRawButton(but);
@@ -38,15 +37,14 @@ bool BSButton::RisingEdge() {
 
 bool BSButton::FallingEdge() {
 	bool fallingEdge = false;
-	if(!joy->GetRawButton(but)) {
-			if(!unpressed) {
-				unpressed = true;
-				fallingEdge = true;
-			}
+	if (!joy->GetRawButton(but)) {
+		if (!unpressed) {
+			unpressed = true;
+			fallingEdge = true;
 		}
-		else {
-			unpressed = false;
-		}
+	} else {
+		unpressed = false;
+	}
 
-		return fallingEdge;
+	return fallingEdge;
 }

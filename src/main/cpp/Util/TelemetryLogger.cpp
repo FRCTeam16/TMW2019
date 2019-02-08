@@ -3,18 +3,16 @@
 #include "RobotMap.h"
 #include <iostream>
 #include <thread>
-#include <time.h>
+#include <ctime>
 #include "frc/Threads.h"
 #include "Subsystems/Drive/DriveInfo.h"
 
 #define LOGNAME_FORMAT "log/%Y%m%d_%H%M%S"
 #define LOGNAME_SIZE 20
 
-TelemetryLogger::TelemetryLogger() {
-}
+TelemetryLogger::TelemetryLogger() = default;
 
-TelemetryLogger::~TelemetryLogger() {
-}
+TelemetryLogger::~TelemetryLogger() = default;
 
 void TelemetryLogger::Launch() {
 	std::cout << "TelemetryLogger::Launch...";
@@ -68,7 +66,7 @@ void TelemetryLogger::Log() {
 	imu->GetBiasedAccelerometer(xyz);
 	imu->GetYawPitchRoll(ypr);
 
-	DriveInfo<double> encoders = Robot::driveBase->GetDriveControlEncoderPosition();
+	DriveInfo<double> encoders = Robot::driveBase->GetDriveEncoderPositions();
 
 	const char delimiter = ',';
 	logFile << Timer::GetFPGATimestamp() << delimiter

@@ -10,11 +10,9 @@
 
 class SecondStep : public Action {
  public:
-  SecondStep();
+  SecondStep() = default;
   void Execute() override;
-  bool IsFinished() override { return finished; }
  private:
-  bool finished = false;
-  bool liftFinished = false;
   double positionStartTime = -1.0;
+  bool liftFinished = false;
 };

@@ -5,19 +5,21 @@
 #include "Subsystems/Drive/SwerveWheel.h"
 #include "Subsystems/Drive/DriveInfo.h"
 #include "Util/RampUtil.h"
+#include "Util/MovingAverageThreshold.h"
 #include <memory>
 #include <iostream>
 
 class JackScrewControl {
 public:
-    JackScrewControl(std::shared_ptr<SwerveWheel> wheel) : wheel(wheel) {
+    explicit JackScrewControl(std::shared_ptr<SwerveWheel> wheel) : wheel(wheel) {
         std::cout << "********************* JackScrewControl *********************\n";
         currentState = JackScrewState::kSwerve;
     }
     enum class JackScrewState { kSwerve, kOpenLoop, kClosedLoop };
+    enum class EndStateAction { kNone, kSwitchToControl, kSwitchToAmpDetect };
 
-    void Init(int targetDistance, int controlTimeStart);
-    void InitOpenLoop(double speed);
+    void ConfigureControlled(double targetDistance, double controlTimeStart, EndStateAction action);
+    void InitOpenLoop(double speed, EndStateAction action);
     void Run();
     void Hold();
 
@@ -25,7 +27,6 @@ public:
     double GetAccumulatedPosition() { return accumulatedPosition; }
     double GetControlSpeed() { return controlSpeed; }
     void SetControlSpeed(double speed) { controlSpeed = speed; }
-    //bool IsFinished() const { return abs(currentPosition - targetDistance) <= finishedThreshold; }
     bool IsClosedLoop() { return currentState == JackScrewState::kClosedLoop; }
     double GetTargetDistance() { return startPosition + targetDistance; }
     JackScrewState GetCurrentState() { return currentState; }
@@ -33,7 +34,7 @@ public:
         std::cout << "Setting JackScrewControl " << this << " to state " << static_cast<int>(newState) << "\n";
         currentState = newState; 
     }
-    void SetAutoSwitchToControl(bool _value) { autoSwitchToControl = _value; }
+    bool IsFinished() { return finished; }
 
 private:
     const std::shared_ptr<SwerveWheel> wheel;
@@ -46,9 +47,13 @@ private:
     double lastChange = 0;
     double accumulatedPosition = 0;
 
-    double controlSpeed = 1.0;  // FIXME: Duplicated in jackscrews
+    double controlSpeed = 1.0;
     const double jackScrewRampTime = 0.1;
     const double rotationCloseLoopThreshold = 7;
-    const double finishedThreshold = 1;
-    bool autoSwitchToControl = false;
+    bool firstThresholdRun = true;
+
+    EndStateAction endStateAction = EndStateAction::kNone;
+    bool finished = false;
+
+    MovingAverageThreshold ampDetector{50, 3};
 };

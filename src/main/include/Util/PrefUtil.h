@@ -13,7 +13,7 @@ using namespace frc;
 
 class PrefUtil {
 public:
-    static double getSet(std::string key, double defaultValue) {
+    static double getSet(const std::string &key, double defaultValue) {
 //    	std::cout << "key: " << key << " | value: " << defaultValue << "\n";
         Preferences *prefs = Preferences::GetInstance();
         double returnValue = prefs->GetDouble(key, defaultValue);
@@ -24,7 +24,7 @@ public:
         return returnValue;
     }
 
-    static int getSetInt(std::string key, int defaultValue) {
+    static int getSetInt(const std::string &key, int defaultValue) {
 //    	std::cout << "key: " << key << " | value: " << defaultValue << "\n";
 		Preferences *prefs = Preferences::GetInstance();
 		int returnValue = prefs->GetInt(key, defaultValue);

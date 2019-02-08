@@ -8,7 +8,7 @@
 #include "Lift/ThirdStep.h"
 #include <iostream>
 
-ThirdStep::ThirdStep() {}
+ThirdStep::ThirdStep() = default;
 
 void ThirdStep::Execute() {
     if (IsFirstRun()) {

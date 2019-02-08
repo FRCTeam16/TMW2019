@@ -8,8 +8,9 @@
 
 class DmsProcessManager {
 public:
-	DmsProcessManager(std::shared_ptr<StatusReporter> _statusReporter) : statusReporter(_statusReporter) {}
-	virtual ~DmsProcessManager() {}
+    explicit DmsProcessManager(std::shared_ptr<StatusReporter> _statusReporter) : statusReporter(_statusReporter) {}
+	virtual ~DmsProcessManager() = default;
+
 	void Run();
 
 	void SetRunning(bool _run);
