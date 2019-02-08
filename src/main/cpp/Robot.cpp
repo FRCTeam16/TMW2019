@@ -182,7 +182,7 @@ void Robot::TeleopPeriodic() {
 	 * Testing and Diagnostics
 	**********************************************************/
 	const bool speedModeTest = oi->DL7->Pressed();
-	const bool distanceMode = oi->DL8->Pressed();
+//	const bool distanceMode = oi->DL8->Pressed();
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
 
@@ -244,7 +244,6 @@ void Robot::TeleopPeriodic() {
 	RunSubsystems();
 	InstrumentSubsystems();
 
-	now = frc::Timer::GetFPGATimestamp();
 	double elapsed = (frc::Timer::GetFPGATimestamp() - startTime) * 1000.0;
 	SmartDashboard::PutNumber("Teleop Period (ms)", elapsed);
 	SmartDashboard::PutNumber("Non-DriveBase Time (ms)", (elapsed - driveBaseTime));
@@ -266,6 +265,8 @@ void Robot::RunSubsystems() {
     dmsProcessManager->Run();
 	intake->Run();
 	crawler->Run();
+	// vision takes over driving so is in teleop loop
+	// liftController takes over driving so is in teleop loop
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("Subsystem Times", (now-start) * 1000);
 }

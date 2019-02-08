@@ -16,7 +16,8 @@ using namespace frc;
 class DriveEncoderPIDSource : public frc::PIDSource {
 public:
 	DriveEncoderPIDSource(std::shared_ptr<WPI_TalonSRX> _motor, int *_inverted);
-	virtual ~DriveEncoderPIDSource();
+
+	~DriveEncoderPIDSource() override;
 	virtual double PIDGet();
 	void SetInitialEncoderValue();
 private:

@@ -9,12 +9,12 @@
 #include "networktables/NetworkTable.h"
 
 struct SceneInfo {
-  bool hasTarget;
-  double xOffset;
-  double yOffset;
-  double targetArea;
-  double skew;
-  double latency;
+  bool hasTarget = false;
+  double xOffset = 0.0;
+  double yOffset = 0.0;
+  double targetArea = 0.0;
+  double skew = 0.0;
+  double latency = 0.0;
 };
 
 /**
@@ -31,7 +31,7 @@ class Limelight {
   SceneInfo GetScene() const;
   
   int GetCurrentPipeline() const;
-  void SelectPipeline(const int pipelineNumber);
+  void SelectPipeline(int pipelineNumber);
   
   CameraMode GetCameraMode() const;
   void SetCameraMode(CameraMode visionMode);

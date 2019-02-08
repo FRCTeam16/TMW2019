@@ -8,8 +8,7 @@ FrontTwoAveragingDriveEncoderPIDSource::FrontTwoAveragingDriveEncoderPIDSource(D
 	frc::PIDSource::SetPIDSourceType(frc::PIDSourceType::kDisplacement);
 }
 
-FrontTwoAveragingDriveEncoderPIDSource::~FrontTwoAveragingDriveEncoderPIDSource() {
-}
+FrontTwoAveragingDriveEncoderPIDSource::~FrontTwoAveragingDriveEncoderPIDSource() = default;
 
 void FrontTwoAveragingDriveEncoderPIDSource::SetInitialEncoderValue() {
 	initialEncoderValue.FL = wheels.FL->GetDriveEncoderPosition();

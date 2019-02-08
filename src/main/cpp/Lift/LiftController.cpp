@@ -11,7 +11,7 @@
 #include "Lift/ThirdStep.h"
 #include "Robot.h"
 
-LiftController::LiftController() {}
+LiftController::LiftController() = default;
 
 void LiftController::Next() {
     if (currentAction.get() == nullptr || currentAction->IsFinished()) {
@@ -27,7 +27,6 @@ void LiftController::Next() {
                 currentAction.reset(new ThirdStep());
                 break;
             case LiftState::kFinished:
-            default:
                 std::cout << "*** Resetting current action ***\n";
                 currentAction.reset();
         }

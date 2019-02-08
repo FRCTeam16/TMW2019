@@ -8,8 +8,7 @@
 #include "Util/MovingAverageThreshold.h"
 #include <iostream>
 
-MovingAverageThreshold::~MovingAverageThreshold() {
-}
+MovingAverageThreshold::~MovingAverageThreshold() = default;
 
 void MovingAverageThreshold::Configure(double _threshold, int _windowSize) {
 	threshold = _threshold;
@@ -37,8 +36,8 @@ bool MovingAverageThreshold::Check() {
 	}
 
 	double sum = 0.0;
-	for (unsigned int i=0;i<values.size();i++) {
-		sum += values[i];
+	for (double value : values) {
+		sum += value;
 	}
 	lastAverage = sum / (double) values.size();
 	std::cout << "Sum = " << sum << " Average: " << lastAverage << "\n";

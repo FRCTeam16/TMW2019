@@ -15,7 +15,7 @@
 
 class FrontTwoAveragingDriveEncoderPIDSource : public frc::PIDSource {
 public:
-	FrontTwoAveragingDriveEncoderPIDSource(DriveInfo<std::shared_ptr<SwerveWheel>> _wheels);
+	explicit FrontTwoAveragingDriveEncoderPIDSource(DriveInfo<std::shared_ptr<SwerveWheel>> _wheels);
 	virtual ~FrontTwoAveragingDriveEncoderPIDSource();
 	virtual double PIDGet();
 	void SetInitialEncoderValue();

@@ -6,9 +6,7 @@ output(0)
 	
 }
 
-CrabSpeed::~CrabSpeed() {
-
-}
+CrabSpeed::~CrabSpeed() = default;
 
 void CrabSpeed::PIDWrite(double _output)
 {

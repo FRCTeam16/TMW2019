@@ -1,7 +1,6 @@
 #include "Util/RampUtil.h"
 #include <iostream>
-
-
+#include <cmath>
 
 double RampUtil::RampUp(double value, double elapsedTime, double rampTime, double minSpeed) {
 	 /*
@@ -25,7 +24,7 @@ double RampUtil::RampUp(double value, double elapsedTime, double rampTime, doubl
 double RampUtil::RampDown(double baseSpeed, double currentPosition, double target, double threshold, double minSpeed) {
 	double speed = baseSpeed;
 	double error = target - currentPosition;
-	if (abs(error) < abs(threshold) ) {
+	if (fabs(error) < fabs(threshold) ) {
 		speed = baseSpeed * (error / threshold);
 		std::cout << "RampDown Error: " << error << " Profiled Speed: " << speed << "\n";
 		if (speed < minSpeed) {

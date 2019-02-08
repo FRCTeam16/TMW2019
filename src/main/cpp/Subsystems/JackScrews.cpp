@@ -17,15 +17,6 @@
 JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearAxleSolenoid(RobotMap::rearAxleSolenoid)
 {
   auto wheels = Robot::driveBase->GetWheels();
-  frontAxis.push_back(wheels.FL);
-  frontAxis.push_back(wheels.FR);
-  rearAxis.push_back(wheels.RL);
-  rearAxis.push_back(wheels.RR);
-
-  allWheels.reserve(frontAxis.size() + rearAxis.size());
-  allWheels.insert(allWheels.end(), frontAxis.begin(), frontAxis.end());
-  allWheels.insert(allWheels.end(), rearAxis.begin(), rearAxis.end());
-
   auto di = new DriveInfo<std::shared_ptr<JackScrewControl>>();
   di->FL.reset(new JackScrewControl(wheels.FL));
   di->FR.reset(new JackScrewControl(wheels.FR));
@@ -40,7 +31,6 @@ void JackScrews::Init() {
 
 void JackScrews::Run()
 {
-  std::cout << "jackScrews->FL: " << jackScrews->FL.get() << " : " << static_cast<int>(jackScrews->FL->GetCurrentState()) << "\n";
   bool allSwerve =
     (JackScrewControl::JackScrewState::kSwerve == jackScrews->FL->GetCurrentState()) &&
     (JackScrewControl::JackScrewState::kSwerve == jackScrews->FR->GetCurrentState()) &&
@@ -49,25 +39,17 @@ void JackScrews::Run()
   
   if (allSwerve) {
     // Should be controlled by driveBase, not jackscrew
-    std::cout << "All swerve in the house\n";
+    std::cout << "!!! All jack screw controls in swerve mode, aborting !!!\n";
     return;
   }
 
-  // std::cout << "Jackscrews::Run() =>\n";
-  
-  switch (targetPosition) {
-    case Position::kNone:
-      // do nothing
-      break;
-
-    case Position::kDown:
-    case Position::kUp:
-      std::cout << "DoControlled\n";
-      DoControlled();      
-      break;
+  if (targetPosition != Direction::kNone) {
+    DoControlled();
   }
 
+  std::cout << "FL | ";
   jackScrews->FL->Run();
+  std::cout << "FR | ";
   jackScrews->FR->Run();
   jackScrews->RL->Run();
   jackScrews->RR->Run();
@@ -84,8 +66,8 @@ void JackScrews::ShiftFront(ShiftMode shiftMode) {
   frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
   if (ShiftMode::kJackscrews == shiftMode) {
     std::cout << "Shifted front to open\n";
-    jackScrews->FL->InitOpenLoop(0.0);
-    jackScrews->FR->InitOpenLoop(0.0);
+    jackScrews->FL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    jackScrews->FR->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
   } else {
     std::cout << "Shifted front to swerve\n";
     jackScrews->FL->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);
@@ -95,11 +77,10 @@ void JackScrews::ShiftFront(ShiftMode shiftMode) {
 
 void JackScrews::ShiftRear(ShiftMode shiftMode) {
   rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
-   JackScrewControl::JackScrewState newState = JackScrewControl::JackScrewState::kSwerve;
   if (ShiftMode::kJackscrews == shiftMode) {
     std::cout << "Shifted rear to open\n";
-    jackScrews->RL->InitOpenLoop(0.0);
-    jackScrews->RR->InitOpenLoop(0.0);
+    jackScrews->RL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    jackScrews->RR->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
   } else {
     std::cout << "Shifted rear to swerve\n";
     jackScrews->RL->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);
@@ -111,18 +92,9 @@ void JackScrews::SetLiftMode(LiftMode liftMode) {
   currentLiftMode = liftMode;
 }
 
-/**
- * Deprecated?
- */
-bool JackScrews::InPosition() {
-  if (targetPosition != Position::kNone) {
-    return controlHoldMode; // TODO: Check screw calculators?
-  }
-}
 
-void JackScrews::ConfigureOpenLoop(double speed) {
-  targetPosition = Position::kNone;
-  openLoopSpeed = speed;
+void JackScrews::ConfigureOpenLoop(double speed, JackScrewControl::EndStateAction endStateAction) {
+  targetPosition = Direction::kNone;
 
   // Initialize jackscrews we will be controlling
   DriveInfo<bool> toInit {false};
@@ -139,31 +111,19 @@ void JackScrews::ConfigureOpenLoop(double speed) {
     toInit.RR = true;
   }
 
-  if (toInit.FL) {
-    // std::cout << "InitOpen FL\n";
-    jackScrews->FL->InitOpenLoop(speed);  
-  }
-  if (toInit.FR) {
-    // std::cout << "InitOpen FR\n";
-    jackScrews->FR->InitOpenLoop(speed);
-  }
-  if (toInit.RL) {
-    // std::cout << "InitOpen RL\n";
-    jackScrews->RL->InitOpenLoop(speed);
-  }
-  if (toInit.RR) {
-    // std::cout << "InitOpen RR\n";
-    jackScrews->RR->InitOpenLoop(speed);  ;
-  }
+  if (toInit.FL) { jackScrews->FL->InitOpenLoop(speed, endStateAction); }
+  if (toInit.FR) { jackScrews->FR->InitOpenLoop(speed, endStateAction); }
+  if (toInit.RL) { jackScrews->RL->InitOpenLoop(speed, endStateAction); }
+  if (toInit.RR) { jackScrews->RR->InitOpenLoop(speed, endStateAction); }
 }
 
-void JackScrews::ConfigureControlled(LiftMode liftMode, Position targetPosition_) {
+void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition_, JackScrewControl::EndStateAction endStateAction) {
   this->SetLiftMode(liftMode);
   targetPosition = targetPosition_;
   controlTimeStart = frc::Timer::GetFPGATimestamp();
+  SetMaxJackScrewSpeed(1.0);
 
   frc::Preferences *prefs = frc::Preferences::GetInstance();
-  // auto wheels = Robot::driveBase->GetWheels();
 
   // Initialize jackscrews we will be controlling
   DriveInfo<bool> toInit {false};
@@ -180,61 +140,10 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Position targetPosition_
     toInit.RR = true;
   }
 
-  if (toInit.FL) {
-    std::cout << "Init FL\n";
-    jackScrews->FL->Init(prefs->GetDouble("JackScrew.FL.dist"), controlTimeStart);  
-  }
-  if (toInit.FR) {
-    std::cout << "Init FR\n";
-    jackScrews->FR->Init(prefs->GetDouble("JackScrew.FR.dist"), controlTimeStart);
-  }
-  if (toInit.RL) {
-    std::cout << "Init RL\n";
-    jackScrews->RL->Init(prefs->GetDouble("JackScrew.RL.dist"), controlTimeStart);
-  }
-  if (toInit.RR) {
-    std::cout << "Init RR\n";
-    jackScrews->RR->Init(prefs->GetDouble("JackScrew.RR.dist"), controlTimeStart);
-  }
-}
-
-/**
- * Called from Run()
- */
-void JackScrews::DoOpenLoop() {
-  // Determine the set of wheels we are manipulating
-  // std::vector<std::shared_ptr<SwerveWheel>> wheels;
-
-  // switch(currentLiftMode) {
-  //   case LiftMode::kFront:
-  //     jackScrews->FL->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->FL->SetControlSpeed(openLoopSpeed);
-  //     jackScrews->FR->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->FR->SetControlSpeed(openLoopSpeed);
-  //     // wheels = frontAxis;
-  //     break;
-  //   case LiftMode::kBack:
-  //     jackScrews->RL->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->RL->SetControlSpeed(openLoopSpeed);
-  //     jackScrews->RR->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->RR->SetControlSpeed(openLoopSpeed);
-  //     // wheels = rearAxis;
-  //     break;
-  //   default:
-  //     // jackScrews->FL->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->FL->SetControlSpeed(openLoopSpeed);
-  //     // jackScrews->FR->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->FR->SetControlSpeed(openLoopSpeed);
-  //     // jackScrews->RL->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->RL->SetControlSpeed(openLoopSpeed);
-  //     // jackScrews->RR->SetCurrentState(JackScrewControl::JackScrewState::kOpenLoop);
-  //     jackScrews->RR->SetControlSpeed(openLoopSpeed);
-  //     // wheels = allWheels;
-  // }
-
-  // for (auto const &wheel : wheels) {
-  //   wheel->UseOpenLoopDrive(openLoopSpeed);
-  // }
+  if (toInit.FL) { jackScrews->FL->ConfigureControlled(prefs->GetDouble("JackScrew.FL.dist"), controlTimeStart, endStateAction); }
+  if (toInit.FR) { jackScrews->FR->ConfigureControlled(prefs->GetDouble("JackScrew.FR.dist"), controlTimeStart, endStateAction); }
+  if (toInit.RL) { jackScrews->RL->ConfigureControlled(prefs->GetDouble("JackScrew.RL.dist"), controlTimeStart, endStateAction); }
+  if (toInit.RR) { jackScrews->RR->ConfigureControlled(prefs->GetDouble("JackScrew.RR.dist"), controlTimeStart, endStateAction); }
 }
 
 /**
@@ -278,13 +187,12 @@ void JackScrews::DoControlled() {
   }
   std::cout << "Configured lowest\n";
 
-  const double MAX_SPEED = 1.0;
   const double kMinAccumulatedPosition = lowest->GetAccumulatedPosition();
-  const int speedDir = static_cast<int>(targetPosition);
-  if (fabs(lowest->GetControlSpeed()) != MAX_SPEED) {
-    lowest->SetControlSpeed(MAX_SPEED * speedDir);
+  const auto speedDir = static_cast<int>(targetPosition);
+  if (fabs(lowest->GetControlSpeed()) != maxJackScrewSpeed) {
+    lowest->SetControlSpeed(maxJackScrewSpeed * speedDir);
   }
-  std::cout << "Set lowest control speed to: " << (MAX_SPEED * speedDir) << "\n";
+  std::cout << "Set lowest control speed to: " << (maxJackScrewSpeed * speedDir) << "\n";
 
 
   // check wheels outside of threshold, slow them down
@@ -298,7 +206,7 @@ void JackScrews::DoControlled() {
       break;
     }
 
-    const int diff = abs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
+    const double diff = fabs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
     if (diff >= kMaximumDisplacementThreshold) {
       if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
         const double delta = speedDir * 0.02; // alternate do ratio?
@@ -309,9 +217,9 @@ void JackScrews::DoControlled() {
     std::string label = "calc[" + std::to_string(i) + "] Speed";
     frc::SmartDashboard::PutNumber(label, currentCalc->GetControlSpeed());
 
-    std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed() 
+    std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed()
               << " | change = " << currentCalc->GetLastChange()
-              << " | accum = " << currentCalc->GetAccumulatedPosition() 
+              << " | accum = " << currentCalc->GetAccumulatedPosition()
               << "\n";
 
     

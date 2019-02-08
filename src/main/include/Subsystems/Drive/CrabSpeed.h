@@ -8,7 +8,8 @@ class CrabSpeed : public frc::PIDOutput
 public:
 	CrabSpeed();
 	virtual ~CrabSpeed();
-	virtual void PIDWrite(double _output) override;
+
+	void PIDWrite(double _output) override;
 	double Get() const;
 	
 private:

@@ -11,7 +11,7 @@ using namespace frc;
  */
 class DistanceControl : public PIDOutput {
 public:
-	DistanceControl(std::shared_ptr<AnalogInput> _ultrasonic, double _target = 0);
+	explicit DistanceControl(std::shared_ptr<AnalogInput> _ultrasonic, double _target = 0);
 	virtual ~DistanceControl();
 	void SetTarget(double _target);
 	void PIDWrite (double output) override;

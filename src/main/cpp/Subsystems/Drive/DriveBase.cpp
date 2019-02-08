@@ -209,10 +209,11 @@ void DriveBase::UseClosedLoopDrive() {
 }
 
 void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
+	const double startTime = frc::Timer::GetFPGATimestamp();
 	lastSpeedX = x;
 	lastSpeedY = y;
-	float FWD = y;
-	float STR = x;
+	double FWD = y;
+	double STR = x;
 
 	if (useGyro) {
 		assert(RobotMap::gyro.get() != nullptr);
@@ -244,8 +245,11 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	}
 
 	SetSteering(setpoint);
+	const double steerEnd = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	SmartDashboard::PutNumber("Crab Steer (ms)", steerEnd);
 
 
+	const double driveStartTime = frc::Timer::GetFPGATimestamp();
 	DriveInfo<double> speed(0.0);
 	speed.FL = sqrt(pow(BP, 2) + pow(DP, 2));
 	speed.FR = sqrt(pow(BP, 2) + pow(CP, 2));
@@ -270,6 +274,11 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	ratio.FR = -ratio.FR;
 	ratio.RR = -ratio.RR;
 	SetDriveSpeed(ratio);
+
+	const double driveEnd = (driveStartTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	frc::SmartDashboard::PutNumber("Crab Drive (ms)", driveEnd);
+	const double end = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	frc::SmartDashboard::PutNumber("Crab Time (ms)", end);
 }
 
 void DriveBase::SetSteering(DriveInfo<double> setpoint) {

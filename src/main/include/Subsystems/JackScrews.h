@@ -34,7 +34,7 @@ class JackScrews : public SubsystemManager
 public:
   enum class ShiftMode { kDrive = false, kJackscrews = true };
   enum class LiftMode { kAll, kFront, kBack };
-  enum class Position { kNone = 0, kUp = -1, kDown = 1 };
+  enum class Direction { kNone = 0, kUp = -1, kDown = 1 };
   
   JackScrews();
   void Run() override;
@@ -45,31 +45,22 @@ public:
   void ShiftRear(ShiftMode shiftMode);
 
   void SetLiftMode(LiftMode liftMode);
-  void ConfigureOpenLoop(double speed);
-  void ConfigureControlled(LiftMode liftMode, Position targetPosition);
-
-  bool InPosition();
+  void ConfigureOpenLoop(double speed, JackScrewControl::EndStateAction endStateAction = JackScrewControl::EndStateAction::kNone);
+  void ConfigureControlled(LiftMode liftMode, Direction targetPosition, JackScrewControl::EndStateAction endStateAction);
 
   DriveInfo<std::shared_ptr<JackScrewControl>>* GetJackScrewControls() { return jackScrews.get(); }
+  void SetMaxJackScrewSpeed(double speed_) { maxJackScrewSpeed = speed_; }
 
  private:
+    std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewControl>>> jackScrews;
     std::shared_ptr<Solenoid> frontAxleSolenoid;
     std::shared_ptr<Solenoid> rearAxleSolenoid;
-    std::vector<std::shared_ptr<SwerveWheel>> allWheels;
-    std::vector<std::shared_ptr<SwerveWheel>> frontAxis;
-    std::vector<std::shared_ptr<SwerveWheel>> rearAxis;
 
     bool enabled = false;  // true when we are shifted and performing jackscrew manipulation
     LiftMode currentLiftMode = LiftMode::kAll;
-    Position targetPosition = Position::kNone;
-    double openLoopSpeed = 0.0;
+    Direction targetPosition = Direction::kNone;
     double controlTimeStart = -1;
-
-    DriveInfo<bool> enabledCalculators;
-    std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewControl>>> jackScrews;
-    bool controlHoldMode = false;
-    
-    void DoOpenLoop();
+    double maxJackScrewSpeed = 1.0;
     void DoControlled();
 
 };

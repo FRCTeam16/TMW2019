@@ -11,18 +11,27 @@
 #include "Subsystems/JackScrews.h"
 
 
-SecondStep::SecondStep() {}
-
 void SecondStep::Execute() {
     const double kThreshold = 0.1;
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
 
-
     if (IsFirstRun()) {
         std::cout << "Lift Second Step\n";
-        Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kFront, JackScrews::Position::kUp);
+        Robot::jackScrews->ConfigureControlled(
+                JackScrews::LiftMode::kFront,
+                JackScrews::Direction::kUp,
+                JackScrewControl::EndStateAction::kSwitchToAmpDetect);
     } else {
-        finished =  (jackScrewControls->FL->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop) &&
-                    (jackScrewControls->FR->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop);
+        if (!liftFinished) {
+            // Waiting for front jackscrew amp detection to kickout
+            bool leftFinished = jackScrewControls->FL->IsFinished();
+            bool rightFinished = jackScrewControls->FR->IsFinished();
+            liftFinished = leftFinished && rightFinished;
+        } else {
+            if (!shiftedFrontToSwerve) {
+                Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
+                std::cout << "TODO: Start Tanking\n";
+            }
+        }
     }
 }

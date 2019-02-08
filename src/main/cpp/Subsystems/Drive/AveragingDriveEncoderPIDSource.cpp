@@ -14,8 +14,7 @@ AveragingDriveEncoderPIDSource::AveragingDriveEncoderPIDSource(DriveInfo<std::sh
 	frc::PIDSource::SetPIDSourceType(PIDSourceType::kDisplacement);
 }
 
-AveragingDriveEncoderPIDSource::~AveragingDriveEncoderPIDSource() {
-}
+AveragingDriveEncoderPIDSource::~AveragingDriveEncoderPIDSource() = default;
 
 void AveragingDriveEncoderPIDSource::SetInitialEncoderValue() {
 	initialEncoderValue.FL = motor.FL->GetSelectedSensorPosition(0);
