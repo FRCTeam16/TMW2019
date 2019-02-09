@@ -14,6 +14,7 @@ class LiftController {
   LiftController();
   void Next();
   void Run();
+  bool IsRunning();
 
  private:
   enum class LiftState { kNone, kFirstStep, kSecondStep, kFinished };

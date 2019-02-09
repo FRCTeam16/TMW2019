@@ -47,6 +47,7 @@ private:
     double currentPosition = 0;
     double lastChange = 0;
     double accumulatedPosition = 0;
+    bool finished = false;
 
     double controlSpeed = 1.0;
     const double jackScrewRampTime = 0.1;
@@ -54,7 +55,6 @@ private:
     bool firstThresholdRun = true;
 
     EndStateAction endStateAction = EndStateAction::kNone;
-    bool finished = false;
 
     MovingAverageThreshold ampDetector{50, 3};
 };

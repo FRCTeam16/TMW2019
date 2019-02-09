@@ -33,7 +33,7 @@ class JackScrews : public SubsystemManager
 {
 public:
   enum class ShiftMode { kDrive = false, kJackscrews = true };
-  enum class LiftMode { kAll, kFront, kBack };
+  enum class LiftMode { kAll, kFront, kBack, kNone };
   enum class Direction { kNone = 0, kUp = -1, kDown = 1 };
   
   JackScrews();
@@ -62,5 +62,6 @@ public:
     double controlTimeStart = -1;
     double maxJackScrewSpeed = 1.0;
     void DoControlled();
+    DriveInfo<bool> DetermineJackScrewsToInit();
 
 };

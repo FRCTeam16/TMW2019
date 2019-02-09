@@ -97,6 +97,7 @@ void Robot::TeleopPeriodic() {
 		}
 		liftController->Next();
 	}
+	// TOOD: move runningLiftSequence check as liftController->IsRunning()
 
 	/**********************************************************
 	 * Intake 
@@ -219,7 +220,6 @@ void Robot::TeleopPeriodic() {
 	} else if (runningScrews) {
 		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
-		jackScrews->Run();
 	} else {
 		if (!lockWheels) {
 
@@ -264,6 +264,7 @@ void Robot::InitSubsystems() {
 
 void Robot::RunSubsystems() {
     double start = frc::Timer::GetFPGATimestamp();
+	jackScrews->Run();
     dmsProcessManager->Run();
 	intake->Run();
 	crawler->Run();

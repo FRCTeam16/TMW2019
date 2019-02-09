@@ -30,7 +30,14 @@ void SecondStep::Execute() {
         } else {
             if (!shiftedFrontToSwerve) {
                 Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
+                Robot::jackScrews->SetLiftMode(JackScrews::LiftMode::kNone);
+                // set direction
+                shiftedFrontToSwerve = true;
                 std::cout << "TODO: Start Tanking\n";
+            } else {
+                double leftInput = Robot::oi->getDriverLeft()->GetY();
+                double rightInput = Robot::oi->getDriverRight()->GetY();
+                std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
             }
         }
     }

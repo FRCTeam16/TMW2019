@@ -12,6 +12,7 @@ void JackScrewControl::ConfigureControlled(double targetDistance_, double contro
     controlSpeed = 0.0;
     endStateAction = action;
     firstThresholdRun = true;
+    finished = false;
     ampDetector.Reset();
 }
 
@@ -27,7 +28,7 @@ void JackScrewControl::Run() {
     }
 
     const double now = frc::Timer::GetFPGATimestamp();
-    const double speed = RampUtil::RampUp(controlSpeed, (now - controlTimeStart), jackScrewRampTime, 0.0);
+    double speed = RampUtil::RampUp(controlSpeed, (now - controlTimeStart), jackScrewRampTime, 0.0);
 
     currentPosition = wheel->GetDriveEncoderPosition();
     lastChange = abs(currentPosition - lastPosition);
@@ -47,7 +48,9 @@ void JackScrewControl::Run() {
                 if (!ampDetector.Check()) {
                     ampDetector.AddValue(wheel->GetDriveOutputCurrent());
                 } else {
+                    std::cout << "JackScrewControl::Run detected amp spike\n";
                     SetControlSpeed(0.0);
+                    speed = 0.0;
                     finished = true;
                 }
             }

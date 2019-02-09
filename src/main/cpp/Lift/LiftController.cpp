@@ -33,9 +33,10 @@ void LiftController::Next() {
     }
 }
 
+
 void LiftController::Run() {
     if (currentAction.get() == nullptr) {
-        std::cout << "!!! No current action in Lift Controller\n";
+        // std::cout << "!!! No current action in Lift Controller\n";
         return;
     }
 
@@ -46,5 +47,8 @@ void LiftController::Run() {
         currentState = static_cast<LiftState>(static_cast<int>(currentState) + 1);
         stateTransitioned = true;
     }
-    Robot::jackScrews->Run();
+}
+
+bool LiftController::IsRunning() {
+    return currentAction.get() == nullptr;
 }

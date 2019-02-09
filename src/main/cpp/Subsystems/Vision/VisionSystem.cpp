@@ -16,7 +16,7 @@ VisionSystem::VisionSystem() {
     limelight.reset(new Limelight());
     xoffsetController.reset(new XOffsetController(limelight));
 
-    double P = PrefUtil::getSet("Vision.x.P", 1.0);
+    double P = PrefUtil::getSet("Vision.x.P", 0.5);
     double I = PrefUtil::getSet("Vision.x.I", 0.0);
     double D = PrefUtil::getSet("Vision.x.D", 0.0);
     double range = PrefUtil::getSet("Vision.x.range", 0.3);
@@ -35,7 +35,7 @@ void VisionSystem::Run() {
     double x = 0.0;
 
     auto prefs = frc::Preferences::GetInstance();
-    double P = prefs->GetDouble("Vision.x.P", 1.0);
+    double P = prefs->GetDouble("Vision.x.P", 0.5);
     double I = prefs->GetDouble("Vision.x.I", 0.0);
     double D = prefs->GetDouble("Vision.x.D", 0.0);
     xoffPID->SetPID(P, I, D);

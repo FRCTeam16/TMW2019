@@ -97,19 +97,7 @@ void JackScrews::ConfigureOpenLoop(double speed, JackScrewControl::EndStateActio
   targetPosition = Direction::kNone;
 
   // Initialize jackscrews we will be controlling
-  DriveInfo<bool> toInit {false};
-  if (LiftMode::kFront == currentLiftMode) {
-    toInit.FL = true;
-    toInit.FR = true;
-  } else if (LiftMode::kBack == currentLiftMode) {
-    toInit.RL = true;
-    toInit.RR = true;
-  } else {
-    toInit.FL = true;
-    toInit.FR = true;
-    toInit.RL = true;
-    toInit.RR = true;
-  }
+  DriveInfo<bool> toInit = DetermineJackScrewsToInit();
 
   if (toInit.FL) { jackScrews->FL->InitOpenLoop(speed, endStateAction); }
   if (toInit.FR) { jackScrews->FR->InitOpenLoop(speed, endStateAction); }
@@ -126,24 +114,36 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition
   frc::Preferences *prefs = frc::Preferences::GetInstance();
 
   // Initialize jackscrews we will be controlling
-  DriveInfo<bool> toInit {false};
-  if (LiftMode::kFront == currentLiftMode) {
-    toInit.FL = true;
-    toInit.FR = true;
-  } else if (LiftMode::kBack == currentLiftMode) {
-    toInit.RL = true;
-    toInit.RR = true;
-  } else {
-    toInit.FL = true;
-    toInit.FR = true;
-    toInit.RL = true;
-    toInit.RR = true;
-  }
-
+  DriveInfo<bool> toInit = DetermineJackScrewsToInit();
+  
   if (toInit.FL) { jackScrews->FL->ConfigureControlled(prefs->GetDouble("JackScrew.FL.dist"), controlTimeStart, endStateAction); }
   if (toInit.FR) { jackScrews->FR->ConfigureControlled(prefs->GetDouble("JackScrew.FR.dist"), controlTimeStart, endStateAction); }
   if (toInit.RL) { jackScrews->RL->ConfigureControlled(prefs->GetDouble("JackScrew.RL.dist"), controlTimeStart, endStateAction); }
   if (toInit.RR) { jackScrews->RR->ConfigureControlled(prefs->GetDouble("JackScrew.RR.dist"), controlTimeStart, endStateAction); }
+}
+
+DriveInfo<bool> JackScrews::DetermineJackScrewsToInit() {
+  DriveInfo<bool> toInit {false};
+  switch (currentLiftMode) {
+    case LiftMode::kFront:
+      toInit.FL = true;
+      toInit.FR = true;
+      break;
+    case LiftMode::kBack:
+      toInit.RL = true;
+      toInit.RR = true;
+      break;
+    case LiftMode::kAll:
+      toInit.FL = true;
+      toInit.FR = true;
+      toInit.RL = true;
+      toInit.RR = true;
+      break;
+    case LiftMode::kNone:
+      // handled by initializtion
+      break;
+  }
+  return toInit;
 }
 
 /**
