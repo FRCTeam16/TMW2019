@@ -5,43 +5,38 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "Lift/ThirdStep.h"
+#include "Lift/Thirdstep.h"
 #include <iostream>
+#include"Robot.h"
+#include "Subsystems/JackScrews.h"
 
-ThirdStep::ThirdStep() = default;
 
-void ThirdStep::Execute() {
+void Thirdstep::Execute() {
+    auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+
     if (IsFirstRun()) {
-        std::cout << "Running third step\n";
+        std::cout << "Lift Third Step\n";
+        Robot::jackScrews->ConfigureControlled(
+            JackScrews::LiftMode::kBack,
+            JackScrews::Direction::kUp,
+            JackScrewControl::EndStateAction::kSwitchToAmpDetect);
+    } else {
+        if (!liftFinished) {
+            bool leftFinished = jackScrewControls->RL->IsFinished();
+            bool rightFinished = jackScrewControls->RR->IsFinished();
+            liftFinished = leftFinished && rightFinished;
+        } else {
+            // Safety set output
+            jackScrewControls->FL->SetControlSpeed(0.0);
+            jackScrewControls->FR->SetControlSpeed(0.0);
+            jackScrewControls->RL->SetControlSpeed(0.0);
+            jackScrewControls->RR->SetControlSpeed(0.0);
+
+            Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+            
+            // TODO: allow exit to robot mode finished = true;
+        }
     }
 }
 
 
-/**
- 
- const double now = frc::Timer::GetFPGATimestamp();
-    if (positionStartTime == -1) {
-        positionStartTime = now;
-    }
-    const double delta = (now - positionStartTime);
-    // Wait for real position from caller, we want to know we are in a good position
-    // Begin driving tank
-    if (delta > 0.25) {
-        double flSpeed = 0.0;
-        double frSpeed = 0.0;
-        auto wheels = Robot::driveBase->GetWheels();
-        double value = Robot::oi->getDriverLeft()->GetY();
-        if (value > kThreshold) {
-            flSpeed = value;
-        }
-        value = Robot::oi->getDriverRight()->GetY();
-        if (value > kThreshold) {
-            frSpeed = value;
-        }
-
-        Robot::driveBase->SetTargetAngle(0.0);
-        double twistInput = Robot::driveBase->GetCrabTwistOutput();
-        wheels.FL->UseOpenLoopDrive(flSpeed);
-        wheels.FR->UseOpenLoopDrive(frSpeed);
-    }
-*/

@@ -195,7 +195,10 @@ void Robot::TeleopPeriodic() {
 	double twistInput = oi->GetJoystickTwist(threshold);
 
 	if (visionMode) {
-		driveBase->SetTargetAngle(calculateLockAngle(RobotMap::gyro->GetYaw()));
+		double currentYaw = RobotMap::gyro->GetYaw();
+		double newYaw = calculateLockAngle(currentYaw);
+		std::cout <<" currentYaw = "<<currentYaw << " | newYaw = " <<newYaw << "\n";
+		driveBase->SetTargetAngle(newYaw);
 	}
 
 		

@@ -6,14 +6,16 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-#include "Lift/Action.h"
+#include "Subsystems/SubsystemManager.h"
 
-class Thirdstep : public Action {
- public:
-  Thirdstep() = default;
-  void Execute() override;
+class RampSystem : public SubsystemManager {
+public:
+  RampSystem();
+
+  void Run() override;
+
+  void ToggleDeploy();
 private:
-  double positionStartTime = -1.0;
-  bool liftFinished = false;
-  bool shiftedBackToSwerve = false;
+  bool deployRequested = false;
+  bool deployed = false;
 };

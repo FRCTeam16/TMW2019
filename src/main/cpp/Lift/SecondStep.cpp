@@ -38,6 +38,7 @@ void SecondStep::Execute() {
                 double leftInput = Robot::oi->getDriverLeft()->GetY();
                 double rightInput = Robot::oi->getDriverRight()->GetY();
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
+                finished = true;
             }
         }
     }

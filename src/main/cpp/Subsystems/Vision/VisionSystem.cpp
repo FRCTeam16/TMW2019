@@ -42,7 +42,7 @@ void VisionSystem::Run() {
 
     SceneInfo scene = limelight->GetScene();
     if (scene.hasTarget) {
-        xTranslate = xoffsetController->GetValue();
+        xTranslate = -xoffsetController->GetValue();
     }
     std::cout 
         << "hasTarget? " << scene.hasTarget

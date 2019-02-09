@@ -8,7 +8,7 @@
 #include "Lift/LiftController.h"
 #include "Lift/FirstStep.h"
 #include "Lift/SecondStep.h"
-#include "Lift/ThirdStep.h"
+#include "Lift/Thirdstep.h"
 #include "Robot.h"
 
 LiftController::LiftController() = default;
@@ -24,7 +24,7 @@ void LiftController::Next() {
                 currentAction.reset(new SecondStep());
                 break;
             case LiftState::kSecondStep:
-                currentAction.reset(new ThirdStep());
+                currentAction.reset(new Thirdstep());
                 break;
             case LiftState::kFinished:
                 std::cout << "*** Resetting current action ***\n";
