@@ -9,22 +9,25 @@
 #include "Subsystems/SubsystemManager.h"
 #include "frc/WPIlib.h"
 #include "Limelight.h"
-#include "RotateController.h"
+#include "XOffsetController.h"
+#include "Util/UtilityFunctions.h"
+#include "Subsystems/Drive/CrabInfo.h"
 #include <iostream>
 
 
 
 /**
- * Test utilities for exercising vision-assisted alignment and driving
+ * Vision-assisted alignment and driving
  */
 class VisionSystem : public SubsystemManager {
  public:
   VisionSystem();
   void Run() override;
   void ToggleCameraMode();
+  std::shared_ptr<CrabInfo> GetLastDriveInfo();
 private:
   std::shared_ptr<Limelight> limelight;
-  std::unique_ptr<RotateController> rotate;
-  std::unique_ptr<frc::PIDController> rotatePID;
-  double calculateLockAngle(double gyro_);
+  std::unique_ptr<XOffsetController> xoffsetController;
+  std::unique_ptr<frc::PIDController> xoffPID;
+  std::shared_ptr<CrabInfo> driveInfo;
 };

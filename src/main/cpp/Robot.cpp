@@ -8,6 +8,7 @@
 #include "Robot.h"
 #include "OI.h"
 #include "Util/PrefUtil.h" 
+#include "Util/UtilityFunctions.h"
 
 std::unique_ptr<OI> Robot::oi;
 std::shared_ptr<DriveBase> Robot::driveBase;
@@ -191,13 +192,9 @@ void Robot::TeleopPeriodic() {
 	 * Drive Control
 	**********************************************************/
 	double twistInput = oi->GetJoystickTwist(threshold);
-	
-	if (oi->DL4->Pressed()) {
-		driveBase->SetTargetAngle(-60.0);
-		twistInput = driveBase->GetCrabTwistOutput();
-	} else 	if (oi->DL5->Pressed()) {
-		driveBase->SetTargetAngle(60.0);
-		twistInput = driveBase->GetCrabTwistOutput();
+
+	if (visionMode) {
+		driveBase->SetTargetAngle(calculateLockAngle(RobotMap::gyro->GetYaw()));
 	}
 
 		
@@ -223,15 +220,20 @@ void Robot::TeleopPeriodic() {
 		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
 		jackScrews->Run();
-	} else if (visionMode) {
-		visionSystem->Run();
 	} else {
 		if (!lockWheels) {
+
+			double xMove = oi->GetJoystickX();
+			bool useGyro = true;
+			if (visionMode) { 
+				xMove = visionSystem->GetLastDriveInfo()->xspeed;
+				useGyro = false;
+			}
 			driveBase->Crab(
 				twistInput,
 				-oi->GetJoystickY(threshold),
-				oi->GetJoystickX(threshold),
-				true);
+				xMove,
+				useGyro);
 		} else {
 			driveBase->Crab(0, 0, 0, true);
 		}
@@ -265,7 +267,7 @@ void Robot::RunSubsystems() {
     dmsProcessManager->Run();
 	intake->Run();
 	crawler->Run();
-	// vision takes over driving so is in teleop loop
+	visionSystem->Run(); 
 	// liftController takes over driving so is in teleop loop
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("Subsystem Times", (now-start) * 1000);

@@ -8,92 +8,56 @@
 #include "Subsystems/Vision/VisionSystem.h"
 
 #include "Robot.h"
+#include "Util/PrefUtil.h"
 #include <iostream>
 
 
 VisionSystem::VisionSystem() {
     limelight.reset(new Limelight());
-    rotate.reset(new RotateController(limelight));
+    xoffsetController.reset(new XOffsetController(limelight));
 
-    auto prefs = frc::Preferences::GetInstance();
-    double P = prefs->GetDouble("VisionSystem.rotP", 1.0);
-    double I = prefs->GetDouble("VisionSystem.rotI", 0.0);
-    double D = prefs->GetDouble("VisionSystem.rotD", 0.0);
-    prefs->PutDouble("VisionSystem.rotP", P);
-    prefs->PutDouble("VisionSystem.rotI", I);
-    prefs->PutDouble("VisionSystem.rotD", D);
+    double P = PrefUtil::getSet("Vision.x.P", 1.0);
+    double I = PrefUtil::getSet("Vision.x.I", 0.0);
+    double D = PrefUtil::getSet("Vision.x.D", 0.0);
+    double range = PrefUtil::getSet("Vision.x.range", 0.3);
 
-    rotatePID.reset(
-        new PIDController(P, I, D, rotate.get(), rotate.get() )
+    xoffPID.reset(
+        new PIDController(P, I, D, xoffsetController.get(), xoffsetController.get() )
     );
-    rotatePID->SetOutputRange(-0.3, 0.3);
-    rotatePID->SetSetpoint(0.0);
-    rotatePID->Enable();
+    xoffPID->SetOutputRange(-range, range);
+    xoffPID->SetSetpoint(0.0);
+    xoffPID->Enable();
 }
 
 void VisionSystem::Run() {
-    double twist = 0.0;
+    double xTranslate = 0.0;
     double y = 0.0;
     double x = 0.0;
 
     auto prefs = frc::Preferences::GetInstance();
-    double P = prefs->GetDouble("VisionSystem.rotP", 1.0);
-    double I = prefs->GetDouble("VisionSystem.rotI", 0.0);
-    double D = prefs->GetDouble("VisionSystem.rotD", 0.0);
-
-    rotatePID->SetPID(P, I, D);
+    double P = prefs->GetDouble("Vision.x.P", 1.0);
+    double I = prefs->GetDouble("Vision.x.I", 0.0);
+    double D = prefs->GetDouble("Vision.x.D", 0.0);
+    xoffPID->SetPID(P, I, D);
 
     SceneInfo scene = limelight->GetScene();
     if (scene.hasTarget) {
-        twist = rotate->GetValue();
+        xTranslate = xoffsetController->GetValue();
     }
     std::cout 
         << "hasTarget? " << scene.hasTarget
-        << " vision twist: " << twist << std::endl;
+        << " | vision xtranslate: " << xTranslate << std::endl;
 
-    double lockAngle = calculateLockAngle(RobotMap::gyro->GetYaw());
-    Robot::driveBase->SetTargetAngle(lockAngle);
+    auto crabInfo = new CrabInfo();
+    crabInfo->xspeed = xTranslate;
+    driveInfo.reset(crabInfo);
+}
 
-    double robotTwist = Robot::driveBase->GetCrabTwistOutput();
-    Robot::driveBase->Crab(robotTwist, y, twist, false);
+std::shared_ptr<CrabInfo> VisionSystem::GetLastDriveInfo() {
+    return driveInfo;
 }
 
 void VisionSystem::ToggleCameraMode() {
     auto mode = limelight->ToggleCameraMode();
     std::cout << "Toggled to mode: " << static_cast<int>(mode) << std::endl;
-}
-
-double VisionSystem::calculateLockAngle(double gyro_) {
-   double answer = -1;
-   bool isNegative = gyro_ < 0;
-   double gyro = fabs(gyro_);
-   // put logic here
-   if (gyro >= -30.0 && gyro < 30.0) {
-       answer = 0.0;
-   } else if (gyro  >= 30 && gyro < 75) {
-       answer = 60,0;
-   } else if (gyro >= 75 && gyro < 120) {
-       answer = 90.0;
-   } else if (gyro >= 120 && gyro < 165) {
-       answer = 150.0;
-   } else if (gyro >= 165 && gyro < 195) {
-       answer = 180.0;
-   // post-180 positive variables
-   } else if (gyro >= 195 && gyro < 240) {
-       answer = 210.0;
-   } else if (gyro >= 240 && gyro < 285) {
-       answer = 270.0;
-   } else if (gyro >= 285 && gyro < 315) {
-       answer = 300.0;
-   } else if (gyro >= 315 && gyro <= 360) {
-       answer = 360;
-   } 
-   
-   int mult = 1;
-   if (isNegative == true) {
-       mult = -1;
-   }
-   
-   return mult*answer;
-   
 }

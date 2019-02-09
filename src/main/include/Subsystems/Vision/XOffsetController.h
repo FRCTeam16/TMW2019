@@ -4,9 +4,9 @@
 #include "frc/PIDOutput.h"
 #include "Subsystems/Vision/Limelight.h"
 
-class RotateController : public frc::PIDSource, public frc::PIDOutput {  
+class XOffsetController : public frc::PIDSource, public frc::PIDOutput {  
 public:
-    explicit RotateController(std::shared_ptr<Limelight> limelight)
+    explicit XOffsetController(std::shared_ptr<Limelight> limelight)
     :  limelight(limelight) {}
   
   double PIDGet() override {
