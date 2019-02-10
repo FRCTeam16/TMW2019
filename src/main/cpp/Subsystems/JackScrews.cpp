@@ -36,12 +36,19 @@ void JackScrews::Run()
     (JackScrewControl::JackScrewState::kSwerve == jackScrews->FR->GetCurrentState()) &&
     (JackScrewControl::JackScrewState::kSwerve == jackScrews->RL->GetCurrentState()) &&
     (JackScrewControl::JackScrewState::kSwerve == jackScrews->RR->GetCurrentState());
-  
   if (allSwerve) {
     // Should be controlled by driveBase, not jackscrew
     // std::cout << "!!! All jack screw controls in swerve mode, aborting !!!\n";
     return;
   }
+
+  // Check CAN communications
+  emergencyHalt |= CheckCANCommunications();
+  if (emergencyHalt) {
+    std::cout << "!!! JackScrews climbing disabled due to emergency halt !!!\n";
+    return;
+  }
+
 
   if (targetPosition != Direction::kNone) {
     DoControlled();
@@ -55,6 +62,28 @@ void JackScrews::Run()
   jackScrews->RR->Run();
   
   // std::cout << "Jackscrews::Run <=\n\n";
+}
+
+bool JackScrews::CheckCANCommunications() {
+  bool halt = false;
+  auto wheels = Robot::driveBase->GetWheels();
+  if (wheels.FL->HasCANError()) {
+    std::cout << "!!! CAN Error FL, emergency halt !!!\n";
+    halt = true;
+  }
+  if (wheels.FR->HasCANError()) {
+    std::cout << "!!! CAN Error FR, emergency halt !!!\n";
+    halt = true;
+  }
+  if (wheels.RL->HasCANError()) {
+    std::cout << "!!! CAN Error RL, emergency halt !!!\n";
+    halt = true;
+  }
+  if (wheels.RR->HasCANError()) {
+    std::cout << "!!! CAN Error RR, emergency halt !!!\n";
+    halt = true;
+  }
+  return halt;
 }
 
 void JackScrews::ShiftAll(ShiftMode shiftMode) {
@@ -164,7 +193,7 @@ void JackScrews::DoControlled() {
     activeCalcs.push_back(jackScrews->RL);
     activeCalcs.push_back(jackScrews->RR);
   }
-  std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
+  // std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
   // Debug
   frc::SmartDashboard::PutNumber("FL Target", jackScrews->FL->GetTargetDistance());
   frc::SmartDashboard::PutNumber("FR Target", jackScrews->FR->GetTargetDistance());
@@ -175,12 +204,38 @@ void JackScrews::DoControlled() {
   // Capture accumulated positions
   bool inHoldPosition = false;
   auto lowest = activeCalcs[0].get();
+  std::vector<double> positions(activeCalcs.size());
+  positions[0] = lowest->GetAccumulatedPosition();
   for (int i=1; i < activeCalcs.size(); i++) {
-    if (activeCalcs[i]->GetAccumulatedPosition() < lowest->GetAccumulatedPosition()) {
+    const double accumulated = activeCalcs[i]->GetAccumulatedPosition(); 
+    positions[i] = accumulated;
+    if (accumulated  < lowest->GetAccumulatedPosition()) {
       lowest = activeCalcs[i].get();
       inHoldPosition |= activeCalcs[i]->IsClosedLoop();
     }
   }
+
+  // If any of the stored accumulated positions exceed the halt threshold then we
+  // stop climbing
+  for (int i=0; i<activeCalcs.size(); i++) {
+    const double diff = fabs(positions[i] - lowest->GetAccumulatedPosition());
+    if (diff > kHaltClimbDisplacementThreshold) {
+      std::cout << "****** Exceeded halt climb displacement threshold at position " << i
+                << ", displacement was " << diff << "*****\n";
+      emergencyHalt = true;
+    }
+  }
+  if (emergencyHalt) {
+    // Set all to zero output
+    // TOOD: Indicate error to callers?
+    this->SetLiftMode(JackScrews::LiftMode::kAll);
+    this->ConfigureOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    return;
+  }
+
+  
+  // If any of the active calcs have entered close loop control, then we stop
+  // processing here
   if (inHoldPosition) {
     std::cout << "Detected active jack screw control in hold position\n";
     return;
@@ -196,7 +251,6 @@ void JackScrews::DoControlled() {
 
 
   // check wheels outside of threshold, slow them down
-  const double kMaximumDisplacementThreshold = 1;
   bool exitOpenLoop = false;
   for (int i=0; i<activeCalcs.size(); i++) {
     auto currentCalc = activeCalcs[i].get();

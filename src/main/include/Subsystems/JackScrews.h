@@ -51,17 +51,25 @@ public:
   DriveInfo<std::shared_ptr<JackScrewControl>>* GetJackScrewControls() { return jackScrews.get(); }
   void SetMaxJackScrewSpeed(double speed_) { maxJackScrewSpeed = speed_; }
 
+  bool IsEmergencyHalt() { return emergencyHalt; }
+
  private:
     std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewControl>>> jackScrews;
     std::shared_ptr<Solenoid> frontAxleSolenoid;
     std::shared_ptr<Solenoid> rearAxleSolenoid;
 
-    bool enabled = false;  // true when we are shifted and performing jackscrew manipulation
     LiftMode currentLiftMode = LiftMode::kAll;
     Direction targetPosition = Direction::kNone;
     double controlTimeStart = -1;
     double maxJackScrewSpeed = 1.0;
+    
     void DoControlled();
     DriveInfo<bool> DetermineJackScrewsToInit();
+    bool CheckCANCommunications();
+
+    const double kMaximumDisplacementThreshold = 1;   // threshold before adjusting speeds
+    const double kHaltClimbDisplacementThreshold = 20;
+    bool emergencyHalt = false;
+
 
 };

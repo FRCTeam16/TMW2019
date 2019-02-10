@@ -8,6 +8,7 @@
 #include "Subsystems/Drive/TMW2019SwerveWheel.h"
 #include "frc/Preferences.h"
 #include <iostream>
+#include "rev/CANError.h"
 
 void TMW2019SwerveWheel::InitializeSteering() {
     assert(steerMotor.get() != nullptr);
@@ -118,6 +119,19 @@ void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
     isOpenLoop = false;
 }
 
+std::shared_ptr<rev::CANSparkMax> TMW2019SwerveWheel::GetDriveMotor() {
+    return driveMotor;
+}
+
+bool TMW2019SwerveWheel::HasCANError() {
+    // TOOD: Is this the best way to get CANError info?  Seems like others
+    // require sending configuration information
+    rev::CANError error = driveMotor->ClearFaults();
+    return error != rev::CANError::kOK;
+}
+
+
+// ****************************************************************************//
 
 double TMW2019SwerveWheel::GetSteerEncoderPositionInDegrees() {
     int currentPosition = steerMotor->GetSelectedSensorPosition(0);
@@ -171,6 +185,10 @@ void TMW2019SwerveWheel::UseOpenLoopSteer(double speed) {
 
 void TMW2019SwerveWheel::UseClosedLoopSteer(double value) {
     steerMotor->Set(ControlMode::Position, value);
+}
+
+std::shared_ptr<WPI_TalonSRX> TMW2019SwerveWheel::GetSteerMotor() {
+    return steerMotor;
 }
 
 

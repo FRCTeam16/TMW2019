@@ -28,6 +28,8 @@ public:
   double GetDriveVelocity() override;
   void ZeroDriveEncoder() override;
   double GetDriveOutputCurrent() override;
+  bool HasCANError() override;
+  std::shared_ptr<rev::CANSparkMax> GetDriveMotor();
   
   void UseOpenLoopSteer(double speed = 0.0) override;
   void UseClosedLoopSteer(double value = 0.0) override;
@@ -36,6 +38,9 @@ public:
   int GetSteerEncoderPosition() override;
   double GetSteerVelocity() override;
   double GetSteerOutputCurrent() override;
+  std::shared_ptr<WPI_TalonSRX> GetSteerMotor();
+
+
   
 
 
