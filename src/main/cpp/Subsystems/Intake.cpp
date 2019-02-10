@@ -148,7 +148,7 @@ void Intake::Run() {
         currentPosition += 4096;
     }
     double theta = ((currentPosition - (base + feedForwardZeroPos)) / 4096.0) * TWO_PI;
-    double k = feedForwardZero * cos(theta);
+    double k = feedForwardZero * cos(theta / 2);    // Account for 2:1 gearing
     frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
 
     if (positionControl) {
