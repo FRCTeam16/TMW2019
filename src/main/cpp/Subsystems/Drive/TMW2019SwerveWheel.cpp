@@ -192,3 +192,10 @@ std::shared_ptr<WPI_TalonSRX> TMW2019SwerveWheel::GetSteerMotor() {
 }
 
 
+void TMW2019SwerveWheel::SetDriveBrakeMode() {
+    driveMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+}
+
+void TMW2019SwerveWheel::SetDriveCoastMode() {
+    driveMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+}

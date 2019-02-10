@@ -34,12 +34,28 @@ void Thirdstep::Execute() {
                 jackScrewControls->RR->SetControlSpeed(0.0);
                 Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
                 // TODO: Put drive wheels in brake mode
+                auto wheels = Robot::driveBase->GetWheels();
+                wheels.FL->SetDriveBrakeMode();
+                wheels.FR->SetDriveBrakeMode();
+                wheels.RL->SetDriveBrakeMode();
+                wheels.RR->SetDriveBrakeMode();
                 shiftedToSwerve = true;
+                Robot::driveBase->SetTargetAngle(-180.0);
             } else {
-                // TODO: allow exit to robot mode finished = true;
-                std::cout << "limited swerve mode";
-            }
-            
+                Robot::driveBase->SetTargetAngle(-180.0);
+                double leftInput = Robot::oi->getDriverLeft()->GetY();
+                double rightInput = Robot::oi->getDriverRight()->GetY();
+                std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
+ 
+                if (Robot::oi->DL9->Pressed()) {
+                    const double crabSpeed = PrefUtil::getSet("Lift.step3.drivespeed.y", -0.2);
+                    Robot::driveBase->Crab(
+                        Robot::driveBase->GetCrabTwistOutput(),
+                        -crabSpeed, 0, false);
+                } else {
+                    Robot::driveBase->Crab(0, 0, 0, false);
+                }
+            }  
         }
     }
 }

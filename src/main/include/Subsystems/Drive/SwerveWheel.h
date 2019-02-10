@@ -26,4 +26,7 @@ public:
   virtual void SetSteerEncoderSetpoint(double setpoint, double offset, int &inv) = 0;
   virtual double GetSteerVelocity() = 0;
   virtual double GetSteerOutputCurrent() = 0;
+
+  virtual void SetDriveBrakeMode() = 0;
+  virtual void SetDriveCoastMode() = 0;
 };

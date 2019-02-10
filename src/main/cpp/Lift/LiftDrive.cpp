@@ -16,7 +16,6 @@
 LiftDrive::LiftDrive() {}
 
 void LiftDrive::DriveFront(double twist, double y, double x, bool useGyro) {
-	//driveMode = DriveMode::kFront;
     const double startTime = frc::Timer::GetFPGATimestamp();
 	double FWD = y;     // y input
 	double STR = x;     // x input

@@ -7,12 +7,14 @@
 
 #pragma once
 #include "Lift/Action.h"
+#include "Lift/LiftDrive.h"
 
 class SecondStep : public Action {
  public:
   SecondStep() = default;
   void Execute() override;
  private:
+  LiftDrive liftDrive;
   double positionStartTime = -1.0;
   bool liftFinished = false;
   bool shiftedFrontToSwerve = false;

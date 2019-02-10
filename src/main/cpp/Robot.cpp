@@ -227,7 +227,7 @@ void Robot::TeleopPeriodic() {
 		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
 	} else if (testFrontDrive) {
-		if (oi->DL9->RisingEdge()) {
+		if (oi->DL9->RisingEdge()) {		// warning DL9 reused in liftControl->Run()
 			driveBase->SetTargetAngle(180.0);
 		}
 		std::cout << "Running liftDrive\n";

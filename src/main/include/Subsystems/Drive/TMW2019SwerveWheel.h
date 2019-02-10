@@ -40,10 +40,8 @@ public:
   double GetSteerOutputCurrent() override;
   std::shared_ptr<WPI_TalonSRX> GetSteerMotor();
 
-
-  
-
-
+  void SetDriveBrakeMode() override;
+  void SetDriveCoastMode() override;
 
 private:
   std::shared_ptr<rev::CANSparkMax> driveMotor;
