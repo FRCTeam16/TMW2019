@@ -6,14 +6,13 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-#include "Lift/Action.h"
+#include "Subsystems/Drive/DriveInfo.h"
 
-class Thirdstep : public Action {
- public:
-  Thirdstep() = default;
-  void Execute() override;
+
+class LiftDrive {
+public:
+  LiftDrive();
+  void DriveFront();
 private:
-  double positionStartTime = -1.0;
-  bool liftFinished = false;
-  bool shiftedToSwerve = false;
+  void SetSteering(DriveInfo<double> setpoing);
 };

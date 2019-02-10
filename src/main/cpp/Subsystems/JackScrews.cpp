@@ -39,7 +39,7 @@ void JackScrews::Run()
   
   if (allSwerve) {
     // Should be controlled by driveBase, not jackscrew
-    std::cout << "!!! All jack screw controls in swerve mode, aborting !!!\n";
+    // std::cout << "!!! All jack screw controls in swerve mode, aborting !!!\n";
     return;
   }
 

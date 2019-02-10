@@ -20,6 +20,7 @@
 #include "FrontTwoAveragingDriveEncoderPIDSource.h"
 #include "DriveInfo.h"
 #include "SwerveWheel.h"
+#include "Lift/LiftDrive.h"
 
 using namespace frc;
 
@@ -31,6 +32,7 @@ struct Wheelbase {
 };
 
 class DriveBase: public Subsystem {
+friend class LiftDrive;
 private:
 
 	std::shared_ptr<SwerveWheel> frontLeft;

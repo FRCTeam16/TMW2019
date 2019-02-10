@@ -38,7 +38,18 @@ void SecondStep::Execute() {
                 double leftInput = Robot::oi->getDriverLeft()->GetY();
                 double rightInput = Robot::oi->getDriverRight()->GetY();
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
-                finished = true;
+                // finished = true (driver must transition)
+
+                // TOOO: LiftDrive
+                // liftDrive->DriveFront();
+
+                
+                // JackScrewControl does not handle swerve inputs
+                auto wheels = Robot::driveBase->GetWheels();
+                // wheels.FL->
+                // wheels.FR->
+
+
             }
         }
     }

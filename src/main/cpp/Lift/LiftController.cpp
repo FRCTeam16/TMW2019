@@ -14,7 +14,8 @@
 LiftController::LiftController() = default;
 
 void LiftController::Next() {
-    if (currentAction.get() == nullptr || currentAction->IsFinished()) {
+    // TODO: think about protected code blocks and an "allowed to transition" state for guards
+    if (currentAction.get() == nullptr) {
         stateTransitioned = false;
         switch (currentState) {
             case LiftState::kNone:

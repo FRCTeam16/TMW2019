@@ -26,15 +26,20 @@ void Thirdstep::Execute() {
             bool rightFinished = jackScrewControls->RR->IsFinished();
             liftFinished = leftFinished && rightFinished;
         } else {
-            // Safety set output
-            jackScrewControls->FL->SetControlSpeed(0.0);
-            jackScrewControls->FR->SetControlSpeed(0.0);
-            jackScrewControls->RL->SetControlSpeed(0.0);
-            jackScrewControls->RR->SetControlSpeed(0.0);
-
-            Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+            if (!shiftedToSwerve) {
+                // Safety set output
+                jackScrewControls->FL->SetControlSpeed(0.0);
+                jackScrewControls->FR->SetControlSpeed(0.0);
+                jackScrewControls->RL->SetControlSpeed(0.0);
+                jackScrewControls->RR->SetControlSpeed(0.0);
+                Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+                // TODO: Put drive wheels in brake mode
+                shiftedToSwerve = true;
+            } else {
+                // TODO: allow exit to robot mode finished = true;
+                std::cout << "limited swerve mode";
+            }
             
-            // TODO: allow exit to robot mode finished = true;
         }
     }
 }
