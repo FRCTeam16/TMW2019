@@ -22,6 +22,7 @@
 #include "Subsystems/Intake.h"
 #include "Lift/LiftController.h"
 #include "Subsystems/Crawler.h"
+#include "Lift/LiftDrive.h"
 
 
 struct ManualSolenoidState {
@@ -67,5 +68,7 @@ private:
   std::unique_ptr<Crawler> crawler;
 
   ManualSolenoidState solenoidState;
+
+  LiftDrive liftDrive;
 
 };

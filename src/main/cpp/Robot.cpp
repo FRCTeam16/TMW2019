@@ -188,6 +188,9 @@ void Robot::TeleopPeriodic() {
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
 
+	const bool testFrontDrive = oi->DL9->Pressed();
+
+
 
 	/**********************************************************
 	 * Drive Control
@@ -223,6 +226,16 @@ void Robot::TeleopPeriodic() {
 	} else if (runningScrews) {
 		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
+	} else if (testFrontDrive) {
+		if (oi->DL9->RisingEdge()) {
+			driveBase->SetTargetAngle(180.0);
+		}
+		std::cout << "Running liftDrive\n";
+		liftDrive.DriveFront(
+			driveBase->GetCrabTwistOutput(),
+			0.2,
+			0,
+			true);
 	} else {
 		if (!lockWheels) {
 

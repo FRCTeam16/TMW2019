@@ -12,7 +12,12 @@
 class LiftDrive {
 public:
   LiftDrive();
-  void DriveFront();
+  void DriveFront(double twist, double y, double x, bool useGyro);
 private:
-  void SetSteering(DriveInfo<double> setpoing);
+  enum class DriveMode { kAll, kFront };
+  DriveMode driveMode = DriveMode::kFront;
+  void SetSteering(DriveInfo<double> setpoint);
+  void SetDriveSpeed(DriveInfo<double> speed);
+
+  const bool driveFront = true;
 };
