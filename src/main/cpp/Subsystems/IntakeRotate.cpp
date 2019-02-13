@@ -53,31 +53,40 @@ void IntakeRotate::Init() {
      * so we are reading the "real" values instead of having a full rotation added.  We just
      * offset by taking off a rotation if this is the case.
      */
-    if (currentPositionValue < base) {
-        std::cout << "!!! Intake - current positionless than base, removing loop !!!\n";
-        rotateOffset = -kRotation;
-    }
+    // if (currentPositionValue < base) {
+    //     std::cout << "!!! Intake - current positionless than base, removing loop !!!\n";
+    //     rotateOffset = -kRotation;
+    // }
     targetPositionValue = currentPositionValue;
     positionControl = false;
 }
 
 void IntakeRotate::Run() {
+    std::cout << "IntakeRotate::Run()\n";
+    const int base = PrefUtil::getSetInt("Intake.position.base", 0);
+    const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
+    const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
+
+    int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
+    // if (currentPosition < base) {
+    //     currentPosition += kRotation;
+    // }
+
+    double theta = ((currentPosition - (base + feedForwardZeroPos)) / kRotation) * TWO_PI;
+    std::cout << "curPos = " << currentPosition << " | "
+              << "base = " << base << " | "
+              << "ffZP = " << feedForwardZeroPos << " | "
+              << "kRot = " << kRotation << " | "
+              << "2PI = " << TWO_PI << "\n";
+    // double k = feedForwardZero * cos(theta / 2);    // Account for 2:1 gearing
+    double k = 0;
+    rotateLeft->Config_kF(0, k);
+    const double rotateAngle = (theta * 180.0) / M_PI;
+    frc::SmartDashboard::PutNumber("Rotate Angle", rotateAngle);
+    std::cout << "rotateAngle: " << rotateAngle << "\n";
+    const double computedTargetValue = targetPositionValue + base + rotateOffset;
    
     if (positionControl) {
-        const int base = PrefUtil::getSetInt("Intake.position.base", 0);
-        const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
-        const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
-
-        int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
-        if (currentPosition < base) {
-            currentPosition += kRotation;
-        }
-        double theta = ((currentPosition - (base + feedForwardZeroPos)) / kRotation) * TWO_PI;
-        double k = feedForwardZero * cos(theta / 2);    // Account for 2:1 gearing
-        rotateLeft->Config_kF(0, k);
-        frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
-        const double computedTargetValue = targetPositionValue + base + rotateOffset;
-
         rotateLeft->Set(ControlMode::MotionMagic, computedTargetValue);
     } else {
         rotateLeft->Set(ControlMode::PercentOutput, positionSpeed);

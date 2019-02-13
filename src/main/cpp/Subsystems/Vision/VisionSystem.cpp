@@ -44,9 +44,9 @@ void VisionSystem::Run() {
     if (scene.hasTarget) {
         xTranslate = -xoffsetController->GetValue();
     }
-    std::cout 
-        << "hasTarget? " << scene.hasTarget
-        << " | vision xtranslate: " << xTranslate << std::endl;
+    // std::cout 
+    //     << "hasTarget? " << scene.hasTarget
+    //     << " | vision xtranslate: " << xTranslate << std::endl;
 
     auto crabInfo = new CrabInfo();
     crabInfo->xspeed = xTranslate;

@@ -35,6 +35,10 @@ void Robot::RobotInit() {
 	std::cout << "Robot::TeleopInit <=\n";
 }
 
+void Robot::DisabledInit() {
+	intakeRotate->SetPositionSpeed(0.0, true);
+}
+
 void Robot::DisabledPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
 }
@@ -146,20 +150,22 @@ void Robot::TeleopPeriodic() {
 				intake->SetGripperState(solenoidState.gripper);
 			}
 		} else {
-			// if (oi->GPY->RisingEdge()) {
-			// 	intake->SetIntakePosition(Intake::IntakePosition::kCargoShot);
-			// } else if (oi->GPA->RisingEdge()) {
-			// 	intake->SetIntakePosition(Intake::IntakePosition::kLevelOne);
-			// } else if (oi->GPX->RisingEdge()) {
-			// 	intake->SetIntakePosition(Intake::IntakePosition::kStarting);
-			// } else if (oi->GPB->RisingEdge()) {
-			// 	intake->SetIntakePosition(Intake::IntakePosition::kFloor);
-			// }
+			if (oi->GPY->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
+			} else if (oi->GPA->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kLevelOne);
+			} else if (oi->GPX->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kStarting);
+			} else if (oi->GPB->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
+			}
+
+			/*
 			if (oi->GPY->RisingEdge()) {
 				intake->EjectHatch();
 			} else if (oi->GPA->RisingEdge()) {
 				intake->IntakeHatch();
-			}
+			}*/
 		}
 	}
 
