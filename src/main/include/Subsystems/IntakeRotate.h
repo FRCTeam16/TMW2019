@@ -8,7 +8,6 @@
 #pragma once
 #include "ctre/Phoenix.h"
 #include <map>
-#include "IntakeMagicMotionManager.h"
 #include "Subsystems/SubsystemManager.h"
 
 class IntakeRotate : public SubsystemManager{
@@ -26,7 +25,6 @@ class IntakeRotate : public SubsystemManager{
   std::shared_ptr<WPI_VictorSPX> rotateRight;
   std::map<IntakeRotate::IntakePosition, int> positionLookup;
   IntakePosition targetPosition = IntakePosition::kStarting;
-  std::unique_ptr<IntakeMagicMotionManager> magicMotion;
 
   int rotateOffset = 0;   // how much hadditional offset to account for if passed a full turn and power cycled
   int targetPositionValue = 0;

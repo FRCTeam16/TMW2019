@@ -12,7 +12,6 @@
 #include "SubsystemManager.h"
 #include <frc/Solenoid.h>
 #include <frc/DoubleSolenoid.h>
-#include "Subsystems/IntakeMagicMotionManager.h"
 
 
 class Intake: SubsystemManager {

@@ -274,6 +274,7 @@ void Robot::InitSubsystems() {
 	jackScrews->Init();
 	visionSystem->Init();
 	intake->Init();
+	intakeRotate->Init();
 	crawler->Init();
 	// status & dms currently don't have init
 	std::cout << "Robot::InitSubsystems <=\n";
@@ -284,6 +285,7 @@ void Robot::RunSubsystems() {
 	jackScrews->Run();
     dmsProcessManager->Run();
 	intake->Run();
+	intakeRotate->Run();
 	crawler->Run();
 	visionSystem->Run(); 
 	// liftController takes over driving so is in teleop loop
@@ -310,6 +312,7 @@ void Robot::InstrumentSubsystems() {
 
 	jackScrews->Instrument();
 	intake->Instrument();
+	intakeRotate->Instrument();
 	crawler->Instrument();
 }
 

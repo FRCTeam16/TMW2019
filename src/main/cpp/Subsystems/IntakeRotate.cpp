@@ -8,9 +8,12 @@
 #include "Subsystems/IntakeRotate.h"
 #include "RobotMap.h"
 #include <frc/smartdashboard/SmartDashboard.h>
+#include "Util/PrefUtil.h"
 
 #define M_PI		3.14159265358979323846	/* pi */
 #define TWO_PI 6.28318530718
+
+const int kRotation = 4096;
 
 IntakeRotate::IntakeRotate() {
     rotateLeft = RobotMap::rotateLeftMotor;
@@ -26,21 +29,21 @@ IntakeRotate::IntakeRotate() {
         // motor->ConfigPeakOutputReverse(-1.0);
     }
     // TODO: limit constraints?
-
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
-    rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-    rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
-    rotateLeft->Config_kF(0, 0.0);
-
-    magicMotion.reset(new IntakeMagicMotionManager(rotateLeft));
-
 }
 
 void IntakeRotate::Init() {
-    positionLookup[IntakePosition::kStarting] = PrefUtil::getSetInt("Intake.Positition.starting", 100);
+    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
+    rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
+    rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    rotateLeft->Config_kF(0, 0);
+    rotateLeft->ConfigMotionCruiseVelocity(PrefUtil::getSet("Intake.rotate.V", 500));
+    rotateLeft->ConfigMotionAcceleration(PrefUtil::getSet("Intake.rotate.A", 500));
+
+
+    positionLookup[IntakePosition::kStarting]  = PrefUtil::getSetInt("Intake.Positition.starting", 100);
     positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
-    positionLookup[IntakePosition::kLevelOne] = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
-    positionLookup[IntakePosition::kFloor] = PrefUtil::getSetInt("Intake.Positition.floor", 400);
+    positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
 
     const int base = PrefUtil::getSetInt("Intake.position.base", 0);
     const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
@@ -52,41 +55,39 @@ void IntakeRotate::Init() {
      */
     if (currentPositionValue < base) {
         std::cout << "!!! Intake - current positionless than base, removing loop !!!\n";
-        rotateOffset = -4096;
+        rotateOffset = -kRotation;
     }
     targetPositionValue = currentPositionValue;
     positionControl = false;
 }
 
 void IntakeRotate::Run() {
-    const int base = PrefUtil::getSetInt("Intake.position.base", 0);
-    const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
-    const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
-
-    int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
-    if (currentPosition < base) {
-        currentPosition += 4096;
-    }
-    double theta = ((currentPosition - (base + feedForwardZeroPos)) / 4096.0) * TWO_PI;
-    double k = feedForwardZero * cos(theta / 2);    // Account for 2:1 gearing
-    frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
-
+   
     if (positionControl) {
-        rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
-        rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-        rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
-        rotateLeft->Config_kF(0, k);
+        const int base = PrefUtil::getSetInt("Intake.position.base", 0);
+        const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
+        const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
 
-        rotateLeft->Set(ctre::phoenix::motorcontrol::ControlMode::Position, targetPositionValue + base + rotateOffset);
+        int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
+        if (currentPosition < base) {
+            currentPosition += kRotation;
+        }
+        double theta = ((currentPosition - (base + feedForwardZeroPos)) / kRotation) * TWO_PI;
+        double k = feedForwardZero * cos(theta / 2);    // Account for 2:1 gearing
+        rotateLeft->Config_kF(0, k);
+        frc::SmartDashboard::PutNumber("Rotate Angle", (theta * 180) / M_PI);
+        const double computedTargetValue = targetPositionValue + base + rotateOffset;
+
+        rotateLeft->Set(ControlMode::MotionMagic, computedTargetValue);
     } else {
-        rotateLeft->Set(positionSpeed);
+        rotateLeft->Set(ControlMode::PercentOutput, positionSpeed);
     }
 }
 
 void IntakeRotate::SetIntakePosition(IntakePosition position) {
     targetPosition = position;
     targetPositionValue = positionLookup[targetPosition];
-     positionControl = true;
+    positionControl = true;
 }
 
 void IntakeRotate::SetPositionSpeed(double speed, bool flipMode) {
