@@ -25,6 +25,7 @@ void Robot::RobotInit() {
 	runningScrews = false;
 
 	intake.reset(new Intake());
+	intakeRotate.reset(new IntakeRotate());
 	crawler.reset(new Crawler());
 
 	visionSystem.reset(new VisionSystem());
@@ -164,10 +165,10 @@ void Robot::TeleopPeriodic() {
 
 	const double leftStickAmt = oi->GetGamepadLeftStick();
 	if (fabs(leftStickAmt) > threshold) {
-		intake->SetPositionSpeed(leftStickAmt, true);
+		intakeRotate->SetPositionSpeed(leftStickAmt, true);
 	} else {
 		// will not trigger switch to open loop mode
-		intake->SetPositionSpeed(0.0, false);
+		intakeRotate->SetPositionSpeed(0.0, false);
 	}
 	
 

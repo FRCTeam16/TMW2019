@@ -20,6 +20,7 @@
 #include "Subsystems/JackScrews.h"
 #include "Subsystems/Vision/VisionSystem.h"
 #include "Subsystems/Intake.h"
+#include "Subsystems/IntakeRotate.h"
 #include "Lift/LiftController.h"
 #include "Subsystems/Crawler.h"
 #include "Lift/LiftDrive.h"
@@ -61,6 +62,7 @@ private:
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
   std::unique_ptr<VisionSystem> visionSystem;
   std::unique_ptr<Intake> intake;
+  std::unique_ptr<IntakeRotate> intakeRotate;
 
   bool runningScrews = false;	// true when running jackscrews
   bool runningLiftSequence = false; // true when running lift sequence

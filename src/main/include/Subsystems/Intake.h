@@ -12,13 +12,12 @@
 #include "SubsystemManager.h"
 #include <frc/Solenoid.h>
 #include <frc/DoubleSolenoid.h>
+#include "Subsystems/IntakeMagicMotionManager.h"
 
 
 class Intake: SubsystemManager {
 
 public:
-  enum class IntakePosition { kStarting, kCargoShot, kLevelOne, kFloor };
-
   Intake();
 
   void Init() override;
@@ -36,7 +35,6 @@ public:
    */
   void Stop();
 
-  void SetIntakePosition(IntakePosition position);
 
   // testing
   void SetBottomBeaterSpeed(double speed);
@@ -49,8 +47,6 @@ public:
 
 
 private:
-  std::shared_ptr<WPI_TalonSRX> rotateLeft;
-  std::shared_ptr<WPI_VictorSPX> rotateRight;
   std::shared_ptr<WPI_VictorSPX> beaterTop;
   std::shared_ptr<WPI_VictorSPX> beaterBottom;
 
@@ -69,14 +65,6 @@ private:
 
   double startTime = -1;  // state activity start time
   bool runningSequence = false; // whether we are in a timed sequence
-
-  std::map<Intake::IntakePosition, int> positionLookup;
-  IntakePosition targetPosition = IntakePosition::kStarting;
-
-  int rotateOffset = 0;   // how much hadditional offset to account for if passed a full turn and power cycled
-  int targetPositionValue = 0;
-  double positionSpeed = 0.0; // testing
-  bool positionControl = true;
 
   void SetState(IntakeState state);
 };
