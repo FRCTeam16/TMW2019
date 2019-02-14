@@ -15,6 +15,17 @@
 
 LiftDrive::LiftDrive() {}
 
+void LiftDrive::DriveTank(double leftInput, double rightInput) {
+	std::cout << "LiftDrive::DriveTank(" << leftInput << ", " << rightInput << ")\n";
+	DriveInfo<double> setpoint(0.0);
+	SetSteering(setpoint);
+
+	auto wheels = Robot::driveBase->GetWheels();
+	
+	wheels.FL->UseOpenLoopDrive(leftInput);
+	wheels.FR->UseOpenLoopDrive(rightInput);
+}
+
 void LiftDrive::DriveFront(double twist, double y, double x, bool useGyro) {
     const double startTime = frc::Timer::GetFPGATimestamp();
 	double FWD = y;     // y input

@@ -13,6 +13,7 @@ class LiftDrive {
 public:
   LiftDrive();
   void DriveFront(double twist, double y, double x, bool useGyro);
+  void DriveTank(double leftInput, double rightInput);
 private:
   enum class DriveMode { kAll, kFront };
   DriveMode driveMode = DriveMode::kFront;

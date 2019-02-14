@@ -13,6 +13,7 @@
 
 void Thirdstep::Execute() {
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+    auto wheels = Robot::driveBase->GetWheels();
 
     if (IsFirstRun()) {
         std::cout << "Lift Third Step\n";
@@ -20,11 +21,23 @@ void Thirdstep::Execute() {
             JackScrews::LiftMode::kBack,
             JackScrews::Direction::kUp,
             JackScrewControl::EndStateAction::kSwitchToAmpDetect);
+
+
+            wheels.FL->SetDriveBrakeMode();
+            wheels.FR->SetDriveBrakeMode();
+            jackScrewControls->FL->SetControlSpeed(0.0);
+            jackScrewControls->FR->SetControlSpeed(0.0);
+
+            jackScrewControls->FL->Run();
+            jackScrewControls->FR->Run();
     } else {
         if (!liftFinished) {
             bool leftFinished = jackScrewControls->RL->IsFinished();
             bool rightFinished = jackScrewControls->RR->IsFinished();
             liftFinished = leftFinished && rightFinished;
+            
+            jackScrewControls->FL->Run();
+            jackScrewControls->FR->Run();
         } else {
             if (!shiftedToSwerve) {
                 // Safety set output
@@ -33,15 +46,23 @@ void Thirdstep::Execute() {
                 jackScrewControls->RL->SetControlSpeed(0.0);
                 jackScrewControls->RR->SetControlSpeed(0.0);
                 Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+
                 // TODO: Put drive wheels in brake mode
-                auto wheels = Robot::driveBase->GetWheels();
+                
                 wheels.FL->SetDriveBrakeMode();
                 wheels.FR->SetDriveBrakeMode();
                 wheels.RL->SetDriveBrakeMode();
                 wheels.RR->SetDriveBrakeMode();
                 shiftedToSwerve = true;
                 Robot::driveBase->SetTargetAngle(-180.0);
+
+                jackScrewControls->FL->Run();
+                jackScrewControls->FR->Run();
             } else {
+                wheels.FL->SetDriveCoastMode();
+                wheels.FR->SetDriveCoastMode();
+                wheels.RL->SetDriveCoastMode();
+                wheels.RR->SetDriveCoastMode();
                 Robot::driveBase->SetTargetAngle(-180.0);
                 double leftInput = Robot::oi->getDriverLeft()->GetY();
                 double rightInput = Robot::oi->getDriverRight()->GetY();

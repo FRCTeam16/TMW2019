@@ -79,10 +79,14 @@ void Robot::TeleopPeriodic() {
 	if (oi->GPRB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
 		jackScrews->ConfigureOpenLoop(0.0);
+		runningLiftSequence = false;
+		liftController.reset();
 		runningScrews = true;
 	} else if (oi->GPLB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 		runningScrews = false;
+		runningLiftSequence = false;
+		liftController.reset();
 	} 
 
 	const bool gamepadLTPressed = oi->GetGamepadLT() > 0.75;

@@ -106,9 +106,9 @@ void Intake::Run() {
     //     gripperSolenoidState = true;
     // }
 
-    std::cout << "SOLENOIDS: ejector = " << ejectorSolenoidState << " | "
-              << "gripper = " << gripperSolenoidState << " | "
-              << "arms = " << hatchSolenoidState << "\n";
+    // std::cout << "SOLENOIDS: ejector = " << ejectorSolenoidState << " | "
+    //           << "gripper = " << gripperSolenoidState << " | "
+    //           << "arms = " << hatchSolenoidState << "\n";
 
     ejectorSolenoid->Set(ejectorSolenoidState);
     hatchCatchSolenoid->Set(hatchSolenoidState);

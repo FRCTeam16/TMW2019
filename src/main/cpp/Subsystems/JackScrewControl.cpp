@@ -42,7 +42,7 @@ void JackScrewControl::Run() {
         case EndStateAction::kSwitchToAmpDetect:
             if (inThreshold) {
                 if (firstThresholdRun) {
-                    Robot::jackScrews->ConfigureOpenLoop(-0.40, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
+                    Robot::jackScrews->ConfigureOpenLoop(kJackScrewApproachSpeed, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
                     firstThresholdRun = false;
                 }
                 if (!ampDetector.Check()) {

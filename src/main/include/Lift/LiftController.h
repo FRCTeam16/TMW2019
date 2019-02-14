@@ -17,8 +17,7 @@ class LiftController {
   bool IsRunning();
 
  private:
-  enum class LiftState { kNone, kFirstStep, kSecondStep, kFinished };
+  enum class LiftState { kNone, kFirst, kSecond, kThird, kFinished };
   LiftState currentState = LiftState::kNone;
   std::unique_ptr<Action> currentAction;
-  bool stateTransitioned = true;
 };

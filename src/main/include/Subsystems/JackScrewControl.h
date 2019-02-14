@@ -49,6 +49,7 @@ private:
     double accumulatedPosition = 0;
     bool finished = false;
 
+    double kJackScrewApproachSpeed = -0.10;
     double controlSpeed = 1.0;
     const double jackScrewRampTime = 0.1;
     const double rotationCloseLoopThreshold = 7;
@@ -56,5 +57,5 @@ private:
 
     EndStateAction endStateAction = EndStateAction::kNone;
 
-    MovingAverageThreshold ampDetector{50, 3};
+    MovingAverageThreshold ampDetector{25, 3};
 };

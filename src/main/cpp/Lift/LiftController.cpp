@@ -15,22 +15,28 @@ LiftController::LiftController() = default;
 
 void LiftController::Next() {
     // TODO: think about protected code blocks and an "allowed to transition" state for guards
-    if (currentAction.get() == nullptr) {
-        stateTransitioned = false;
-        switch (currentState) {
-            case LiftState::kNone:
-                currentAction.reset(new FirstStep());
-                break;
-            case LiftState::kFirstStep:
-                currentAction.reset(new SecondStep());
-                break;
-            case LiftState::kSecondStep:
-                currentAction.reset(new Thirdstep());
-                break;
-            case LiftState::kFinished:
-                std::cout << "*** Resetting current action ***\n";
-                currentAction.reset();
-        }
+    
+    std::cout << "LiftController::Run() transitioning to next state\n";
+    currentState = static_cast<LiftState>(static_cast<int>(currentState) + 1);
+
+    switch (currentState) {
+        case LiftState::kNone:
+            break;
+        case LiftState::kFirst:
+            std::cout << "Setting First Step\n";
+            currentAction.reset(new FirstStep());
+            break;
+        case LiftState::kSecond:
+            std::cout << "Setting Second Step\n";
+            currentAction.reset(new SecondStep());
+            break;
+        case LiftState::kThird:
+            std::cout << "Setting Third Step\n";
+            currentAction.reset(new Thirdstep());
+            break;
+        case LiftState::kFinished:
+            std::cout << "*** Resetting current action ***\n";
+            currentAction.reset();
     }
 }
 
@@ -41,12 +47,9 @@ void LiftController::Run() {
         return;
     }
 
+    // TODO: Maybe always run
     if (!currentAction->IsFinished()) {
         currentAction->Run();
-    } else if (!stateTransitioned) {
-        std::cout << "LiftController::Run() transitioning to next state\n";
-        currentState = static_cast<LiftState>(static_cast<int>(currentState) + 1);
-        stateTransitioned = true;
     }
 }
 

@@ -36,19 +36,25 @@ void SecondStep::Execute() {
                 Robot::driveBase->SetTargetAngle(-180.0);
             } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
+                const double kLowJoyThreshold = 0.10;
+                const double kHighJoyThreshold = 0.30;
                 double leftInput = Robot::oi->getDriverLeft()->GetY();
                 double rightInput = Robot::oi->getDriverRight()->GetY();
+                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
+                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold; }
+                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
+                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold; }
+
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
                     const double crabSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", -0.2);
-                    liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), -crabSpeed, 0, true);
+                    liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), crabSpeed, 0, true);
                 } else {
-                    liftDrive.DriveFront(0, 0, 0, false);
+                    liftDrive.DriveTank(leftInput, rightInput);
                 }
                 
                 // JackScrewControl does not handle swerve inputs so we must send motor inputs
-                // auto wheels = Robot::driveBase->GetWheels();
                 auto jsCtrls = Robot::jackScrews->GetJackScrewControls();
                 jsCtrls->RL->Run();
                 jsCtrls->RR->Run();
