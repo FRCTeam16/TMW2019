@@ -21,6 +21,7 @@ class IntakeRotate : public SubsystemManager{
   void Instrument() override;
   void SetPositionSpeed(double speed, bool flipMode);
  private:
+
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
   std::shared_ptr<WPI_VictorSPX> rotateRight;
   std::map<IntakeRotate::IntakePosition, int> positionLookup;
@@ -28,6 +29,8 @@ class IntakeRotate : public SubsystemManager{
 
   int rotateOffset = 0;   // how much hadditional offset to account for if passed a full turn and power cycled
   int targetPositionValue = 0;
+  double computedTargetValue = 0; // includes base and offset
   double positionSpeed = 0.0; // testing
   bool positionControl = true;
+  double rotateAngle = 0.0;
 };
