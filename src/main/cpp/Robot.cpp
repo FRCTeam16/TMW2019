@@ -144,11 +144,11 @@ void Robot::TeleopPeriodic() {
 		} else {
 			if (oi->GPY->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
-			} else if (oi->GPA->RisingEdge()) {
+			} else if (oi->GPB->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kLevelOne);
 			} else if (oi->GPX->RisingEdge()) {
 				intake->ToggleEjectorState();
-			} else if (oi->GPB->RisingEdge()) {
+			} else if (oi->GPA->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
 			}
 
