@@ -50,55 +50,48 @@ void Intake::Run() {
             // positionSpeed = 0.0;
         break;
 
-        case IntakeState::kIntakeCargo:
-            bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
-            topBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
-            break;
-
-        case IntakeState::kEjectCargo:
-            bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
-            topBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
-            break;
-
         case IntakeState::kIntakeHatch:
-            // std::cout << "IntakeState::Run() -> kIntakeHatch (elapsed = " << elapsed << ")\n";
+            std::cout << "IntakeState::Run() -> kIntakeHatch (elapsed = " << elapsed << ")\n";
             runningSequence = true;
-            ejectorSolenoidState = true;
-            hatchSolenoidState = true;
-            gripperSolenoidState = true;
-            runningSequence = false;
-            // currentState = IntakeState::kNone; // human will tigger next state
-            break;
 
-        case IntakeState::kIntakeHatch2:
-            // std::cout << "IntakeState::Run() -> kIntakeHatch2 (elapsed = " << elapsed << ")\n";
-            runningSequence = true;
+            ejectorSolenoidState = true;
+            hatchSolenoidState = false;
             gripperSolenoidState = false;
-            if (elapsed > 0.25) {
+            if (elapsed > 0.25 && elapsed < 0.5) {
+                ejectorSolenoidState = true;
+                gripperSolenoidState = true;
+                hatchSolenoidState = false;
+            } else if (elapsed >= 0.5) {
                 ejectorSolenoidState = false;
+                gripperSolenoidState = true;
+                hatchSolenoidState = false;
                 runningSequence = false;
-                currentState = IntakeState::kNone;
+                currentState = IntakeState::kNone; // human will tigger next state
             }
             break;
 
         case IntakeState::kEjectHatch:
-            // std::cout << "IntakeState::Run() -> kEjectHatch (elapsed = " << elapsed << ") " << ejectorSolenoidState << " - ";
+            std::cout << "IntakeState::Run() -> kEjectHatch (elapsed = " << elapsed << ") " << ejectorSolenoidState << " - ";
             runningSequence = true;
+
+            ejectorSolenoidState = false;
+            // gripperSolenoidState = true;
             hatchSolenoidState = false;
-            ejectorSolenoidState = true;
             if (elapsed > 0.25 && elapsed < 0.5) {
-                gripperSolenoidState = true;
-            } else if (elapsed > 0.5 ) {
+                ejectorSolenoidState = true;
+                gripperSolenoidState = false;
+                hatchSolenoidState = false;
+            } else if (elapsed >= 0.5 && elapsed < 1.0) {
+                ejectorSolenoidState = true;
+                gripperSolenoidState = false;
                 hatchSolenoidState = true;
+            } else if (elapsed >= 1.0) {
+                ejectorSolenoidState = true;
+                hatchSolenoidState = false;
+                gripperSolenoidState = false;
                 runningSequence = false;
                 currentState = IntakeState::kNone;
             }
-            break;
-        
-        case IntakeState::kOpen:
-            // std::cout << "in kOpen: ";
-            bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
-            topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
             break;
     }
 
@@ -106,29 +99,34 @@ void Intake::Run() {
 
     beaterBottom->Set(bottomBeaterSpeed);
     beaterTop->Set(topBeaterSpeed);
-    // FIXME: handling solenoid testing in Robot::TeleopPeriodic
-    // std::cout << "---- Ejector set = " << ejectorSolenoidState << "\n";
+    
+    // Safety Check
+    // if (ejectorSolenoidState && !gripperSolenoidState) {
+    //     std::cout << " Intake::Run() SAFETY OVERRIDE = toggling gripper solenoid\n";
+    //     gripperSolenoidState = true;
+    // }
+
+    std::cout << "SOLENOIDS: ejector = " << ejectorSolenoidState << " | "
+              << "gripper = " << gripperSolenoidState << " | "
+              << "arms = " << hatchSolenoidState << "\n";
+
     ejectorSolenoid->Set(ejectorSolenoidState);
     hatchCatchSolenoid->Set(hatchSolenoidState);
     gripperSolenoid->Set(gripperSolenoidState);
 }
 
 void Intake::IntakeCargo() {
-    SetState(IntakeState::kIntakeCargo);
+    bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
+    topBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
 }
 
 void Intake::EjectCargo() {
-    SetState(IntakeState::kEjectCargo);
+    bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
+    topBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
 }
 
 void Intake::IntakeHatch() {
-    if (IntakeState::kIntakeHatch == currentState) {
-        std::cout << "Intake::InjectHatch\n";
-        SetState(IntakeState::kIntakeHatch2);
-    } else {
-        std::cout << "Intake::InjectHatch\n";
-        SetState(IntakeState::kIntakeHatch);
-    }
+    SetState(IntakeState::kIntakeHatch);
 }
 
 void Intake::EjectHatch() {
@@ -136,8 +134,17 @@ void Intake::EjectHatch() {
     SetState(IntakeState::kEjectHatch);
 }
 
+void Intake::HatchIntakeFromGround() {
+    bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
+    topBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
+}
+
+void Intake::HatchBeaterEject() {
+    bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
+    topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
+}
+
 void Intake::Stop() {
-    // SetState(IntakeState::kNone);
     bottomBeaterSpeed = 0.0;
     topBeaterSpeed = 0.0;
 }
@@ -150,12 +157,10 @@ void Intake::SetState(IntakeState state) {
 // Testing Methods
 
 void Intake::SetBottomBeaterSpeed(double speed) {
-    // currentState = IntakeState::kOpen;
     bottomBeaterSpeed = speed;
 }
 
 void Intake::SetTopBeaterSpeed(double speed) {
-    // currentState = IntakeState::kOpen;
     topBeaterSpeed = speed;
 }
 

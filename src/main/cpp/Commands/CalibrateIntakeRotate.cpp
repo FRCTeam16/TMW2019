@@ -9,6 +9,7 @@
 #include "RobotMap.h"
 #include <frc/Preferences.h>
 #include <iostream>
+#include "Robot.h"
 
 CalibrateIntakeRotate::CalibrateIntakeRotate() {
   // Use Requires() here to declare subsystem dependencies
@@ -22,6 +23,9 @@ void CalibrateIntakeRotate::Initialize() {
   const int currentPosition = RobotMap::rotateLeftMotor->GetSelectedSensorPosition();
   frc::Preferences::GetInstance()->PutInt("Intake.position.base", currentPosition);
   std::cout << "*** CalibrateIntakeRotate: Base is now " << currentPosition << "\n";
+  Robot::intakeRotate->SetPositionSpeed(0.0, true); // setup open loop to clear closed loop flag
+  Robot::intakeRotate->SetPositionSpeed(0.0, false); // setup open loop to clear closed loop flag
+
   SetTimeout(1);
 }
 

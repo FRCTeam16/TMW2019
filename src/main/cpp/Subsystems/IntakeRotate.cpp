@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Subsystems/IntakeRotate.h"
+#include "Robot.h"
 #include "RobotMap.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "Util/PrefUtil.h"
@@ -44,12 +45,12 @@ void IntakeRotate::Init() {
 
     const int base = PrefUtil::getSetInt("Intake.position.base", 0);
     const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
-    targetPositionValue = currentPositionValue;
-    positionControl = false;
+    targetPositionValue = currentPositionValue - base;
+    positionControl = true;
 }
 
 void IntakeRotate::Run() {
-    std::cout << "IntakeRotate::Run()\n";
+    // std::cout << "IntakeRotate::Run(" << positionControl << ")\n";
     const double base = PrefUtil::getSetInt("Intake.position.base", 0);
     const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
     const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
@@ -58,21 +59,27 @@ void IntakeRotate::Run() {
     const double theta = (currentPosition - (base + feedForwardZeroPos)) * (M_PI / kRotation);    // use M_PI instead of TWO_PI to account for 1:2 gearing
     rotateAngle = (theta * 180.0) / M_PI;
 
-    std::cout << "curPos = " << currentPosition << " | "
-              << "base = " << base << " | "
-              << "ffZP = " << feedForwardZeroPos << " = "
-              << "raw theta (rad) = " << theta 
-              << "theta (deg) = " << rotateAngle << "\n";
+    // std::cout << "curPos = " << currentPosition << " | "
+    //           << "base = " << base << " | "
+    //           << "ffZP = " << feedForwardZeroPos << " = "
+    //           << "raw theta (rad) = " << theta 
+    //           << "theta (deg) = " << rotateAngle << "\n";
              
     const double k = feedForwardZero * cos(theta);    // Account for 2:1 gearing
     // const double k = 0;
     rotateLeft->Config_kF(0, k);
     
     computedTargetValue = targetPositionValue + base + rotateOffset;
+
+    if (IntakeRotate::IntakePosition::kFloor == targetPosition) {
+        Robot::intake->SetEjectorState(false);  // force retract of ejector if we move to floor
+    }
    
     if (positionControl) {
+        // std::cout << "CLOSED LOOP: " << computedTargetValue << "\n";
         rotateLeft->Set(ControlMode::MotionMagic, computedTargetValue);
     } else {
+        // std::cout << "OPEN LOOP  : " << positionSpeed << "\n";
         rotateLeft->Set(ControlMode::PercentOutput, positionSpeed);
     }
 }
@@ -87,7 +94,18 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
 void IntakeRotate::SetPositionSpeed(double speed, bool flipMode) {
     positionSpeed = speed;
     if (flipMode) {
+        std::cout << "Setting open loop from SetPositionSpeed\n";
         positionControl = false;
+    } else if (!positionControl) {
+        std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
+        double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
+        const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+        targetPositionValue = currentPosition - base - rotateOffset;
+        positionControl = true;
+        std::cout << "SetPositionSpeed() -> Current Pos: " << currentPosition << " | "
+                  << "Base: " << base << " = "
+                  << "Offset: " << rotateOffset << " = "
+                  << targetPositionValue << "\n";
     }
 }
 

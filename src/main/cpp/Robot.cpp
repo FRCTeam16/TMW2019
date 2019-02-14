@@ -13,6 +13,8 @@
 std::unique_ptr<OI> Robot::oi;
 std::shared_ptr<DriveBase> Robot::driveBase;
 std::shared_ptr<JackScrews> Robot::jackScrews;
+std::unique_ptr<Intake> Robot::intake;
+std::shared_ptr<IntakeRotate> Robot::intakeRotate;
 
 
 void Robot::RobotInit() {
@@ -108,31 +110,21 @@ void Robot::TeleopPeriodic() {
 	 * Intake 
 	**********************************************************/
 	if (oi->DR1->Pressed()) {
-		// intake->IntakeCargo();
-		double bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
-		double topBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
-		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
-		intake->SetTopBeaterSpeed(topBeaterSpeed);
+		intake->IntakeCargo();
 	} else if (oi->DR2->Pressed()) {
-		// intake->EjectCargo();
-		double bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
-		double topBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
-		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
-		intake->SetTopBeaterSpeed(topBeaterSpeed);
+		intake->EjectCargo();
 	} else if (oi->DL1->Pressed()) {
-		// intake->IntakeHatch();
-		double bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
-		double topBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
-		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
-		intake->SetTopBeaterSpeed(topBeaterSpeed);
-	} else if (oi->DL2->Pressed()) {
-		// intake->EjectHatchManual();
-		double bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
-		double topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
-		intake->SetBottomBeaterSpeed(bottomBeaterSpeed);
-		intake->SetTopBeaterSpeed(topBeaterSpeed);
+		intake->HatchIntakeFromGround();
+	} else if (oi->DL5->Pressed()) {
+		intake->HatchBeaterEject();
 	} else {
 		intake->Stop();
+	}
+
+	if (oi->DL2->RisingEdge()) {
+		intake->IntakeHatch();
+	} else if (oi->DL3->RisingEdge()) {
+		intake->EjectHatch();
 	}
 
 	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
@@ -155,7 +147,7 @@ void Robot::TeleopPeriodic() {
 			} else if (oi->GPA->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kLevelOne);
 			} else if (oi->GPX->RisingEdge()) {
-				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kStarting);
+				intake->ToggleEjectorState();
 			} else if (oi->GPB->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
 			}

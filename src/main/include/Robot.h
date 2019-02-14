@@ -52,6 +52,8 @@ class Robot : public frc::TimedRobot {
   static std::shared_ptr<DriveBase> driveBase; 
   static std::unique_ptr<OI> oi;
   static std::shared_ptr<JackScrews> jackScrews;
+  static std::unique_ptr<Intake> intake;
+  static std::shared_ptr<IntakeRotate> intakeRotate;
 
 private:
   void InitSubsystems();
@@ -62,8 +64,8 @@ private:
   std::shared_ptr<StatusReporter> statusReporter;
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
   std::unique_ptr<VisionSystem> visionSystem;
-  std::unique_ptr<Intake> intake;
-  std::unique_ptr<IntakeRotate> intakeRotate;
+  
+  
 
   bool runningScrews = false;	// true when running jackscrews
   bool runningLiftSequence = false; // true when running lift sequence

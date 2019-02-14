@@ -29,18 +29,20 @@ public:
   void IntakeHatch();
   void EjectHatch();
 
+  void HatchIntakeFromGround();
+  void HatchBeaterEject();
+
   /**
    * Stops motors, resets state
    */
   void Stop();
 
 
-  // testing
-  void SetBottomBeaterSpeed(double speed);
-  void SetTopBeaterSpeed(double speed);
+  
   void SetPositionSpeed(double speed, bool flipMode);
 
   void SetEjectorState(bool state) { ejectorSolenoidState = state; }
+  void ToggleEjectorState() { ejectorSolenoidState = !ejectorSolenoidState; }
   void SetHatchState(bool state) { hatchSolenoidState = state; }
   void SetGripperState(bool state) { gripperSolenoidState = state; }
 
@@ -59,13 +61,15 @@ private:
   bool hatchSolenoidState = false;
   bool gripperSolenoidState = false;
 
-  enum class IntakeState{kNone, kOpen, kIntakeCargo, kEjectCargo, kIntakeHatch, kIntakeHatch2, kEjectHatch};
+  enum class IntakeState{kNone, kIntakeHatch, kEjectHatch};
   IntakeState currentState = IntakeState::kNone;
 
   double startTime = -1;  // state activity start time
   bool runningSequence = false; // whether we are in a timed sequence
 
   void SetState(IntakeState state);
+  void SetBottomBeaterSpeed(double speed);
+  void SetTopBeaterSpeed(double speed);
 };
 
 

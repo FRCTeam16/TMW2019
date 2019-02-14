@@ -19,7 +19,7 @@ class IntakeRotate : public SubsystemManager{
   void Run() override;
   void SetIntakePosition(IntakePosition position);
   void Instrument() override;
-  void SetPositionSpeed(double speed, bool flipMode);
+  void SetPositionSpeed(double speed, bool flipMode); // flip mode: true for open loop, false for closed if not already closed
  private:
 
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
