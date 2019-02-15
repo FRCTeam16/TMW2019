@@ -21,6 +21,7 @@ class IntakeRotate : public SubsystemManager{
   void Instrument() override;
   void SetPositionSpeed(double speed, bool flipMode); // flip mode: true for open loop, false for closed if not already closed
  private:
+  void DisabledHoldCurrentPosition();
 
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
   std::shared_ptr<WPI_VictorSPX> rotateRight;

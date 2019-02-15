@@ -46,7 +46,7 @@ void IntakeRotate::Init() {
     const int base = PrefUtil::getSetInt("Intake.position.base", 0);
     const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
     targetPositionValue = currentPositionValue - base;
-    positionControl = true;
+    positionControl = false;
 }
 
 void IntakeRotate::Run() {
@@ -91,9 +91,9 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
     positionSpeed = 0.0;
 }
 
-void IntakeRotate::SetPositionSpeed(double speed, bool flipMode) {
+void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     positionSpeed = speed;
-    if (flipMode) {
+    if (openLoop) {
         std::cout << "Setting open loop from SetPositionSpeed\n";
         positionControl = false;
     } else if (!positionControl) {
@@ -107,6 +107,14 @@ void IntakeRotate::SetPositionSpeed(double speed, bool flipMode) {
                   << "Offset: " << rotateOffset << " = "
                   << targetPositionValue << "\n";
     }
+}
+
+void IntakeRotate::DisabledHoldCurrentPosition() {
+    double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
+    const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+    targetPositionValue = currentPosition - base - rotateOffset;
+    positionControl = true;
+    rotateLeft->Set(currentPosition);      // make sure to signal
 }
 
 void IntakeRotate::Instrument() {

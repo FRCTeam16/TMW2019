@@ -38,11 +38,12 @@ void Robot::RobotInit() {
 }
 
 void Robot::DisabledInit() {
-	intakeRotate->SetPositionSpeed(0.0, true);
+	intakeRotate->DisabledHoldCurrentPosition();
 }
 
 void Robot::DisabledPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
+	intakeRotate->DisabledHoldCurrentPosition();
 }
 
 void Robot::AutonomousInit() {
@@ -155,13 +156,6 @@ void Robot::TeleopPeriodic() {
 			} else if (oi->GPA->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
 			}
-
-			/*
-			if (oi->GPY->RisingEdge()) {
-				intake->EjectHatch();
-			} else if (oi->GPA->RisingEdge()) {
-				intake->IntakeHatch();
-			}*/
 		}
 	}
 
