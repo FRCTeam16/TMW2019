@@ -75,7 +75,7 @@ void Robot::TeleopPeriodic() {
 	const bool lockWheels = oi->DL6->Pressed();
 
 	/**********************************************************/
-	// Jackscrew Test code
+	// Jackscrew Manual Control
 	/**********************************************************/
 	if (oi->GPRB->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
@@ -115,10 +115,11 @@ void Robot::TeleopPeriodic() {
 	 * Intake 
 	**********************************************************/
 	if (oi->DR1->Pressed()) {
+		intake->EjectCargo();	// score cargo
+	 // DR 2 is vision handled elsewhere
+	} else if (oi->DL3->Pressed()) {
 		intake->IntakeCargo();
-	} else if (oi->DR2->Pressed()) {
-		intake->EjectCargo();
-	} else if (oi->DL1->Pressed()) {
+	} else if (oi->DL4->Pressed()) {
 		intake->HatchIntakeFromGround();
 	} else if (oi->DL5->Pressed()) {
 		intake->HatchBeaterEject();
@@ -126,11 +127,11 @@ void Robot::TeleopPeriodic() {
 		intake->Stop();
 	}
 
-	if (oi->DL2->RisingEdge()) {
-		intake->IntakeHatch();
-	} else if (oi->DL3->RisingEdge()) {
-		intake->EjectHatch();
-	}
+	if (oi->DL1->RisingEdge()) {
+		intake->EjectHatch();	// score hatch
+	} else if (oi->DL2->RisingEdge()) {
+		intake->IntakeHatch();	// from wall
+	} 
 
 	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
 	if (!gamepadLTPressed) {
@@ -148,15 +149,25 @@ void Robot::TeleopPeriodic() {
 			}
 		} else {
 			if (oi->GPY->RisingEdge()) {
-				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
-			} else if (oi->GPB->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kLevelOne);
+			} else if (oi->GPB->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kRocketShot);
 			} else if (oi->GPX->RisingEdge()) {
-				intake->ToggleEjectorState();
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
 			} else if (oi->GPA->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
 			}
 		}
+	}
+
+	if (oi->GetGamepadDPad() == OI::DPad::kRight) {
+		if (!dpadRightToggled) {
+			intake->ToggleEjectorState();
+			intake->SetGripperState(false);
+			dpadRightToggled = true;
+		}
+	} else {
+		dpadRightToggled = false;
 	}
 
 	const double leftStickAmt = oi->GetGamepadLeftStick();
@@ -169,11 +180,17 @@ void Robot::TeleopPeriodic() {
 	
 
 	/**********************************************************
-	 * Vision Testing
+	 * Vision
 	**********************************************************/
-	const bool visionMode = oi->DL8->Pressed();	// controls drive
+	const bool visionMode = oi->DR2->Pressed();	// controls drive
 	if (oi->DR11->RisingEdge()) {
 		visionSystem->ToggleCameraMode();
+	}
+	if (oi->DR7->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::LimelightMain);
+	}
+	if (oi->DR8->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::USBMain);
 	}
 
 	
@@ -197,8 +214,9 @@ void Robot::TeleopPeriodic() {
 	if (visionMode) {
 		double currentYaw = RobotMap::gyro->GetYaw();
 		double newYaw = calculateLockAngle(currentYaw);
-		std::cout <<" currentYaw = "<<currentYaw << " | newYaw = " <<newYaw << "\n";
+		std::cout <<" currentYaw = "<< currentYaw << " | newYaw = " << newYaw << "\n";
 		driveBase->SetTargetAngle(newYaw);
+		twistInput = driveBase->GetTwistControlOutput();
 	}
 
 		
@@ -240,6 +258,9 @@ void Robot::TeleopPeriodic() {
 			bool useGyro = true;
 			if (visionMode) { 
 				xMove = visionSystem->GetLastDriveInfo()->xspeed;
+				useGyro = false;
+			} else if (oi->DR4->Pressed()) {
+				// robot centric
 				useGyro = false;
 			}
 			driveBase->Crab(

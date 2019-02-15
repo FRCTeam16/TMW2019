@@ -74,15 +74,15 @@ void DriveBase::InitializePIDs() {
 	if (driveControlTwist == nullptr) {
 		driveControlTwist.reset(
 					new PIDController(
-							prefs->GetFloat("TwistP", 0.02),
-							prefs->GetFloat("TwistI", 0.0),
-							prefs->GetFloat("TwistD", 0.12),
-							0.0, RobotMap::gyro.get(), crabSpeedTwist.get(), 0.02 ));
+						PrefUtil::getSet("TwistP", 0.02),
+						PrefUtil::getSet("TwistI", 0.0),
+						PrefUtil::getSet("TwistD", 0.12),
+						0.0, RobotMap::gyro.get(), crabSpeedTwist.get(), 0.02 ));
 	} else {
 		driveControlTwist->SetPID(
-				prefs->GetFloat("TwistP", 0.02),
-				prefs->GetFloat("TwistI", 0.0),
-				prefs->GetFloat("TwistD", 0.12));
+				PrefUtil::getSet("TwistP", 0.02),
+				PrefUtil::getSet("TwistI", 0.0),
+				PrefUtil::getSet("TwistD", 0.12));
 		// was setting izone in custom PID
 	}
 	driveControlTwist->SetContinuous(true);

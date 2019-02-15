@@ -12,7 +12,7 @@
 
 class IntakeRotate : public SubsystemManager{
  public:
-  enum class IntakePosition { kStarting, kCargoShot, kLevelOne, kFloor };
+  enum class IntakePosition { kStarting, kCargoShot, kRocketShot, kLevelOne, kFloor };
 
   IntakeRotate();
   void Init() override;
@@ -20,8 +20,9 @@ class IntakeRotate : public SubsystemManager{
   void SetIntakePosition(IntakePosition position);
   void Instrument() override;
   void SetPositionSpeed(double speed, bool flipMode); // flip mode: true for open loop, false for closed if not already closed
- private:
   void DisabledHoldCurrentPosition();
+ private:
+  
 
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
   std::shared_ptr<WPI_VictorSPX> rotateRight;

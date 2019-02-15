@@ -40,13 +40,16 @@ void IntakeRotate::Init() {
 
     positionLookup[IntakePosition::kStarting]  = PrefUtil::getSetInt("Intake.Positition.starting", 100);
     positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
+    positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
     positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
     positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
 
     const int base = PrefUtil::getSetInt("Intake.position.base", 0);
     const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
     targetPositionValue = currentPositionValue - base;
-    positionControl = false;
+    positionControl = true;
+    rotateLeft->ClearMotionProfileTrajectories();
+    rotateLeft->ClearMotionProfileHasUnderrun();
 }
 
 void IntakeRotate::Run() {
@@ -68,7 +71,7 @@ void IntakeRotate::Run() {
     const double k = feedForwardZero * cos(theta);    // Account for 2:1 gearing
     // const double k = 0;
     rotateLeft->Config_kF(0, k);
-    
+    frc::SmartDashboard::PutNumber("Intake Target (non-computed)", targetPositionValue);
     computedTargetValue = targetPositionValue + base + rotateOffset;
 
     if (IntakeRotate::IntakePosition::kFloor == targetPosition) {
@@ -85,6 +88,12 @@ void IntakeRotate::Run() {
 }
 
 void IntakeRotate::SetIntakePosition(IntakePosition position) {
+    positionLookup[IntakePosition::kStarting]  = PrefUtil::getSetInt("Intake.Positition.starting", 100);
+    positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
+    positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
+    positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
+
     targetPosition = position;
     targetPositionValue = positionLookup[targetPosition];
     positionControl = true;
@@ -114,7 +123,9 @@ void IntakeRotate::DisabledHoldCurrentPosition() {
     const double base = PrefUtil::getSetInt("Intake.position.base", 0);
     targetPositionValue = currentPosition - base - rotateOffset;
     positionControl = true;
-    rotateLeft->Set(currentPosition);      // make sure to signal
+    rotateLeft->Set(ControlMode::MotionMagic, currentPosition);      // make sure to signal
+    rotateLeft->ClearMotionProfileTrajectories();
+    rotateLeft->ClearMotionProfileHasUnderrun();
 }
 
 void IntakeRotate::Instrument() {

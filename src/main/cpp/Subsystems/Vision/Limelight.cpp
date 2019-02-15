@@ -12,6 +12,7 @@
 Limelight::Limelight() {
     auto defaultInstance = nt::NetworkTableInstance::GetDefault();
     dataTable = defaultInstance.GetTable("limelight");
+    SetStreamMode(StreamMode::USBMain);
 }
 
 SceneInfo Limelight::GetScene() const {
@@ -67,6 +68,12 @@ Limelight::CameraMode Limelight::ToggleCameraMode() {
         default:
             return CameraMode::Unknown;
     }
+}
+
+void Limelight::SetStreamMode(StreamMode streamMode) {
+    const int nMode = static_cast<int>(streamMode);
+    std::cout << "Limelight::SetStreamMode -> " << nMode << "\n";
+    dataTable->PutNumber("stream", nMode);
 }
 
 

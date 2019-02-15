@@ -18,6 +18,9 @@ Intake::Intake() {
     ejectorSolenoid = RobotMap::ejectorSolenoid;
     hatchCatchSolenoid = RobotMap::hatchCatchSolenoid;
     gripperSolenoid = RobotMap::gripperSolenoid;
+
+    beaterTop->EnableVoltageCompensation(true);
+    beaterBottom->EnableVoltageCompensation(true);
 }
 
 void Intake::Init() {
@@ -55,8 +58,8 @@ void Intake::Run() {
             runningSequence = true;
 
             ejectorSolenoidState = true;
-            hatchSolenoidState = false;
             gripperSolenoidState = false;
+            hatchSolenoidState = false;
             if (elapsed > 0.25 && elapsed < 0.5) {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = true;
@@ -65,6 +68,7 @@ void Intake::Run() {
                 ejectorSolenoidState = false;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
+
                 runningSequence = false;
                 currentState = IntakeState::kNone; // human will tigger next state
             }
@@ -87,8 +91,9 @@ void Intake::Run() {
                 hatchSolenoidState = true;
             } else if (elapsed >= 1.0) {
                 ejectorSolenoidState = true;
-                hatchSolenoidState = false;
                 gripperSolenoidState = false;
+                hatchSolenoidState = false;
+                
                 runningSequence = false;
                 currentState = IntakeState::kNone;
             }

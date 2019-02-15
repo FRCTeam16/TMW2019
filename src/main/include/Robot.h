@@ -65,10 +65,12 @@ private:
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
   std::unique_ptr<VisionSystem> visionSystem;
   
-  
-
+  // teleop control variables
   bool runningScrews = false;	// true when running jackscrews
   bool runningLiftSequence = false; // true when running lift sequence
+  bool dpadRightToggled = false;
+
+
   std::unique_ptr<LiftController> liftController;
   std::unique_ptr<Crawler> crawler;
 

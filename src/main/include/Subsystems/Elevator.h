@@ -55,7 +55,7 @@ public:
 
 private:
 	std::shared_ptr<WPI_TalonSRX> elevatorMotor = RobotMap::elevatorMotor;
-	std::shared_ptr<WPI_TalonSRX> followerElevatorMotor = RobotMap::elevatorElevatorMotor2;
+	std::shared_ptr<WPI_TalonSRX> followerElevatorMotor;// = RobotMap::elevatorElevatorMotor2;
 	const std::vector<std::shared_ptr<WPI_TalonSRX>> motors { elevatorMotor, followerElevatorMotor };
 	ElevatorPosition elevatorPosition = ElevatorPosition::kFloor;
 	double openLoopPercent = 0.0;

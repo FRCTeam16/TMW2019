@@ -25,6 +25,7 @@ struct SceneInfo {
 class Limelight {
  public:
  enum class CameraMode { Unknown = -1, ImageProcessing = 0, DriverCamera = 1 };
+ enum class StreamMode { SideBySide = 0, LimelightMain = 1, USBMain = 2};
 
   Limelight();
 
@@ -36,6 +37,7 @@ class Limelight {
   CameraMode GetCameraMode() const;
   void SetCameraMode(CameraMode visionMode);
   CameraMode ToggleCameraMode();
+  void SetStreamMode(StreamMode streamMode);
 
   /** Uses angle to target object to determine distance **/
   double CalculateDistance(double heightToCamera, double heightToTarget) const;

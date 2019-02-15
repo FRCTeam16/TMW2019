@@ -25,6 +25,7 @@ class VisionSystem : public SubsystemManager {
   void Run() override;
   void ToggleCameraMode();
   std::shared_ptr<CrabInfo> GetLastDriveInfo();
+  std::shared_ptr<Limelight> GetLimelight() { return limelight; }
 private:
   std::shared_ptr<Limelight> limelight;
   std::unique_ptr<XOffsetController> xoffsetController;
