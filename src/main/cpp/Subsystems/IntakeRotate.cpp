@@ -50,6 +50,10 @@ void IntakeRotate::Init() {
     positionControl = true;
     rotateLeft->ClearMotionProfileTrajectories();
     rotateLeft->ClearMotionProfileHasUnderrun();
+
+    std::cout << "IntakeRotate::Init() curPos = " << currentPositionValue << " | "
+            << "Target: " << targetPositionValue << " | "
+            << "Computed Target: " << computedTargetValue << "\n";
 }
 
 void IntakeRotate::Run() {
@@ -61,21 +65,25 @@ void IntakeRotate::Run() {
     const int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
     const double theta = (currentPosition - (base + feedForwardZeroPos)) * (M_PI / kRotation);    // use M_PI instead of TWO_PI to account for 1:2 gearing
     rotateAngle = (theta * 180.0) / M_PI;
-
-    // std::cout << "curPos = " << currentPosition << " | "
-    //           << "base = " << base << " | "
-    //           << "ffZP = " << feedForwardZeroPos << " = "
-    //           << "raw theta (rad) = " << theta 
-    //           << "theta (deg) = " << rotateAngle << "\n";
-             
     const double k = feedForwardZero * cos(theta);    // Account for 2:1 gearing
-    // const double k = 0;
+             
     rotateLeft->Config_kF(0, k);
     frc::SmartDashboard::PutNumber("Intake Target (non-computed)", targetPositionValue);
     computedTargetValue = targetPositionValue + base + rotateOffset;
 
+    
+    // std::cout << "IntakeRotate::Run() curPos = " << currentPosition << " | "
+    //           << "Target: " << targetPositionValue << " | "
+    //           << "Computed Target: " << computedTargetValue << " --- "
+    //           << "base = " << base << " | "
+    //           << "ffZP = " << feedForwardZeroPos << " = "
+    //           << "raw theta (rad) = " << theta 
+    //           << " theta (deg) = " << rotateAngle << " | "
+    //           << "k = " << k << "\n";
+
     if (IntakeRotate::IntakePosition::kFloor == targetPosition) {
         Robot::intake->SetEjectorState(false);  // force retract of ejector if we move to floor
+        Robot::intake->SetGripperState(false);  // Make sure gripper is retracted as well
     }
    
     if (positionControl) {
@@ -103,18 +111,18 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
 void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     positionSpeed = speed;
     if (openLoop) {
-        std::cout << "Setting open loop from SetPositionSpeed\n";
+        // std::cout << "Setting open loop from SetPositionSpeed\n";
         positionControl = false;
     } else if (!positionControl) {
-        std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
+        // std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
         double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
         const double base = PrefUtil::getSetInt("Intake.position.base", 0);
         targetPositionValue = currentPosition - base - rotateOffset;
         positionControl = true;
-        std::cout << "SetPositionSpeed() -> Current Pos: " << currentPosition << " | "
-                  << "Base: " << base << " = "
-                  << "Offset: " << rotateOffset << " = "
-                  << targetPositionValue << "\n";
+        // std::cout << "SetPositionSpeed() -> Current Pos: " << currentPosition << " | "
+        //           << "Base: " << base << " = "
+        //           << "Offset: " << rotateOffset << " = "
+        //           << targetPositionValue << "\n";
     }
 }
 
@@ -124,8 +132,6 @@ void IntakeRotate::DisabledHoldCurrentPosition() {
     targetPositionValue = currentPosition - base - rotateOffset;
     positionControl = true;
     rotateLeft->Set(ControlMode::MotionMagic, currentPosition);      // make sure to signal
-    rotateLeft->ClearMotionProfileTrajectories();
-    rotateLeft->ClearMotionProfileHasUnderrun();
 }
 
 void IntakeRotate::Instrument() {

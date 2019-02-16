@@ -85,11 +85,11 @@ void Intake::Run() {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = false;
                 hatchSolenoidState = false;
-            } else if (elapsed >= 0.5 && elapsed < 1.0) {
+            } else if (elapsed >= 0.5 && elapsed < 2.5) {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = false;
                 hatchSolenoidState = true;
-            } else if (elapsed >= 1.0) {
+            } else if (elapsed >= 2.5) {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = false;
                 hatchSolenoidState = false;
@@ -108,7 +108,7 @@ void Intake::Run() {
     // Safety Check
     // if (ejectorSolenoidState && !gripperSolenoidState) {
     //     std::cout << " Intake::Run() SAFETY OVERRIDE = toggling gripper solenoid\n";
-    //     gripperSolenoidState = true;
+    //     gripperSolenoidState = false;
     // }
 
     // std::cout << "SOLENOIDS: ejector = " << ejectorSolenoidState << " | "

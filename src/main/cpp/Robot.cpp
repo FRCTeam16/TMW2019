@@ -114,10 +114,10 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************
 	 * Intake 
 	**********************************************************/
+	// DR 3 is vision handled elsewhere
 	if (oi->DR1->Pressed()) {
 		intake->EjectCargo();	// score cargo
-	 // DR 2 is vision handled elsewhere
-	} else if (oi->DL3->Pressed()) {
+	} else if (oi->DR2->Pressed()) {
 		intake->IntakeCargo();
 	} else if (oi->DL4->Pressed()) {
 		intake->HatchIntakeFromGround();
@@ -129,7 +129,7 @@ void Robot::TeleopPeriodic() {
 
 	if (oi->DL1->RisingEdge()) {
 		intake->EjectHatch();	// score hatch
-	} else if (oi->DL2->RisingEdge()) {
+	} else if (oi->DL3->RisingEdge()) {
 		intake->IntakeHatch();	// from wall
 	} 
 
@@ -182,16 +182,18 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************
 	 * Vision
 	**********************************************************/
-	const bool visionMode = oi->DR2->Pressed();	// controls drive
+	const bool visionMode = oi->DR3->Pressed();	// controls drive
 	if (oi->DR11->RisingEdge()) {
 		visionSystem->ToggleCameraMode();
 	}
 	if (oi->DR7->RisingEdge()) {
 		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::LimelightMain);
-	}
-	if (oi->DR8->RisingEdge()) {
+	} else if (oi->DR8->RisingEdge()) {
 		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::USBMain);
+	} else if (oi->DR10->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::SideBySide);
 	}
+
 
 	
 	/**********************************************************
@@ -214,7 +216,7 @@ void Robot::TeleopPeriodic() {
 	if (visionMode) {
 		double currentYaw = RobotMap::gyro->GetYaw();
 		double newYaw = calculateLockAngle(currentYaw);
-		std::cout <<" currentYaw = "<< currentYaw << " | newYaw = " << newYaw << "\n";
+		// std::cout <<" currentYaw = "<< currentYaw << " | newYaw = " << newYaw << "\n";
 		driveBase->SetTargetAngle(newYaw);
 		twistInput = driveBase->GetTwistControlOutput();
 	}

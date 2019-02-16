@@ -6,11 +6,11 @@ double calculateLockAngle(double gyro_) {
     double answer = -1;
     double gyro = fabs(gyro_);
 
-    if (gyro >= 0.0 && gyro < 30.0) {
+    if (gyro >= 0.0 && gyro < 15.0) {
         answer = 0.0;
-    } else if (gyro  >= 30 && gyro < 75) {
-        answer = 60.0;
-    } else if (gyro >= 75 && gyro < 120) {
+    } else if (gyro  >= 15 && gyro < 60) {
+        answer = 30.0;
+    } else if (gyro >= 60 && gyro < 120) {
         answer = 90.0;
     } else if (gyro >= 120 && gyro < 165) {
         answer = 150.0;

@@ -9,6 +9,7 @@
 #include "frc/Preferences.h"
 #include <iostream>
 #include "rev/CANError.h"
+#include "Util/PrefUtil.h"
 
 void TMW2019SwerveWheel::InitializeSteering() {
     assert(steerMotor.get() != nullptr);
@@ -19,6 +20,8 @@ void TMW2019SwerveWheel::InitializeSteering() {
     steerMotor->Config_kP(0, kSteerP, 0);
     steerMotor->ConfigPeakOutputForward(0.75, 0);
     steerMotor->ConfigPeakOutputReverse(-0.75, 0);
+    steerMotor->ConfigPeakCurrentLimit(0);
+    steerMotor->ConfigContinuousCurrentLimit(PrefUtil::getSet("Steer.ContinuousCurrentLimit", 20.0));
 }
 
 void TMW2019SwerveWheel::InitializeDrivePID() {
