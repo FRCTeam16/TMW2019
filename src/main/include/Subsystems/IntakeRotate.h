@@ -12,7 +12,7 @@
 
 class IntakeRotate : public SubsystemManager{
  public:
-  enum class IntakePosition { kStarting, kCargoShot, kRocketShot, kLevelOne, kFloor };
+  enum class IntakePosition { kStarting, kCargoShot, kRocketShot, kLevelOne, kCargoPickup, kFloor };
 
   IntakeRotate();
   void Init() override;

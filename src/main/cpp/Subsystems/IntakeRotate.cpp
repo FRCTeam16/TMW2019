@@ -42,6 +42,7 @@ void IntakeRotate::Init() {
     positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
     positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
     positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kCargoPickup] = PrefUtil::getSetInt("Intake.Position.cargopickup", 350);
     positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
 
     const int base = PrefUtil::getSetInt("Intake.position.base", 0);
@@ -100,6 +101,7 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
     positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
     positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
     positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kCargoPickup] = PrefUtil::getSetInt("Intake.Position.cargopickup", 350);
     positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
 
     targetPosition = position;

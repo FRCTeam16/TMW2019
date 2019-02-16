@@ -148,6 +148,9 @@ void Robot::TeleopPeriodic() {
 				intake->SetGripperState(solenoidState.gripper);
 			}
 		} else {
+			// no shift modifiers
+			const double aButtonThreshold = 0.3;
+			const double elapsed = frc::Timer::GetFPGATimestamp() - aButtonTimerStart;
 			if (oi->GPY->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kLevelOne);
 			} else if (oi->GPB->RisingEdge()) {
@@ -155,10 +158,24 @@ void Robot::TeleopPeriodic() {
 			} else if (oi->GPX->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
 			} else if (oi->GPA->RisingEdge()) {
-				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
+				if (aButtonTimerStart == -1) {
+					aButtonTimerStart = frc::Timer::GetFPGATimestamp();
+				} else if (elapsed < aButtonThreshold) {
+					intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoPickup);
+					aButtonTimerStart = -1;
+				}
+			} else {
+				// handle single A press
+				if (aButtonTimerStart > 0 && elapsed > aButtonThreshold) {
+					intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
+					aButtonTimerStart = -1;
+				}
 			}
+			
 		}
 	}
+
+
 
 	if (oi->GetGamepadDPad() == OI::DPad::kRight) {
 		if (!dpadRightToggled) {
