@@ -9,7 +9,7 @@ double calculateLockAngle(double gyro_) {
     if (gyro >= 0.0 && gyro < 30.0) {
         answer = 0.0;
     } else if (gyro  >= 30 && gyro < 75) {
-        answer = 60,0;
+        answer = 60.0;
     } else if (gyro >= 75 && gyro < 120) {
         answer = 90.0;
     } else if (gyro >= 120 && gyro < 165) {
