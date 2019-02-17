@@ -18,9 +18,11 @@ class IntakeRotate : public SubsystemManager{
   void Init() override;
   void Run() override;
   void SetIntakePosition(IntakePosition position);
+  IntakePosition GetIntakePosition();
   void Instrument() override;
   void SetPositionSpeed(double speed, bool flipMode); // flip mode: true for open loop, false for closed if not already closed
   void DisabledHoldCurrentPosition();
+  bool InPosition();
  private:
   
 
@@ -35,4 +37,5 @@ class IntakeRotate : public SubsystemManager{
   double positionSpeed = 0.0; // testing
   bool positionControl = true;
   double rotateAngle = 0.0;
+  double kRotateInPositionThreshold = 10.0;
 };

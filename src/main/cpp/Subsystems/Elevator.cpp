@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Subsystems/Elevator.h"
 #include "Util/PrefUtil.h"
+#include <frc/Timer.h>
+#include "Robot.h"
 
 Elevator::Elevator() {
 	std::cout << "Elevator starting\n";
@@ -35,7 +37,10 @@ void Elevator::Run() {
 			elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
 		case kMagic:
-			double P = PrefUtil::getSet("Elevator.P", 1);
+			double target = moveRequest != nullptr ? moveRequest->CalculateSetpoint() : setpoint;
+			if (moveRequest->finished) { moveRequest.reset(); }
+
+			double P = PrefUtil::getSet("Elevator.P", 0.01);
 			double F = PrefUtil::getSet("Elevator.F", 0.18);
 			int V = PrefUtil::getSetInt("Elevator.V", 5592);
 			int A = PrefUtil::getSetInt("Elevator.A", 5592);
@@ -47,11 +52,10 @@ void Elevator::Run() {
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
 
-			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
+			elevatorMotor->Set(ControlMode::MotionMagic, target);
 			break;
 	}
 }
-
 
 void Elevator::SetOpenLoopPercent(double _openLoopPercent) {
 	runMode = RunMode::kManual;
@@ -65,6 +69,8 @@ Elevator::ElevatorPosition Elevator::GetElevatorPosition() {
 void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 	runMode = RunMode::kMagic;
 	elevatorPosition = _elevatorPosition;
+
+	double lastSetpoint = setpoint;
 	switch(elevatorPosition) {
 		case ElevatorPosition::kFloor:
 			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
@@ -79,9 +85,12 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 			setpoint = PrefUtil::getSet("Elevator.pos.Level3", 6000);
 			break;
 	}
+	moveRequest.reset(new ElevatorMoveRequest(Robot::intakeRotate, lastSetpoint, setpoint));
+
 	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << " | " << setpoint << "\n";
 }
 
+// Hidden/deprecated
 void Elevator::SetElevatorSetpoint(int _setpoint) {
 	setpoint = _setpoint;
 }

@@ -11,7 +11,8 @@
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
 #include "RobotMap.h"
-
+#include "Subsystems/IntakeRotate.h"
+#include "Subsystems/ElevatorMoveRequest.h"
 
 
 class Elevator : SubsystemManager {
@@ -56,6 +57,7 @@ private:
 	int elevatorPositionThreshold;
 	double setpoint = 0.0;
 	RunMode runMode = RunMode::kManual;
+	std::unique_ptr<ElevatorMoveRequest> moveRequest;	// tracks move request information
 
 	void SetElevatorSetpoint(int setpoint);	// deprecated?
 };

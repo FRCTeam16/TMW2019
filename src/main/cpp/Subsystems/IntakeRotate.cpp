@@ -110,6 +110,10 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
     positionSpeed = 0.0;
 }
 
+IntakeRotate::IntakePosition IntakeRotate::GetIntakePosition() {
+    return targetPosition;
+}
+
 void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     positionSpeed = speed;
     if (openLoop) {
@@ -134,6 +138,12 @@ void IntakeRotate::DisabledHoldCurrentPosition() {
     targetPositionValue = currentPosition - base - rotateOffset;
     positionControl = true;
     rotateLeft->Set(ControlMode::MotionMagic, currentPosition);      // make sure to signal
+}
+
+bool IntakeRotate::InPosition() {
+    double error = computedTargetValue - (rotateLeft->GetSelectedSensorPosition());
+    bool inPosition = (fabs(error) < kRotateInPositionThreshold);
+	return inPosition;
 }
 
 void IntakeRotate::Instrument() {
