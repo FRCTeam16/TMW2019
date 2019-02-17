@@ -92,7 +92,8 @@ void JackScrews::ShiftAll(ShiftMode shiftMode) {
 }
 
 void JackScrews::ShiftFront(ShiftMode shiftMode) {
-  frontAxleSolenoid->Set(static_cast<bool>(shiftMode));
+  const bool shiftBool = static_cast<bool>(shiftMode);
+  frontAxleSolenoid->Set(shiftBool ? DoubleSolenoid::Value::kForward : DoubleSolenoid::Value::kReverse);
   if (ShiftMode::kJackscrews == shiftMode) {
     std::cout << "Shifted front to open\n";
     jackScrews->FL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
@@ -105,7 +106,8 @@ void JackScrews::ShiftFront(ShiftMode shiftMode) {
 }
 
 void JackScrews::ShiftRear(ShiftMode shiftMode) {
-  rearAxleSolenoid->Set(static_cast<bool>(shiftMode));
+  const bool shiftBool = static_cast<bool>(shiftMode);
+  rearAxleSolenoid->Set(shiftBool ? DoubleSolenoid::Value::kForward : DoubleSolenoid::Value::kReverse);
   if (ShiftMode::kJackscrews == shiftMode) {
     std::cout << "Shifted rear to open\n";
     jackScrews->RL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
