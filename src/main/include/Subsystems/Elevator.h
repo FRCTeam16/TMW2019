@@ -17,7 +17,7 @@
 class Elevator : SubsystemManager {
 public:
 	Elevator();
-	virtual ~Elevator();
+	virtual ~Elevator() = default;
 
 	enum class ElevatorPosition {
 		kFloor, kLevel1, kLevel2, kLevel3
@@ -28,10 +28,6 @@ public:
 		kManual, kMagic
 	};
 
-
-	void InitDefaultCommand() {}
-	void Periodic() {}
-
 	void Init() override;
 	void Run() override;
 	void Instrument() override;
@@ -41,7 +37,7 @@ public:
 	void SetInitialPosition();
 	ElevatorPosition GetElevatorPosition();
 	void SetElevatorPosition(ElevatorPosition position);
-	void SetElevatorSetpoint(int setpoint);
+	
 	bool InPosition();
 	void IncreaseElevatorPosition();
 	void DecreaseElevatorPosition();
@@ -50,21 +46,18 @@ public:
 	void SetHomePosition();
 
 	int GetElevatorEncoderPosition();
-	std::tuple<double, double> GetElevatorMotorCurrents();
+	double GetElevatorMotorCurrent();
 
 
 private:
 	std::shared_ptr<WPI_TalonSRX> elevatorMotor = RobotMap::elevatorMotor;
-	std::shared_ptr<WPI_TalonSRX> followerElevatorMotor;// = RobotMap::elevatorElevatorMotor2;
-	const std::vector<std::shared_ptr<WPI_TalonSRX>> motors { elevatorMotor, followerElevatorMotor };
 	ElevatorPosition elevatorPosition = ElevatorPosition::kFloor;
 	double openLoopPercent = 0.0;
 	int elevatorPositionThreshold;
 	double setpoint = 0.0;
 	RunMode runMode = RunMode::kManual;
-	bool shifterState = false;       // false = reverse = low, true = forward = high
 
-	void SetShift(bool state);
+	void SetElevatorSetpoint(int setpoint);	// deprecated?
 };
 
 #endif /* SRC_SUBSYSTEMS_ELEVATOR_H_ */

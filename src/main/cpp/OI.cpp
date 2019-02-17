@@ -179,9 +179,9 @@ double OI::GetGamepadLT() {
     }
 }
 
-OI::DPad OI::GetGamepadDPad() {
-    DPad value = kUnknown;
-    switch (gamepad->GetPOV()) {
+OI::DPad OI::TranslatePOV(int pov) {
+    OI::DPad value = kUnknown;
+    switch (pov) {
         case -1: value = kUnpressed;
             break;
         case 0: value = kUp;
@@ -203,6 +203,14 @@ OI::DPad OI::GetGamepadDPad() {
         default: value = kUnknown;
     }
     return value;
+}
+
+OI::DPad OI::GetGamepadDPad() {
+    return TranslatePOV(gamepad->GetPOV());
+}
+
+OI::DPad OI::GetDRHat() {
+    return TranslatePOV(driverRight->GetPOV());
 }
 
 void OI::SetGamepadLeftRumble(double rumble) {

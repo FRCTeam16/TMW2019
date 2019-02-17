@@ -24,6 +24,7 @@
 #include "Lift/LiftController.h"
 #include "Subsystems/Crawler.h"
 #include "Lift/LiftDrive.h"
+#include "Subsystems/Elevator.h"
 
 
 struct ManualSolenoidState {
@@ -54,6 +55,7 @@ class Robot : public frc::TimedRobot {
   static std::shared_ptr<JackScrews> jackScrews;
   static std::unique_ptr<Intake> intake;
   static std::shared_ptr<IntakeRotate> intakeRotate;
+  static std::shared_ptr<Elevator> elevator;
 
 private:
   void InitSubsystems();
@@ -70,6 +72,7 @@ private:
   bool runningLiftSequence = false; // true when running lift sequence
   bool dpadRightToggled = false;
   double aButtonTimerStart = -1;
+  bool drPadToggled = false;
 
   std::unique_ptr<LiftController> liftController;
   std::unique_ptr<Crawler> crawler;

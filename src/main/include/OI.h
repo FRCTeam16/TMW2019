@@ -68,7 +68,7 @@ public:
 	std::shared_ptr<BSButton> DR10;
 	std::shared_ptr<BSButton> DR11;
 	std::shared_ptr<BSButton> DR12;
-
+	
 	enum DPad {
 		kUnpressed = -1,
 		kUp = 0,
@@ -83,6 +83,9 @@ public:
 	};
 
 	DPad GetGamepadDPad();
+	DPad GetDRHat();
+	DPad TranslatePOV(int povValue);
+
 	double GetJoystickTwist(double threshold = 0.1);
 	double GetJoystickX(double threshold = 0.1);
 	double GetJoystickY(double threshold = 0.1);

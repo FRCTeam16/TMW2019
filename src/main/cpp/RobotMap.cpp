@@ -47,7 +47,7 @@ RobotMap::RobotMap() {
   driveBaseRearLeftSteer.reset(new WPI_TalonSRX{6});
   driveBaseRearRightSteer.reset(new WPI_TalonSRX{8});
 
-  // elevatorMotor.reset(new WPI_TalonSRX{9});
+  elevatorMotor.reset(new WPI_TalonSRX{9});
   crawlMotor.reset(new WPI_TalonSRX{10});
   rotateLeftMotor.reset(new WPI_TalonSRX{11});
   rotateRightMotor.reset(new WPI_VictorSPX{12});

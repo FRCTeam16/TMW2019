@@ -15,6 +15,7 @@ std::shared_ptr<DriveBase> Robot::driveBase;
 std::shared_ptr<JackScrews> Robot::jackScrews;
 std::unique_ptr<Intake> Robot::intake;
 std::shared_ptr<IntakeRotate> Robot::intakeRotate;
+std::shared_ptr<Elevator> Robot::elevator;
 
 
 void Robot::RobotInit() {
@@ -29,6 +30,8 @@ void Robot::RobotInit() {
 	intake.reset(new Intake());
 	intakeRotate.reset(new IntakeRotate());
 	crawler.reset(new Crawler());
+
+	elevator.reset(new Elevator());
 
 	visionSystem.reset(new VisionSystem());
     statusReporter.reset(new StatusReporter());
@@ -194,6 +197,31 @@ void Robot::TeleopPeriodic() {
 		// will not trigger switch to open loop mode
 		intakeRotate->SetPositionSpeed(0.0, false);
 	}
+
+	/**********************************************************
+	 * Elevator
+	**********************************************************/
+	const double rightStickAmt = oi->GetGamepadRightStick();
+	if (fabs(rightStickAmt) > threshold) {
+		elevator->SetOpenLoopPercent(rightStickAmt);
+	} else {
+		elevator->HoldPosition();
+	}
+
+	const OI::DPad drHat = oi->GetDRHat();
+	if (OI::DPad::kUp == drHat) {
+		if (!drPadToggled) {
+			elevator->IncreaseElevatorPosition();
+			drPadToggled = true;
+		}
+	} else if (OI::DPad::kDown == drHat) {
+		if (!drPadToggled) {
+			elevator->DecreaseElevatorPosition();
+			drPadToggled = true;
+		}
+	} else {
+		drPadToggled = false;
+	}
 	
 
 	/**********************************************************
@@ -312,6 +340,7 @@ void Robot::InitSubsystems() {
 	intake->Init();
 	intakeRotate->Init();
 	crawler->Init();
+	elevator->Init();
 	// status & dms currently don't have init
 	std::cout << "Robot::InitSubsystems <=\n";
 }
@@ -324,6 +353,7 @@ void Robot::RunSubsystems() {
 	intakeRotate->Run();
 	crawler->Run();
 	visionSystem->Run(); 
+	elevator->Run();
 	// liftController takes over driving so is in teleop loop
 	double now = frc::Timer::GetFPGATimestamp();
 	SmartDashboard::PutNumber("Subsystem Times", (now-start) * 1000);

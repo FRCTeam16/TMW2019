@@ -4,31 +4,17 @@
 
 Elevator::Elevator() {
 	std::cout << "Elevator starting\n";
-	for (auto &motor : motors) {
-		motor->SetNeutralMode(NeutralMode::Brake);
-		motor->ConfigPeakOutputForward(1,  0);
-		motor->ConfigPeakOutputReverse(-1, 0);
-	}
 
-	elevatorMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::QuadEncoder, 0,0);
-
-	elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, 0);
-	elevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, 0);
-
-	followerElevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, elevatorMotor->GetDeviceID());
-	followerElevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, elevatorMotor->GetDeviceID());
-
+	elevatorMotor->SetNeutralMode(NeutralMode::Brake);
+	elevatorMotor->ConfigPeakOutputForward(1);
+	elevatorMotor->ConfigPeakOutputReverse(-1);
+	elevatorMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute);
+	elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
+	elevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
 	elevatorMotor->ConfigSetParameter(ParamEnum::eClearPositionOnLimitR, 1, 0, 0, 0);
-	followerElevatorMotor->Set(ControlMode::Follower, elevatorMotor->GetDeviceID());
-
-	elevatorMotor->SetSensorPhase(true);
+	// elevatorMotor->SetSensorPhase(true);
 	std::cout << "Elevator() complete\n";
 }
-
-
-Elevator::~Elevator() {
-}
-
 
 void Elevator::Init() {
 	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
@@ -60,8 +46,7 @@ void Elevator::Run() {
 			elevatorMotor->Config_kI(0, 0, 0);
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
-			elevatorMotor->ClearMotionProfileTrajectories();
-			elevatorMotor->ClearMotionProfileHasUnderrun(0);
+
 			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
 			break;
 	}
@@ -80,9 +65,7 @@ Elevator::ElevatorPosition Elevator::GetElevatorPosition() {
 void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 	runMode = RunMode::kMagic;
 	elevatorPosition = _elevatorPosition;
-	std::cout << "Setting position to: " << static_cast<int>(elevatorPosition) << "\n";
 	switch(elevatorPosition) {
-		// Elevator.pos.floor
 		case ElevatorPosition::kFloor:
 			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
 			break;
@@ -95,7 +78,8 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 		case ElevatorPosition::kLevel3:
 			setpoint = PrefUtil::getSet("Elevator.pos.Level3", 6000);
 			break;
-			}
+	}
+	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << " | " << setpoint << "\n";
 }
 
 void Elevator::SetElevatorSetpoint(int _setpoint) {
@@ -130,6 +114,7 @@ void Elevator::DecreaseElevatorPosition() {
 
 
 void Elevator::HoldPosition() {
+	openLoopPercent = 0.0;
 	if (RunMode::kManual == runMode) {
 		setpoint = GetElevatorEncoderPosition();
 		runMode = RunMode::kMagic;
@@ -138,16 +123,14 @@ void Elevator::HoldPosition() {
 
 
 void Elevator::SetHomePosition() {
-	elevatorMotor->SetSelectedSensorPosition(0, 0, 0);
+	elevatorMotor->SetSelectedSensorPosition(0);
 	setpoint = 0;
 }
 
 void Elevator::Instrument() {
 	SmartDashboard::PutNumber("Elevator Position", GetElevatorEncoderPosition());
 	SmartDashboard::PutNumber("Elevator Current (Main)", elevatorMotor->GetOutputCurrent());
-	SmartDashboard::PutNumber("Elevator Current (Follow)", followerElevatorMotor->GetOutputCurrent());
 	SmartDashboard::PutNumber("Elevator Output (Main)", elevatorMotor->Get());
-	SmartDashboard::PutNumber("Elevator Output (Follow)", followerElevatorMotor->Get());
 	SmartDashboard::PutBoolean("Elevator Limit Switch FWD", elevatorMotor->GetSensorCollection().IsFwdLimitSwitchClosed());
 	SmartDashboard::PutBoolean("Elevator Limit Switch REV", elevatorMotor->GetSensorCollection().IsRevLimitSwitchClosed());
 }
@@ -157,8 +140,6 @@ int Elevator::GetElevatorEncoderPosition() {
 
 }
 
-std::tuple<double, double> Elevator::GetElevatorMotorCurrents() {
-	return std::make_tuple(
-			elevatorMotor->GetOutputCurrent(),
-			followerElevatorMotor->GetOutputCurrent());
+double Elevator::GetElevatorMotorCurrent() {
+	return elevatorMotor->GetOutputCurrent();
 }
