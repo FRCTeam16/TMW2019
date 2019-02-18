@@ -9,16 +9,25 @@ Elevator::Elevator() {
 	elevatorMotor->ConfigPeakOutputForward(1);
 	elevatorMotor->ConfigPeakOutputReverse(-1);
 	elevatorMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative);
-	elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
+	// elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
 	elevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
 	elevatorMotor->ConfigSetParameter(ParamEnum::eClearPositionOnLimitR, 1, 0, 0, 0);
-	// elevatorMotor->SetSensorPhase(true);
+	elevatorMotor->ConfigContinuousCurrentLimit(39);
+	elevatorMotor->ConfigPeakCurrentLimit(0);
+	elevatorMotor->EnableCurrentLimit(true);
+	elevatorMotor->SetSensorPhase(true);
+	// elevatorMotor->SetInverted(true);
 	std::cout << "Elevator() complete\n";
 }
 
 void Elevator::Init() {
 	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
 	SetInitialPosition();
+
+	runMode = kManual;
+	initializeFinished = false;
+	initializeScanCounts = 0;
+
 }
 
 
@@ -30,7 +39,24 @@ void Elevator::SetInitialPosition() {
 
 
 void Elevator::Run() {
-	switch (runMode) {
+	RunMode mode = runMode;
+
+    if (!initializeFinished && (initializeScanCounts++ < kInitializeScanCountMax)) {
+        std::cout << "Elevator Overriding intitialization - current draw: " 
+                  << elevatorMotor->GetOutputCurrent() << "\n";
+        mode = kManual;
+        openLoopPercent = 0.0;
+    } else {
+        if (initializeScanCounts > 0) {
+            initializeFinished = true;
+            initializeScanCounts = 0;
+            mode = kMagic;
+            setpoint = GetElevatorEncoderPosition();
+        }   
+    }
+
+
+	switch (mode) {
 		case kManual:
 			elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
@@ -47,8 +73,9 @@ void Elevator::Run() {
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
 
-			// FIXME: Removed for testing : elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
-			elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
+			// FIXME: Removed for testing : 
+			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
+			// elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
 	}
 }
@@ -57,6 +84,10 @@ void Elevator::Run() {
 void Elevator::SetOpenLoopPercent(double _openLoopPercent) {
 	runMode = RunMode::kManual;
 	openLoopPercent = _openLoopPercent;
+}
+
+void Elevator::DisabledZeroOutput() {
+	elevatorMotor->Set(ControlMode::PercentOutput, 0.0);
 }
 
 Elevator::ElevatorPosition Elevator::GetElevatorPosition() {
@@ -70,9 +101,9 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 		case ElevatorPosition::kFloor:
 			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
 			break;
-		case ElevatorPosition::kLevel1:
-			setpoint = PrefUtil::getSet("Elevator.pos.Level1", 4200);
-			break;
+		// case ElevatorPosition::kLevel1:
+		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level1", 4200);
+		// 	break;
 		case ElevatorPosition::kLevel2:
 			setpoint = PrefUtil::getSet("Elevator.pos.Level2", 5000);
 			break;
@@ -97,6 +128,7 @@ bool Elevator::InPosition() {
 
 
 void Elevator::IncreaseElevatorPosition() {
+	std::cout << "Elevator::IncraseElevatorPosition\n";
 	int nextOrdinal = static_cast<int>(elevatorPosition)  + 1;
 	if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
@@ -106,6 +138,7 @@ void Elevator::IncreaseElevatorPosition() {
 
 
 void Elevator::DecreaseElevatorPosition() {
+	std::cout << "Elevator::DecreaseElevatorPosition\n";
 	int nextOrdinal = static_cast<int>(elevatorPosition) - 1;
 	if (nextOrdinal >= 0 ) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);

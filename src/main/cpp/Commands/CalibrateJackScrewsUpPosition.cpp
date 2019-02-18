@@ -19,12 +19,12 @@ CalibrateJackScrewsUpPosition::CalibrateJackScrewsUpPosition() {
 // Called just before this Command runs the first time
 void CalibrateJackScrewsUpPosition::Initialize() {
   std::cout << "=== Start JackScrew Baseline Calibration ===\n";
-  frc::Preferences *prefs = frc::Preferences::GetInstance();
-  auto encoders = Robot::driveBase->GetDriveEncoderPositions(); 
-  prefs->PutDouble("JackScrew.FL.base", encoders.FL);
-  prefs->PutDouble("JackScrew.FR.base", encoders.FR);
-  prefs->PutDouble("JackScrew.RL.base", encoders.RL);
-  prefs->PutDouble("JackScrew.RR.base", encoders.RR);
+  // frc::Preferences *prefs = frc::Preferences::GetInstance();
+  // auto encoders = Robot::driveBase->GetDriveEncoderPositions(); 
+  // prefs->PutDouble("JackScrew.FL.base", encoders.FL);
+  // prefs->PutDouble("JackScrew.FR.base", encoders.FR);
+  // prefs->PutDouble("JackScrew.RL.base", encoders.RL);
+  // prefs->PutDouble("JackScrew.RR.base", encoders.RR);
 
   SetTimeout(1);
   std::cout << "=== End JackScrew Baseline Calibration ===\n";

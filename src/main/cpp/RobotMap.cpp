@@ -22,7 +22,7 @@
   std::shared_ptr<WPI_TalonSRX> RobotMap::crawlMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::rotateLeftMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::rotateRightMotor;
-  std::shared_ptr<WPI_VictorSPX> RobotMap::beaterTopMotor;
+  std::shared_ptr<WPI_TalonSRX> RobotMap::beaterTopMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::beaterBottomMotor;
 
   std::shared_ptr<DoubleSolenoid> RobotMap::frontAxleSolenoid;
@@ -51,7 +51,7 @@ RobotMap::RobotMap() {
   crawlMotor.reset(new WPI_TalonSRX{10});
   rotateLeftMotor.reset(new WPI_TalonSRX{11});
   rotateRightMotor.reset(new WPI_VictorSPX{12});
-  beaterTopMotor.reset(new WPI_VictorSPX{13});
+  beaterTopMotor.reset(new WPI_TalonSRX{13});
   beaterBottomMotor.reset(new WPI_VictorSPX{14});
 
   gyro.reset(new BSGyro(crawlMotor.get()));

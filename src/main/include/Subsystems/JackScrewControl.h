@@ -51,7 +51,7 @@ private:
 
     double kJackScrewApproachSpeed = -0.10;
     double controlSpeed = 1.0;
-    const double jackScrewRampTime = 0.1;
+    const double jackScrewRampTime = 0.25;
     const double rotationCloseLoopThreshold = 7;
     bool firstThresholdRun = true;
 

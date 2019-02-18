@@ -35,4 +35,9 @@ class IntakeRotate : public SubsystemManager{
   double positionSpeed = 0.0; // testing
   bool positionControl = true;
   double rotateAngle = 0.0;
+
+  // Startup Handling
+  bool initializeFinished = false;
+  int initializeScanCounts = 0;
+  int kInitializeScanCountMax = 25;
 };

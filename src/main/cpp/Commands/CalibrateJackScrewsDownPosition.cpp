@@ -20,19 +20,21 @@ CalibrateJackScrewsDownPosition::CalibrateJackScrewsDownPosition() {
 void CalibrateJackScrewsDownPosition::Initialize() {
   std::cout << "=== Start JackScrew Distance Calibration ===\n";
   frc::Preferences *prefs = frc::Preferences::GetInstance();
-  auto end = Robot::driveBase->GetDriveEncoderPositions(); 
-  DriveInfo<double> start {
-    prefs->GetDouble("JackScrew.FL.base"),
-    prefs->GetDouble("JackScrew.FR.base"),
-    prefs->GetDouble("JackScrew.RL.base"),
-    prefs->GetDouble("JackScrew.RR.base"),
-  };
-  DriveInfo<double> dist = end - start;
+  // auto end = Robot::driveBase->GetDriveEncoderPositions(); 
+  // DriveInfo<double> start {
+  //   prefs->GetDouble("JackScrew.FL.base"),
+  //   prefs->GetDouble("JackScrew.FR.base"),
+  //   prefs->GetDouble("JackScrew.RL.base"),
+  //   prefs->GetDouble("JackScrew.RR.base"),
+  // };
+  // DriveInfo<double> dist = end - start;
 
-  prefs->PutDouble("JackScrew.FL.dist", dist.FL);
-  prefs->PutDouble("JackScrew.FR.dist", dist.FR);
-  prefs->PutDouble("JackScrew.RL.dist", dist.RL);
-  prefs->PutDouble("JackScrew.RR.dist", dist.RR);
+  // prefs->PutDouble("JackScrew.FL.dist", dist.FL);
+  // prefs->PutDouble("JackScrew.FR.dist", dist.FR);
+  // prefs->PutDouble("JackScrew.RL.dist", dist.RL);
+  // prefs->PutDouble("JackScrew.RR.dist", dist.RR);
+
+  prefs->PutDouble("JackScrew.dist", 100);
 
   SetTimeout(1);
   std::cout << "=== End JackScrew Distance Calibration ===\n";

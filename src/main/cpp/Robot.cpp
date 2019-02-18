@@ -42,11 +42,13 @@ void Robot::RobotInit() {
 
 void Robot::DisabledInit() {
 	intakeRotate->DisabledHoldCurrentPosition();
+	elevator->DisabledZeroOutput();;
 }
 
 void Robot::DisabledPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
 	intakeRotate->DisabledHoldCurrentPosition();
+	elevator->DisabledZeroOutput();
 }
 
 void Robot::AutonomousInit() {
@@ -80,13 +82,13 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************/
 	// Jackscrew Manual Control
 	/**********************************************************/
-	if (oi->GPRB->RisingEdge()) {
+	if (oi->DR11->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
 		jackScrews->ConfigureOpenLoop(0.0);
 		runningLiftSequence = false;
 		liftController.reset();
 		runningScrews = true;
-	} else if (oi->GPLB->RisingEdge()) {
+	} else if (oi->DR12->RisingEdge()) {
 		jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
 		runningScrews = false;
 		runningLiftSequence = false;
@@ -208,6 +210,7 @@ void Robot::TeleopPeriodic() {
 		elevator->HoldPosition();
 	}
 
+/*
 	const OI::DPad drHat = oi->GetDRHat();
 	if (OI::DPad::kUp == drHat) {
 		if (!drPadToggled) {
@@ -222,13 +225,20 @@ void Robot::TeleopPeriodic() {
 	} else {
 		drPadToggled = false;
 	}
+*/
+
+	if (oi->GPRB->RisingEdge()) {
+		elevator->IncreaseElevatorPosition();
+	} else if (oi->GPLB->RisingEdge()) {
+		elevator->DecreaseElevatorPosition();
+	}
 	
 
 	/**********************************************************
 	 * Vision
 	**********************************************************/
 	const bool visionMode = oi->DR3->Pressed();	// controls drive
-	if (oi->DR11->RisingEdge()) {
+	if (oi->DR9->RisingEdge()) {
 		visionSystem->ToggleCameraMode();
 	}
 	if (oi->DR7->RisingEdge()) {

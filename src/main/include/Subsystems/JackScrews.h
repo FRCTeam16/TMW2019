@@ -32,7 +32,7 @@ using namespace frc;
 class JackScrews : public SubsystemManager
 {
 public:
-  enum class ShiftMode { kDrive = false, kJackscrews = true };
+  enum class ShiftMode { kDrive = true, kJackscrews = false };
   enum class LiftMode { kAll, kFront, kBack, kNone };
   enum class Direction { kNone = 0, kUp = -1, kDown = 1 };
   

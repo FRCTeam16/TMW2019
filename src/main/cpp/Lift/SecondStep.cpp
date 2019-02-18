@@ -21,12 +21,14 @@ void SecondStep::Execute() {
                 JackScrews::LiftMode::kFront,
                 JackScrews::Direction::kUp,
                 JackScrewControl::EndStateAction::kSwitchToAmpDetect);
+        startTime = frc::Timer::GetFPGATimestamp();
     } else {
         if (!liftFinished) {
             // Waiting for front jackscrew amp detection to kickout
             bool leftFinished = jackScrewControls->FL->IsFinished();
             bool rightFinished = jackScrewControls->FR->IsFinished();
-            liftFinished = leftFinished && rightFinished;
+            bool timedOut = (frc::Timer::GetFPGATimestamp() - startTime) >= 5.0;
+            liftFinished = (leftFinished && rightFinished) || timedOut;
         } else {
             if (!shiftedFrontToSwerve) {
                 Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
@@ -36,22 +38,26 @@ void SecondStep::Execute() {
                 Robot::driveBase->SetTargetAngle(-180.0);
             } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
-                const double kLowJoyThreshold = 0.10;
+                const double kLowJoyThreshold = 0.15;
                 const double kHighJoyThreshold = 0.30;
                 double leftInput = Robot::oi->getDriverLeft()->GetY();
                 double rightInput = Robot::oi->getDriverRight()->GetY();
-                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
-                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold; }
-                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
-                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold; }
 
+                int dir = leftInput < 0 ? -1 : 1;
+                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
+                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+
+                dir = rightInput < 0 ? -1 : 1;
+                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
+                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
                     const double crabSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", -0.2);
                     liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), crabSpeed, 0, true);
                 } else {
-                    liftDrive.DriveTank(leftInput, rightInput);
+                    // swap inputs
+                    liftDrive.DriveTank(-rightInput, -leftInput);   // invert direction
                 }
                 
                 // JackScrewControl does not handle swerve inputs so we must send motor inputs

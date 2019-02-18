@@ -48,7 +48,7 @@ public:
 
 
 private:
-  std::shared_ptr<WPI_VictorSPX> beaterTop;
+  std::shared_ptr<WPI_TalonSRX> beaterTop;
   std::shared_ptr<WPI_VictorSPX> beaterBottom;
 
   std::shared_ptr<frc::Solenoid> ejectorSolenoid;

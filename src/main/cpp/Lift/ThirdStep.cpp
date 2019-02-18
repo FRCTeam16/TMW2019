@@ -64,8 +64,8 @@ void Thirdstep::Execute() {
                 wheels.RL->SetDriveCoastMode();
                 wheels.RR->SetDriveCoastMode();
                 Robot::driveBase->SetTargetAngle(-180.0);
-                double leftInput = Robot::oi->getDriverLeft()->GetY();
-                double rightInput = Robot::oi->getDriverRight()->GetY();
+                double leftInput = Robot::oi->GetJoystickX();
+                double rightInput = Robot::oi->GetJoystickY();
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
@@ -74,7 +74,8 @@ void Thirdstep::Execute() {
                         Robot::driveBase->GetCrabTwistOutput(),
                         -crabSpeed, 0, false);
                 } else {
-                    Robot::driveBase->Crab(0, 0, 0, false);
+                    double twist = Robot::oi->GetJoystickTwist(0.10);
+                    Robot::driveBase->Crab(twist, -rightInput, leftInput, true);
                 }
             }  
         }

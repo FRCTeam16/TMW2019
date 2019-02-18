@@ -21,9 +21,12 @@ void LiftDrive::DriveTank(double leftInput, double rightInput) {
 	SetSteering(setpoint);
 
 	auto wheels = Robot::driveBase->GetWheels();
-	
-	wheels.FL->UseOpenLoopDrive(leftInput);
-	wheels.FR->UseOpenLoopDrive(rightInput);
+
+	int invFL = Robot::driveBase->inv.FL;
+	int invFR = Robot::driveBase->inv.FR;
+	std::cout << "INV => FL = " << invFL << " | FR = " << invFR << "\n";
+	wheels.FL->UseOpenLoopDrive(leftInput * invFL);
+	wheels.FR->UseOpenLoopDrive(rightInput * invFR);
 }
 
 void LiftDrive::DriveFront(double twist, double y, double x, bool useGyro) {

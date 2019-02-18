@@ -28,13 +28,20 @@ void JackScrewControl::Run() {
     }
 
     const double now = frc::Timer::GetFPGATimestamp();
-    double speed = RampUtil::RampUp(controlSpeed, (now - controlTimeStart), jackScrewRampTime, 0.0);
-
+    double elapsed = now - controlTimeStart;
+    double speed = controlSpeed;
+    if (elapsed < 0.25) {
+        std::cout << "Running constant speed\n";
+        speed = -0.10;
+    } else {
+        speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, 0.0);
+    }
+    
     currentPosition = wheel->GetDriveEncoderPosition();
-    lastChange = abs(currentPosition - lastPosition);
+    lastChange = (currentPosition - lastPosition);  // removed fabs
     accumulatedPosition += lastChange;
-    const double remaining = fabs(targetDistance - accumulatedPosition);
-    const bool inThreshold = remaining < rotationCloseLoopThreshold;
+    const double remaining = (targetDistance - accumulatedPosition);    // removed fabs
+    const bool inThreshold = fabs(remaining) < rotationCloseLoopThreshold;
 
     switch (endStateAction) {
         case EndStateAction::kNone:

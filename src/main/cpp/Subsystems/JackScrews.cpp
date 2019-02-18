@@ -46,6 +46,11 @@ void JackScrews::Run()
   emergencyHalt |= CheckCANCommunications();
   if (emergencyHalt) {
     std::cout << "!!! JackScrews climbing disabled due to emergency halt !!!\n";
+    auto wheels = Robot::driveBase->GetWheels();
+    wheels.FL->UseOpenLoopDrive();
+    wheels.FR->UseOpenLoopDrive();
+    wheels.RL->UseOpenLoopDrive();
+    wheels.RR->UseOpenLoopDrive();
     return;
   }
 
@@ -54,13 +59,15 @@ void JackScrews::Run()
     DoControlled();
   }
 
-  std::cout << "FL | ";
+  std::cout << "\nFL | ";
   jackScrews->FL->Run();
-  std::cout << "FR | ";
+  std::cout << "\nFR | ";
   jackScrews->FR->Run();
+  std::cout << "\nRL | ";
   jackScrews->RL->Run();
+  std::cout << "\nRR | ";
   jackScrews->RR->Run();
-  
+  std::cout << "\n";
   // std::cout << "Jackscrews::Run <=\n\n";
 }
 
@@ -137,6 +144,7 @@ void JackScrews::ConfigureOpenLoop(double speed, JackScrewControl::EndStateActio
 }
 
 void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition_, JackScrewControl::EndStateAction endStateAction) {
+  currentLiftMode = liftMode;
   this->SetLiftMode(liftMode);
   targetPosition = targetPosition_;
   controlTimeStart = frc::Timer::GetFPGATimestamp();
@@ -147,10 +155,12 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition
   // Initialize jackscrews we will be controlling
   DriveInfo<bool> toInit = DetermineJackScrewsToInit();
   
-  if (toInit.FL) { jackScrews->FL->ConfigureControlled(prefs->GetDouble("JackScrew.FL.dist"), controlTimeStart, endStateAction); }
-  if (toInit.FR) { jackScrews->FR->ConfigureControlled(prefs->GetDouble("JackScrew.FR.dist"), controlTimeStart, endStateAction); }
-  if (toInit.RL) { jackScrews->RL->ConfigureControlled(prefs->GetDouble("JackScrew.RL.dist"), controlTimeStart, endStateAction); }
-  if (toInit.RR) { jackScrews->RR->ConfigureControlled(prefs->GetDouble("JackScrew.RR.dist"), controlTimeStart, endStateAction); }
+  int dirMul = Direction::kUp == targetPosition ? -1 : 1;
+  const double distance = prefs->GetDouble("JackScrew.dist") * dirMul;
+  if (toInit.FL) { jackScrews->FL->ConfigureControlled(distance, controlTimeStart, endStateAction); }
+  if (toInit.FR) { jackScrews->FR->ConfigureControlled(distance, controlTimeStart, endStateAction); }
+  if (toInit.RL) { jackScrews->RL->ConfigureControlled(distance, controlTimeStart, endStateAction); }
+  if (toInit.RR) { jackScrews->RR->ConfigureControlled(distance, controlTimeStart, endStateAction); }
 }
 
 DriveInfo<bool> JackScrews::DetermineJackScrewsToInit() {
@@ -211,8 +221,9 @@ void JackScrews::DoControlled() {
   for (int i=1; i < activeCalcs.size(); i++) {
     const double accumulated = activeCalcs[i]->GetAccumulatedPosition(); 
     positions[i] = accumulated;
-    if (accumulated  < lowest->GetAccumulatedPosition()) {
+    if (fabs(accumulated)  < fabs(lowest->GetAccumulatedPosition())) {
       lowest = activeCalcs[i].get();
+      std::cout << "lowest = " << i << " = " << accumulated;
       inHoldPosition |= activeCalcs[i]->IsClosedLoop();
     }
   }
@@ -224,11 +235,16 @@ void JackScrews::DoControlled() {
     if (diff > kHaltClimbDisplacementThreshold) {
       std::cout << "****** Exceeded halt climb displacement threshold at position " << i
                 << ", displacement was " << diff << "*****\n";
+      std::cout << "Position[" << i << "] = " << positions[i] << " | lowest = " << lowest->GetAccumulatedPosition() << "\n";
       emergencyHalt = true;
     }
   }
   if (emergencyHalt) {
-    // Set all to zero output
+    jackScrews->FL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    jackScrews->FR->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    jackScrews->RL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    jackScrews->RR->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
+    auto wheels = Robot::driveBase->GetWheels();
     // TOOD: Indicate error to callers?
     this->SetLiftMode(JackScrews::LiftMode::kAll);
     this->ConfigureOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
@@ -265,7 +281,7 @@ void JackScrews::DoControlled() {
     const double diff = fabs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
     if (diff >= kMaximumDisplacementThreshold) {
       if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
-        const double delta = speedDir * 0.02; // alternate do ratio?
+        const double delta = speedDir * 0.02; // alternate do ratio? // FIXME
         const double newSpeed = currentCalc->GetControlSpeed() - delta;
         currentCalc->SetControlSpeed(newSpeed);
       }

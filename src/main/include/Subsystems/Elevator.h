@@ -20,7 +20,7 @@ public:
 	virtual ~Elevator() = default;
 
 	enum class ElevatorPosition {
-		kFloor, kLevel1, kLevel2, kLevel3
+		kFloor, /*kLevel1,*/ kLevel2, kLevel3
 	};
 	const int ELEVATOR_POSITION_COUNT = 4;
 
@@ -31,6 +31,7 @@ public:
 	void Init() override;
 	void Run() override;
 	void Instrument() override;
+	void DisabledZeroOutput();
 
 	void SetOpenLoopPercent(double openLoopPercent);
 
@@ -58,6 +59,10 @@ private:
 	RunMode runMode = RunMode::kManual;
 
 	void SetElevatorSetpoint(int setpoint);	// deprecated?
+
+	bool initializeFinished = false;
+	int initializeScanCounts = 0;
+	int kInitializeScanCountMax = 25;
 };
 
 #endif /* SRC_SUBSYSTEMS_ELEVATOR_H_ */
