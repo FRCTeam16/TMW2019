@@ -65,5 +65,4 @@ RobotMap::RobotMap() {
 
   compressor.reset(new Compressor{0});
   compressor->SetClosedLoopControl(true);
-
 }

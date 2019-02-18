@@ -203,7 +203,7 @@ void Robot::TeleopPeriodic() {
 	**********************************************************/
 	const double rightStickAmt = oi->GetGamepadRightStick();
 	if (fabs(rightStickAmt) > threshold) {
-		elevator->SetOpenLoopPercent(rightStickAmt);
+		elevator->SetOpenLoopPercent(-rightStickAmt);
 	} else {
 		elevator->HoldPosition();
 	}
@@ -380,6 +380,7 @@ void Robot::InstrumentSubsystems() {
 	intake->Instrument();
 	intakeRotate->Instrument();
 	crawler->Instrument();
+	elevator->Instrument();
 }
 
 

@@ -47,7 +47,8 @@ void Elevator::Run() {
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
 
-			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
+			// FIXME: Removed for testing : elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
+			elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
 	}
 }
