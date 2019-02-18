@@ -25,8 +25,8 @@
   std::shared_ptr<WPI_VictorSPX> RobotMap::beaterTopMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::beaterBottomMotor;
 
-  std::shared_ptr<Solenoid> RobotMap::frontAxleSolenoid;
-  std::shared_ptr<Solenoid> RobotMap::rearAxleSolenoid;
+  std::shared_ptr<DoubleSolenoid> RobotMap::frontAxleSolenoid;
+  std::shared_ptr<DoubleSolenoid> RobotMap::rearAxleSolenoid;
   
   std::shared_ptr<Solenoid> RobotMap::ejectorSolenoid;
   std::shared_ptr<Solenoid> RobotMap::hatchCatchSolenoid;
@@ -56,11 +56,11 @@ RobotMap::RobotMap() {
 
   gyro.reset(new BSGyro(crawlMotor.get()));
 
-  frontAxleSolenoid.reset(new Solenoid{0});   // TBD Double
-  rearAxleSolenoid.reset(new Solenoid{1});    // TBD Double
-  ejectorSolenoid.reset(new Solenoid{2});     // extender
-  gripperSolenoid.reset(new Solenoid{3});
-  hatchCatchSolenoid.reset(new Solenoid{4}); // TBD Single
+  frontAxleSolenoid.reset(new DoubleSolenoid{0, 1});
+  rearAxleSolenoid.reset(new DoubleSolenoid{2, 3});
+  ejectorSolenoid.reset(new Solenoid{4});
+  gripperSolenoid.reset(new Solenoid{5});
+  hatchCatchSolenoid.reset(new Solenoid{6});
 
 
   compressor.reset(new Compressor{0});

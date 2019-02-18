@@ -7,7 +7,7 @@
 
 #pragma once
 #include <frc/WPILib.h>
-#include <frc/Solenoid.h>
+#include <frc/DoubleSolenoid.h>
 #include "SubsystemManager.h"
 #include "Subsystems/Drive/SwerveWheel.h"
 #include "Subsystems/JackScrewControl.h"
@@ -55,8 +55,8 @@ public:
 
  private:
     std::unique_ptr<DriveInfo<std::shared_ptr<JackScrewControl>>> jackScrews;
-    std::shared_ptr<Solenoid> frontAxleSolenoid;
-    std::shared_ptr<Solenoid> rearAxleSolenoid;
+    std::shared_ptr<DoubleSolenoid> frontAxleSolenoid;
+    std::shared_ptr<DoubleSolenoid> rearAxleSolenoid;
 
     LiftMode currentLiftMode = LiftMode::kAll;
     Direction targetPosition = Direction::kNone;
