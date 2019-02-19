@@ -11,6 +11,7 @@
 #include "frc/WPILib.h"
 #include "ctre/Phoenix.h"
 #include "RobotMap.h"
+#include "ElevatorIntakeSetpointStrategy.h"
 
 
 
@@ -53,6 +54,7 @@ public:
 private:
 	std::shared_ptr<WPI_TalonSRX> elevatorMotor = RobotMap::elevatorMotor;
 	std::shared_ptr<WPI_TalonSRX> followerMotor = RobotMap::elevatorFollowerMotor;
+	ElevatorIntakeSetpointStrategy elevatorSetpointStrategy;
 	
 	ElevatorPosition elevatorPosition = ElevatorPosition::kFloor;
 	double openLoopPercent = 0.0;
