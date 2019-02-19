@@ -73,9 +73,8 @@ void Elevator::Run() {
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
 
-			// FIXME: Removed for testing : 
+			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
 			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
-			// elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
 	}
 }
@@ -104,12 +103,15 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 		// case ElevatorPosition::kLevel1:
 		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level1", 4200);
 		// 	break;
-		case ElevatorPosition::kLevel2:
-			setpoint = PrefUtil::getSet("Elevator.pos.Level2", 5000);
-			break;
-		case ElevatorPosition::kLevel3:
-			setpoint = PrefUtil::getSet("Elevator.pos.Level3", 6000);
-			break;
+		// case ElevatorPosition::kLevel2:
+		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level2", 5000);
+		// 	break;
+		// case ElevatorPosition::kLevel3:
+		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level3", 6000);
+		// 	break;
+		default:
+			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
+			
 	}
 	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << " | " << setpoint << "\n";
 }

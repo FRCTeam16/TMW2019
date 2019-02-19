@@ -28,19 +28,19 @@ double ElevatorIntakeSetpointStrategy::LookupElevatorSetpoint () {
             return PrefUtil::getSet("ElevRotate.V.F", 100);
         } else  */
         
-        if (ElevatorPosition::kLevel2 == elevatorPosition) {
-            return PrefUtil::getSet("ElevRotate.V.L2", 100);
-        } else if (ElevatorPosition::kLevel3 == elevatorPosition) {
-            return PrefUtil::getSet("ElevRotate.V.L3", 100);
+        if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
+            return PrefUtil::getSet("ElevRotate.V.L2", 77000);
+        } else if (Elevator::ElevatorPosition::kLevel3 == elevatorPosition) {
+            return PrefUtil::getSet("ElevRotate.V.L3", 100000);
         }
     } else {
         /*if (ElevatorPosition::kFloor == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.NV.F", 100);
         } else */
-        if (ElevatorPosition::kLevel2 == elevatorPosition) {
-            return PrefUtil::getSet("ElevRotate.NV.L2", 100);
-        } else if (ElevatorPosition::kLevel3 == elevatorPosition) {
-            return PrefUtil::getSet("ElevRotate.NV.L3", 100);
+        if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
+            return PrefUtil::getSet("ElevRotate.NV.L2", 80000);
+        } else if (Elevator::ElevatorPosition::kLevel3 == elevatorPosition) {
+            return PrefUtil::getSet("ElevRotate.NV.L3", 103000);
         }
     }
 }
