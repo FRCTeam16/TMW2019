@@ -15,7 +15,7 @@ Elevator::Elevator() {
 	elevatorMotor->ConfigContinuousCurrentLimit(39);
 	elevatorMotor->ConfigPeakCurrentLimit(0);
 	elevatorMotor->EnableCurrentLimit(true);
-	elevatorMotor->SetSensorPhase(true);
+	elevatorMotor->SetSensorPhase(false);
 	// elevatorMotor->SetInverted(true);
 
 	followerMotor->SetNeutralMode(NeutralMode::Brake);
