@@ -130,6 +130,11 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
     positionSpeed = 0.0;
 }
 
+ IntakePosition IntakeRotate::GetIntakePosition() {
+     return targetPosition;
+ }
+
+ 
 void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     positionSpeed = speed;
 
