@@ -9,9 +9,10 @@ Elevator::Elevator() {
 	elevatorMotor->ConfigPeakOutputForward(1);
 	elevatorMotor->ConfigPeakOutputReverse(-1);
 	elevatorMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative);
-	// elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
-	elevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
-	elevatorMotor->ConfigSetParameter(ParamEnum::eClearPositionOnLimitR, 1, 0, 0, 0);
+	elevatorMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
+	elevatorMotor->ConfigSetParameter(ParamEnum::eClearPositionOnLimitF, 1, 0, 0, 0);
+	// elevatorMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_FeedbackConnector, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen);
+	// elevatorMotor->ConfigSetParameter(ParamEnum::eClearPositionOnLimitR, 1, 0, 0, 0);
 	elevatorMotor->ConfigContinuousCurrentLimit(39);
 	elevatorMotor->ConfigPeakCurrentLimit(0);
 	elevatorMotor->EnableCurrentLimit(true);
@@ -65,7 +66,7 @@ void Elevator::Run() {
 
 	// Check for homing signal
 	auto sensors = elevatorMotor->GetSensorCollection();
-	if (elevatorMotor->GetSensorCollection().IsRevLimitSwitchClosed()) {
+	if (elevatorMotor->GetSensorCollection().IsFwdLimitSwitchClosed()) {
 		if (ElevatorPosition::kFloor != elevatorPosition) {
 			std::cout << "Elevator :: Reset to Floor Position to due RevLimitSwitch\n";
 			elevatorPosition = ElevatorPosition::kFloor;
