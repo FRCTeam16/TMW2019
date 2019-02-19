@@ -55,6 +55,15 @@ void Elevator::Run() {
         }   
     }
 
+	// Check for homing signal
+	auto sensors = elevatorMotor->GetSensorCollection();
+	if (elevatorMotor->GetSensorCollection().IsRevLimitSwitchClosed()) {
+		if (ElevatorPosition::kFloor != elevatorPosition) {
+			std::cout << "Elevator :: Reset to Floor Position to due RevLimitSwitch\n";
+			elevatorPosition = ElevatorPosition::kFloor;
+		}
+	}
+
 
 	switch (mode) {
 		case kManual:
@@ -73,7 +82,6 @@ void Elevator::Run() {
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
 
-			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
 			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
 			break;
 	}
