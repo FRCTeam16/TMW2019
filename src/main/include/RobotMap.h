@@ -31,6 +31,7 @@ class RobotMap {
 	static std::shared_ptr<BSGyro> gyro;
 
   static std::shared_ptr<WPI_TalonSRX> elevatorMotor;
+  static std::shared_ptr<WPI_TalonSRX> elevatorFollowerMotor;
   static std::shared_ptr<WPI_TalonSRX> crawlMotor;
   static std::shared_ptr<WPI_TalonSRX> rotateLeftMotor;
   static std::shared_ptr<WPI_VictorSPX> rotateRightMotor;

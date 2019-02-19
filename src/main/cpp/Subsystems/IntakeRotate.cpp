@@ -130,7 +130,7 @@ void IntakeRotate::SetIntakePosition(IntakePosition position) {
     positionSpeed = 0.0;
 }
 
- IntakePosition IntakeRotate::GetIntakePosition() {
+ IntakeRotate::IntakePosition IntakeRotate::GetIntakePosition() {
      return targetPosition;
  }
 

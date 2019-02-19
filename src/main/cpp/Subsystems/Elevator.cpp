@@ -17,6 +17,14 @@ Elevator::Elevator() {
 	elevatorMotor->EnableCurrentLimit(true);
 	elevatorMotor->SetSensorPhase(true);
 	// elevatorMotor->SetInverted(true);
+
+	followerMotor->SetNeutralMode(NeutralMode::Brake);
+	followerMotor->ConfigPeakOutputForward(1);
+	followerMotor->ConfigPeakOutputReverse(-1);
+	// followerMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, mainElevatorMotor->GetDeviceID());
+	// followerMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, mainElevatorMotor->GetDeviceID());
+	followerMotor->Set(ControlMode::Follower, elevatorMotor->GetDeviceID());
+
 	std::cout << "Elevator() complete\n";
 }
 

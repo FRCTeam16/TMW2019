@@ -19,6 +19,7 @@
   std::shared_ptr<BSGyro> RobotMap::gyro;
 
   std::shared_ptr<WPI_TalonSRX> RobotMap::elevatorMotor;
+  std::shared_ptr<WPI_TalonSRX> RobotMap::elevatorFollowerMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::crawlMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::rotateLeftMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::rotateRightMotor;
@@ -48,6 +49,7 @@ RobotMap::RobotMap() {
   driveBaseRearRightSteer.reset(new WPI_TalonSRX{8});
 
   elevatorMotor.reset(new WPI_TalonSRX{9});
+  elevatorFollowerMotor.reset(new WPI_TalonSRX{15});
   crawlMotor.reset(new WPI_TalonSRX{10});
   rotateLeftMotor.reset(new WPI_TalonSRX{11});
   rotateRightMotor.reset(new WPI_VictorSPX{12});

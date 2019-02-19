@@ -28,18 +28,18 @@ double ElevatorIntakeSetpointStrategy::LookupElevatorSetpoint () {
             return PrefUtil::getSet("ElevRotate.V.F", 100);
         } else  */
         
-        if (ElevatorPosition::kLevel2 == elevatorPosition) {
+        if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.V.L2", 100);
-        } else if (ElevatorPosition::kLevel3 == elevatorPosition) {
+        } else if (Elevator::ElevatorPosition::kLevel3 == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.V.L3", 100);
         }
     } else {
         /*if (ElevatorPosition::kFloor == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.NV.F", 100);
         } else */
-        if (ElevatorPosition::kLevel2 == elevatorPosition) {
+        if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.NV.L2", 100);
-        } else if (ElevatorPosition::kLevel3 == elevatorPosition) {
+        } else if (Elevator::ElevatorPosition::kLevel3 == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.NV.L3", 100);
         }
     }
