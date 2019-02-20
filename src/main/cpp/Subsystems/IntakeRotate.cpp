@@ -141,6 +141,7 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     if (openLoop) {
         // std::cout << "Setting open loop from SetPositionSpeed\n";
         positionControl = false;
+        positionSpeed = positionSpeed/3.5;
     } else if (!positionControl) {
         // std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
         double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
