@@ -58,9 +58,10 @@ private:
 	
 	ElevatorPosition elevatorPosition = ElevatorPosition::kFloor;
 	double openLoopPercent = 0.0;
-	int elevatorPositionThreshold;
+	int elevatorPositionThreshold = 0;
 	double setpoint = 0.0;
 	RunMode runMode = RunMode::kManual;
+	int kElevatorMaxPosition = -100000;
 
 	void SetElevatorSetpoint(int setpoint);	// deprecated?
 

@@ -192,8 +192,9 @@ void Robot::TeleopPeriodic() {
 		dpadRightToggled = false;
 	}
 
+	const double kIntakeRotateThreshold = 0.07;
 	const double leftStickAmt = oi->GetGamepadLeftStick();
-	if (fabs(leftStickAmt) > threshold) {
+	if (fabs(leftStickAmt) > kIntakeRotateThreshold) {
 		intakeRotate->SetPositionSpeed(leftStickAmt, true);
 	} else {
 		// will not trigger switch to open loop mode

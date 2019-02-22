@@ -50,7 +50,7 @@ RobotMap::RobotMap() {
 
   elevatorMotor.reset(new WPI_TalonSRX{9});
   elevatorFollowerMotor.reset(new WPI_TalonSRX{15});
-  crawlMotor.reset(new WPI_TalonSRX{10});
+  // crawlMotor.reset(new WPI_TalonSRX{10});
   rotateLeftMotor.reset(new WPI_TalonSRX{11});
   rotateRightMotor.reset(new WPI_VictorSPX{12});
   beaterTopMotor.reset(new WPI_TalonSRX{13});

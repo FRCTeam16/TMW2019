@@ -31,12 +31,12 @@ Elevator::Elevator() {
 
 void Elevator::Init() {
 	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
+	kElevatorMaxPosition = PrefUtil::getSetInt("Elevator.Pos.MaxHeight", -110000);
 	SetInitialPosition();
 
 	runMode = kManual;
 	initializeFinished = false;
 	initializeScanCounts = 0;
-
 }
 
 
@@ -71,6 +71,10 @@ void Elevator::Run() {
 			std::cout << "Elevator :: Reset to Floor Position to due RevLimitSwitch\n";
 			elevatorPosition = ElevatorPosition::kFloor;
 		}
+	}
+
+	if (fabs(setpoint) > fabs(kElevatorMaxPosition)) {
+		setpoint = kElevatorMaxPosition;
 	}
 
 
