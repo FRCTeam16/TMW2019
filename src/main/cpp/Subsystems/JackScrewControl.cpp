@@ -32,7 +32,7 @@ void JackScrewControl::Run() {
     double speed = controlSpeed;
     if (elapsed < 0.25) {
         std::cout << "Running constant speed\n";
-        speed = -0.10;
+        speed = 0.10;
     } else {
         speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, 0.0);
     }
