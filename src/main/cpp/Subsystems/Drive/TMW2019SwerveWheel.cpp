@@ -180,13 +180,13 @@ void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset,
 
     
 	double finalSetpoint = currentPosition + diff;
-	std::cout << name << 
-            ": base: " << baseCurrentPosition <<
-            " | current: " << currentPosition <<
-			" | setpoint: " << setpoint <<
-            " | wholeRot: " << wholeRotations <<
-			" | diff: " << diff <<
-			" | final: " << finalSetpoint << std::endl;
+	// std::cout << name << 
+    //         ": base: " << baseCurrentPosition <<
+    //         " | current: " << currentPosition <<
+	// 		" | setpoint: " << setpoint <<
+    //         " | wholeRot: " << wholeRotations <<
+	// 		" | diff: " << diff <<
+	// 		" | final: " << finalSetpoint << std::endl;
 	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.);
 }
 
