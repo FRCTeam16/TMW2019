@@ -228,11 +228,11 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	double CP = FWD - twist * 2 * wheelbase.Y / radius;
 	double DP = FWD + twist * 2 * wheelbase.Y / radius;
 
-	std::cout << "STEER(FWD = " << FWD << ", STR = " << STR << ", twist = " << twist << ")"
-		"| AP: " << AP <<
-		"| BP: " << BP <<
-		"| CP: " << CP <<
-		"| DP: " << DP << "\n";
+	// std::cout << "STEER(FWD = " << FWD << ", STR = " << STR << ", twist = " << twist << ")"
+	// 	"| AP: " << AP <<
+	// 	"| BP: " << BP <<
+	// 	"| CP: " << CP <<
+	// 	"| DP: " << DP << "\n";
 
 
 	DriveInfo<double> setpoint(0.0);

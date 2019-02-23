@@ -22,6 +22,10 @@ Elevator::Elevator() {
 	followerMotor->SetNeutralMode(NeutralMode::Brake);
 	followerMotor->ConfigPeakOutputForward(1);
 	followerMotor->ConfigPeakOutputReverse(-1);
+	followerMotor->ConfigContinuousCurrentLimit(39);
+	followerMotor->ConfigPeakCurrentLimit(0);
+	followerMotor->EnableCurrentLimit(true);
+
 	// followerMotor->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, mainElevatorMotor->GetDeviceID());
 	// followerMotor->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated, LimitSwitchNormal::LimitSwitchNormal_NormallyOpen, mainElevatorMotor->GetDeviceID());
 	followerMotor->Set(ControlMode::Follower, elevatorMotor->GetDeviceID());
@@ -134,7 +138,7 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
 			
 	}
-	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << " | " << setpoint << "\n";
+	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << ")| " << setpoint << "\n";
 }
 
 void Elevator::SetElevatorSetpoint(int _setpoint) {
@@ -151,7 +155,7 @@ bool Elevator::InPosition() {
 
 
 void Elevator::IncreaseElevatorPosition() {
-	std::cout << "Elevator::IncraseElevatorPosition\n";
+	std::cout << frc::Timer::GetFPGATimestamp() << " - Elevator::IncreaseElevatorPosition\n";
 	int nextOrdinal = static_cast<int>(elevatorPosition)  + 1;
 	if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
@@ -161,7 +165,7 @@ void Elevator::IncreaseElevatorPosition() {
 
 
 void Elevator::DecreaseElevatorPosition() {
-	std::cout << "Elevator::DecreaseElevatorPosition\n";
+	std::cout << frc::Timer::GetFPGATimestamp() << " - Elevator::DecreaseElevatorPosition\n";
 	int nextOrdinal = static_cast<int>(elevatorPosition) - 1;
 	if (nextOrdinal >= 0 ) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
