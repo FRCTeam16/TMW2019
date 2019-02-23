@@ -23,7 +23,7 @@ public:
 	enum class ElevatorPosition {
 		kFloor, /*kLevel1,*/ kLevel2, kLevel3
 	};
-	const int ELEVATOR_POSITION_COUNT = 4;
+	const int ELEVATOR_POSITION_COUNT = 3;
 
 	enum RunMode {
 		kManual, kMagic
