@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Subsystems/Elevator.h"
 #include "Util/PrefUtil.h"
+#include "Subsystems/IntakeRotate.h"
+#include "Robot.h"
 
 Elevator::Elevator() {
 	std::cout << "Elevator starting\n";
@@ -159,6 +161,11 @@ void Elevator::IncreaseElevatorPosition() {
 	int nextOrdinal = static_cast<int>(elevatorPosition)  + 1;
 	if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
+		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
+		if (elevatorPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+			nextPosition = static_cast<ElevatorPosition>(nextOrdinal + 1);
+		}
+
 		SetElevatorPosition(nextPosition);
 	}
 }
@@ -169,9 +176,14 @@ void Elevator::DecreaseElevatorPosition() {
 	int nextOrdinal = static_cast<int>(elevatorPosition) - 1;
 	if (nextOrdinal >= 0 ) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
+		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
+		if (elevatorPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+			nextPosition = static_cast<ElevatorPosition>(nextOrdinal - 1);
+		}
+
 		SetElevatorPosition(nextPosition);
 	}
-}
+}	 
 
 
 void Elevator::HoldPosition() {

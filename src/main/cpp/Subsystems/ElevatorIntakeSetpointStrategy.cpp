@@ -14,6 +14,7 @@ ElevatorIntakeSetpointStrategy::ElevatorIntakeSetpointStrategy() {
  PrefUtil::getSet("Elevator.V.L2", 77000);
  PrefUtil::getSet("Elevator.V.L3", 100000);
 //  PrefUtil::getSet("ElevRotate.NV.F", 100);
+ PrefUtil::getSet("Elevator.NV.L1", 57000);
  PrefUtil::getSet("Elevator.NV.L2", 80000);
  PrefUtil::getSet("Elevator.NV.L3", 103000);
 }
@@ -37,7 +38,9 @@ double ElevatorIntakeSetpointStrategy::LookupElevatorSetpoint () {
         /*if (ElevatorPosition::kFloor == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.NV.F", 100);
         } else */
-        if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
+        if (Elevator::ElevatorPosition::kLevel1 == elevatorPosition) {
+            return PrefUtil::getSet("Elevator.NV.L1", 57000); 
+        } else if (Elevator::ElevatorPosition::kLevel2 == elevatorPosition) {
             return PrefUtil::getSet("Elevator.NV.L2", 80000);
         } else if (Elevator::ElevatorPosition::kLevel3 == elevatorPosition) {
             return PrefUtil::getSet("Elevator.NV.L3", 103000);
