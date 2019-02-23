@@ -71,7 +71,6 @@ private:
   bool runningScrews = false;	// true when running jackscrews
   bool runningLiftSequence = false; // true when running lift sequence
   bool dpadRightToggled = false;
-  double aButtonTimerStart = -1;
   bool drPadToggled = false;
 
   std::unique_ptr<LiftController> liftController;

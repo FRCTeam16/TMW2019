@@ -127,15 +127,6 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 		case ElevatorPosition::kFloor:
 			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
 			break;
-		// case ElevatorPosition::kLevel1:
-		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level1", 4200);
-		// 	break;
-		// case ElevatorPosition::kLevel2:
-		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level2", 5000);
-		// 	break;
-		// case ElevatorPosition::kLevel3:
-		// 	setpoint = PrefUtil::getSet("Elevator.pos.Level3", 6000);
-		// 	break;
 		default:
 			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
 			
@@ -162,7 +153,8 @@ void Elevator::IncreaseElevatorPosition() {
 	if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
 		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
-		if (elevatorPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+		if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+			std::cout << "Skipping Level1\n";
 			nextPosition = static_cast<ElevatorPosition>(nextOrdinal + 1);
 		}
 
@@ -177,8 +169,9 @@ void Elevator::DecreaseElevatorPosition() {
 	if (nextOrdinal >= 0 ) {
 		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
 		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
-		if (elevatorPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+		if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
 			nextPosition = static_cast<ElevatorPosition>(nextOrdinal - 1);
+			std::cout << "Skipping Level1\n";
 		}
 
 		SetElevatorPosition(nextPosition);
