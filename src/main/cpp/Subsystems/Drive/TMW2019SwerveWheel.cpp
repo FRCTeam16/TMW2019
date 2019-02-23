@@ -10,6 +10,7 @@
 #include <iostream>
 #include "rev/CANError.h"
 #include "Util/PrefUtil.h"
+#include <string>
 
 void TMW2019SwerveWheel::InitializeSteering() {
     assert(steerMotor.get() != nullptr);
@@ -150,11 +151,26 @@ double TMW2019SwerveWheel::GetSteerEncoderPositionInDegrees() {
 }
 
 void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset, int &inv) {
-    double currentPosition = steerMotor->GetSelectedSensorPosition(0) / 4096.0;
+    double baseCurrentPosition = steerMotor->GetSelectedSensorPosition(0);
+    double currentPosition = baseCurrentPosition / 4096.0;
 	double setpointRotations = (setpoint + offset) / 360.0;
 
-	double wholeRotations = 0.0;
-	double diff = modf(setpointRotations - currentPosition, &wholeRotations);
+    // double spRotations = 0.0;
+    // double spDiff = modf(setpointRotations, &spRotations);
+	
+    double cpRotations = 0.0;
+    double cpDiff = modf(currentPosition, &cpRotations);
+
+    // Unify windings
+    if (setpointRotations >= 0.0 && cpDiff < 0.0 ) {
+        cpDiff += 1.0;
+    } else if (setpointRotations <= 0.0 && cpDiff > 0.0) {
+        cpDiff -= 1.0;
+    }
+	// double diff = spDiff - cpDiff;
+    double wholeRotations = 0.0;
+    double diff = modf(setpointRotations - cpDiff, &wholeRotations);
+
 	if (fabs(diff) > 0.25) {
 		diff -= copysign(0.5, diff);
 		inv = -1;
@@ -162,12 +178,16 @@ void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset,
 		inv = 1;
 	}
 
+    
 	double finalSetpoint = currentPosition + diff;
-//	std::cout << "current: " << currentPosition <<
-//			" | setpoint: " << setpoint <<
-//			" | diff: " << diff <<
-//			" | final: " << finalSetpoint << std::endl;
-	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096);
+	std::cout << name << 
+            ": base: " << baseCurrentPosition <<
+            " | current: " << currentPosition <<
+			" | setpoint: " << setpoint <<
+            " | wholeRot: " << wholeRotations <<
+			" | diff: " << diff <<
+			" | final: " << finalSetpoint << std::endl;
+	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.);
 }
 
 int TMW2019SwerveWheel::GetSteerEncoderPosition() {

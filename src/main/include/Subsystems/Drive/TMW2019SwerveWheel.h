@@ -13,8 +13,8 @@
 
 class TMW2019SwerveWheel : public SwerveWheel {
 public:
-  TMW2019SwerveWheel(std::shared_ptr<rev::CANSparkMax> driveMotor_, std::shared_ptr<WPI_TalonSRX> steerMotor_) 
-    : driveMotor(driveMotor_), steerMotor(steerMotor_) {}
+  TMW2019SwerveWheel(std::string name_, std::shared_ptr<rev::CANSparkMax> driveMotor_, std::shared_ptr<WPI_TalonSRX> steerMotor_) 
+    : name(name_), driveMotor(driveMotor_), steerMotor(steerMotor_) {}
 
   void InitTeleop() override;
   void InitAuto() override;  
@@ -44,6 +44,7 @@ public:
   void SetDriveCoastMode() override;
 
 private:
+  std::string name;
   std::shared_ptr<rev::CANSparkMax> driveMotor;
   std::shared_ptr<WPI_TalonSRX> steerMotor;
   bool isOpenLoop = true;

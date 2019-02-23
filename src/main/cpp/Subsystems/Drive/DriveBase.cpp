@@ -38,10 +38,10 @@ using namespace frc;
 DriveBase::DriveBase() : Subsystem("DriveBase") {
 	std::cout << "DriveBase::DriveBase =>\n";
 
-	frontLeft.reset(new TMW2019SwerveWheel{RobotMap::driveBaseFrontLeftDrive, RobotMap::driveBaseFrontLeftSteer});
-	frontRight.reset(new TMW2019SwerveWheel{RobotMap::driveBaseFrontRightDrive, RobotMap::driveBaseFrontRightSteer});
-	rearLeft.reset(new TMW2019SwerveWheel{RobotMap::driveBaseRearLeftDrive, RobotMap::driveBaseRearLeftSteer});
-	rearRight.reset(new TMW2019SwerveWheel{RobotMap::driveBaseRearRightDrive, RobotMap::driveBaseRearRightSteer});
+	frontLeft.reset(new TMW2019SwerveWheel{"FL", RobotMap::driveBaseFrontLeftDrive, RobotMap::driveBaseFrontLeftSteer});
+	frontRight.reset(new TMW2019SwerveWheel{"FR", RobotMap::driveBaseFrontRightDrive, RobotMap::driveBaseFrontRightSteer});
+	rearLeft.reset(new TMW2019SwerveWheel{"RL", RobotMap::driveBaseRearLeftDrive, RobotMap::driveBaseRearLeftSteer});
+	rearRight.reset(new TMW2019SwerveWheel{"RR",  RobotMap::driveBaseRearRightDrive, RobotMap::driveBaseRearRightSteer});
 	wheels.push_back(frontLeft);
 	wheels.push_back(frontRight);
 	wheels.push_back(rearLeft);
@@ -228,20 +228,27 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	double CP = FWD - twist * 2 * wheelbase.Y / radius;
 	double DP = FWD + twist * 2 * wheelbase.Y / radius;
 
+	std::cout << "STEER(FWD = " << FWD << ", STR = " << STR << ", twist = " << twist << ")"
+		"| AP: " << AP <<
+		"| BP: " << BP <<
+		"| CP: " << CP <<
+		"| DP: " << DP << "\n";
+
 
 	DriveInfo<double> setpoint(0.0);
+	const double RadiansToDegrees = (180.0 / M_PI);
 
 	if (DP != 0 || BP != 0) {
-		setpoint.FL = atan2(BP,DP) * (180/M_PI);
+		setpoint.FL = atan2(BP,DP) * RadiansToDegrees;
 	}
 	if (BP != 0 || CP != 0) {
-		setpoint.FR = atan2(BP, CP) * (180/M_PI);
+		setpoint.FR = atan2(BP, CP) * RadiansToDegrees;
 	}
 	if (AP != 0 || DP != 0) {
-		setpoint.RL = atan2(AP, DP) * (180/M_PI);
+		setpoint.RL = atan2(AP, DP) * RadiansToDegrees;
 	}
 	if (AP != 0 || CP != 0) {
-		setpoint.RR = atan2(AP, CP) * (180/M_PI);
+		setpoint.RR = atan2(AP, CP) * RadiansToDegrees;
 	}
 
 	SetSteering(setpoint);
@@ -299,7 +306,7 @@ void DriveBase::SetSteering(DriveInfo<double> setpoint) {
 	}
 }
 
-
+/*
 void DriveBase::SetSteerSetpoint(double setpoint,
 		std::shared_ptr<AnalogInput> actual, double offset,
 		std::shared_ptr<PIDController> PIDCon, std::shared_ptr<WPI_TalonSRX> steer,
@@ -356,6 +363,7 @@ double DriveBase::CorrectSteerSetpoint(double setpoint) {
 		return setpoint;
 	}
 }
+*/
 
 
 void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
