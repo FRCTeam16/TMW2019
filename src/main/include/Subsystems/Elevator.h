@@ -21,8 +21,9 @@ public:
 	virtual ~Elevator() = default;
 
 	enum class ElevatorPosition {
-		kFloor, kLevel1, kLevel2, kLevel3
+		kFloor, kLevel1, kLevel2, kLevel3, kSpecialCargo
 	};
+	// Elevator position count must not include special modes
 	const int ELEVATOR_POSITION_COUNT = 4;
 
 	enum RunMode {
@@ -50,6 +51,8 @@ public:
 	int GetElevatorEncoderPosition();
 	double GetElevatorMotorCurrent();
 
+	void ToggleCargoShotMode();
+
 
 private:
 	std::shared_ptr<WPI_TalonSRX> elevatorMotor = RobotMap::elevatorMotor;
@@ -70,6 +73,8 @@ private:
 
 	double setpointStartMoveTime = -1;
 	double kFloorResetWaitPeriod = 0.5;		// time to wait before resetting to floor position
+
+	bool cargoShotMode = false;
 };
 
 #endif /* SRC_SUBSYSTEMS_ELEVATOR_H_ */

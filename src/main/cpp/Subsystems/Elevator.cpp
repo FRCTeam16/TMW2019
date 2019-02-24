@@ -152,32 +152,40 @@ bool Elevator::InPosition() {
 
 void Elevator::IncreaseElevatorPosition() {
 	std::cout << frc::Timer::GetFPGATimestamp() << " - Elevator::IncreaseElevatorPosition\n";
-	int nextOrdinal = static_cast<int>(elevatorPosition)  + 1;
-	if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
-		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
-		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
-		if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
-			std::cout << "Skipping Level1\n";
-			nextPosition = static_cast<ElevatorPosition>(nextOrdinal + 1);
-		}
+	if (ElevatorPosition::kSpecialCargo != elevatorPosition) { 
+		int nextOrdinal = static_cast<int>(elevatorPosition)  + 1;
+		if (nextOrdinal < ELEVATOR_POSITION_COUNT) {
+			ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
+			IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
+			if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+				std::cout << "Skipping Level1\n";
+				nextPosition = static_cast<ElevatorPosition>(nextOrdinal + 1);
+			}
 
-		SetElevatorPosition(nextPosition);
+			SetElevatorPosition(nextPosition);
+		}
+	} else {
+		SetElevatorPosition(ElevatorPosition::kFloor);
 	}
 }
 
 
 void Elevator::DecreaseElevatorPosition() {
 	std::cout << frc::Timer::GetFPGATimestamp() << " - Elevator::DecreaseElevatorPosition\n";
-	int nextOrdinal = static_cast<int>(elevatorPosition) - 1;
-	if (nextOrdinal >= 0 ) {
-		ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
-		IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
-		if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
-			nextPosition = static_cast<ElevatorPosition>(nextOrdinal - 1);
-			std::cout << "Skipping Level1\n";
-		}
+	if (ElevatorPosition::kSpecialCargo != elevatorPosition) {
+		int nextOrdinal = static_cast<int>(elevatorPosition) - 1;
+		if (nextOrdinal >= 0 ) {
+			ElevatorPosition nextPosition = static_cast<ElevatorPosition>(nextOrdinal);
+			IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition();
+			if (nextPosition == ElevatorPosition::kLevel1 && intakePosition == IntakeRotate::IntakePosition::kLevelOne){
+				nextPosition = static_cast<ElevatorPosition>(nextOrdinal - 1);
+				std::cout << "Skipping Level1\n";
+			}
 
-		SetElevatorPosition(nextPosition);
+			SetElevatorPosition(nextPosition);
+		}
+	} else {
+		SetElevatorPosition(ElevatorPosition::kFloor);
 	}
 }	 
 
@@ -194,6 +202,18 @@ void Elevator::HoldPosition() {
 void Elevator::SetHomePosition() {
 	elevatorMotor->SetSelectedSensorPosition(0);
 	setpoint = 0;
+}
+
+
+void Elevator::ToggleCargoShotMode() {
+	std::cout << "Elevator::ToggleCargoShotMode(" << cargoShotMode << " to " << cargoShotMode ")\n";
+	cargoShotMode = !cargoShotMode;
+	ElevatorPosition nextPosition = ElevatorPosition::kFloor;
+	if (cargoShotMode) {
+		nextPosition = ElevatorPosition::kSpecialCargo;
+		Robot::intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
+	}
+	SetElevatorPosition(nextPosition);
 }
 
 void Elevator::Instrument() {

@@ -17,14 +17,17 @@ ElevatorIntakeSetpointStrategy::ElevatorIntakeSetpointStrategy() {
  PrefUtil::getSet("Elevator.NV.L1", 57000);
  PrefUtil::getSet("Elevator.NV.L2", 80000);
  PrefUtil::getSet("Elevator.NV.L3", 103000);
+
+ PrefUtil::getSet("Elevator.cargoship.shot", 62500);
 }
 
 double ElevatorIntakeSetpointStrategy::LookupElevatorSetpoint () {
     Elevator::ElevatorPosition elevatorPosition = Robot::elevator->GetElevatorPosition ();
     IntakeRotate::IntakePosition intakePosition = Robot::intakeRotate->GetIntakePosition ();
 
-
-    if (IntakeRotate::IntakePosition::kLevelOne == intakePosition) {
+    if (Elevator::ElevatorPosition::kSpecialCargo == elevatorPosition) {
+        return PrefUtil::getSet("Elevator.cargoship.shot", 62500);;
+    } else if (IntakeRotate::IntakePosition::kLevelOne == intakePosition) {
         /* if (ElevatorPosition::kFloor == elevatorPosition) {
             return PrefUtil::getSet("ElevRotate.V.F", 100);
         } else  */
