@@ -10,11 +10,18 @@
 #include "ctre/Phoenix.h"
 #include "rev/CANSparkMax.h"
 #include "Subsystems/Drive/SwerveWheel.h"
+#include "Util/SwerveWheelLog.h"
 
 class TMW2019SwerveWheel : public SwerveWheel {
 public:
   TMW2019SwerveWheel(std::string name_, std::shared_ptr<rev::CANSparkMax> driveMotor_, std::shared_ptr<WPI_TalonSRX> steerMotor_) 
-    : name(name_), driveMotor(driveMotor_), steerMotor(steerMotor_) {}
+    : name(name_), 
+      driveMotor(driveMotor_), 
+      steerMotor(steerMotor_),
+      steerLog(name_) { 
+
+      steerLog.Disable();
+  }
 
   void InitTeleop() override;
   void InitAuto() override;  
@@ -49,4 +56,6 @@ private:
   std::shared_ptr<WPI_TalonSRX> steerMotor;
   bool isOpenLoop = true;
   double kSteerP = 3.0;
+
+  SwerveWheelLog steerLog;
 };

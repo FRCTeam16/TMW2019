@@ -158,36 +158,63 @@ void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset,
     // double spRotations = 0.0;
     // double spDiff = modf(setpointRotations, &spRotations);
 	
-    double cpRotations = 0.0;
-    double cpDiff = modf(currentPosition, &cpRotations);
+    // double cpRotations = 0.0;
+    // double cpDiff = modf(currentPosition, &cpRotations);
+    // double initCpDiff = cpDiff;
 
-    // Unify windings
-    if (setpointRotations >= 0.0 && cpDiff < 0.0 ) {
-        cpDiff += 1.0;
-    } else if (setpointRotations <= 0.0 && cpDiff > 0.0) {
-        cpDiff -= 1.0;
-    }
+    // double spRotations = 0.0;
+    // double spDiff = modf(setpointRotations, &spRotations);
+
+    // // Unify windings/signs
+    // double rawDiff = setpointRotations - cpDiff;
+    
 	// double diff = spDiff - cpDiff;
     double wholeRotations = 0.0;
-    double diff = modf(setpointRotations - cpDiff, &wholeRotations);
+    // double diff = modf(setpointRotations - cpDiff, &wholeRotations);
+    double diff = modf(setpointRotations - currentPosition, &wholeRotations);
 
+    // Normalize difference into the nearest half of circle (positive or negative)
+    if (fabs(diff) > 0.5) {
+        if (diff < 0 ) {
+            diff = 1.0 + diff;
+        } else {
+            diff = -1.0 + diff;
+        }
+    }
+
+    // Invert wheel if difference > 90 degrees
 	if (fabs(diff) > 0.25) {
 		diff -= copysign(0.5, diff);
 		inv = -1;
 	} else {
 		inv = 1;
 	}
-
     
 	double finalSetpoint = currentPosition + diff;
-	// std::cout << name << 
-    //         ": base: " << baseCurrentPosition <<
-    //         " | current: " << currentPosition <<
-	// 		" | setpoint: " << setpoint <<
-    //         " | wholeRot: " << wholeRotations <<
-	// 		" | diff: " << diff <<
-	// 		" | final: " << finalSetpoint << std::endl;
-	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.);
+    // if (name == "FR") {
+    //     std::cout << name << 
+    //             ": base: " << baseCurrentPosition <<
+    //             " | setpoint: " << setpoint <<
+    //             " | curPos: " << currentPosition <<
+    //             " | spRot: " << setpointRotations <<
+    //             " | cpDiff: " << cpDiff <<
+    //             " | diff: " << diff <<
+    //             " | final: " << finalSetpoint << std::endl;
+    // }
+	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.0);
+
+    // steerLog.Log(
+    //     frc::Timer::GetFPGATimestamp(),
+    //     baseCurrentPosition,
+    //     setpoint,
+    //     currentPosition,
+    //     setpointRotations,
+    //     initCpDiff,
+    //     cpDiff,
+    //     rawDiff,
+    //     diff,
+    //     wholeRotations,
+    //     finalSetpoint);
 }
 
 int TMW2019SwerveWheel::GetSteerEncoderPosition() {
