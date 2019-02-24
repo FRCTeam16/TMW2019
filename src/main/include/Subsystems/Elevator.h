@@ -61,13 +61,15 @@ private:
 	int elevatorPositionThreshold = 0;
 	double setpoint = 0.0;
 	RunMode runMode = RunMode::kManual;
-	int kElevatorMaxPosition = -100000;
 
 	void SetElevatorSetpoint(int setpoint);	// deprecated?
 
 	bool initializeFinished = false;
 	int initializeScanCounts = 0;
 	int kInitializeScanCountMax = 25;
+
+	double setpointStartMoveTime = -1;
+	double kFloorResetWaitPeriod = 0.5;		// time to wait before resetting to floor position
 };
 
 #endif /* SRC_SUBSYSTEMS_ELEVATOR_H_ */

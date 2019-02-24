@@ -18,9 +18,6 @@ void SwerveWheelLog::Log(
     double setpoint,
     double currentPosition,
     double setpointRotations,
-    double initCpDiff,
-    double cpDiff,
-    double rawDiff,
     double diff,
     double wholeRotations,
     double finalSetpoint) {
@@ -33,8 +30,8 @@ void SwerveWheelLog::Log(
         std::string filename = "/home/lvuser/steer-" + name + ".csv";
         logfile.open(filename, ios::out);
         logfile << "timestamp, baseSensor, setpoint, "
-                << "currentPosition, setpointRotations, initCpDiff, cpDiff, "
-                << "rawDiff, diff, wholeRot, finalSetpoint\n";
+                << "currentPosition, setpointRotations, "
+                << "diff, wholeRot, finalSetpoint\n";
         headerWritten = true;
     }
     
@@ -43,9 +40,6 @@ void SwerveWheelLog::Log(
             << setpoint << ","
             << currentPosition << ","
             << setpointRotations << ","
-            << initCpDiff << ","
-            << cpDiff << ","
-            << rawDiff << ","
             << diff << ","
             << wholeRotations << ","
             << finalSetpoint << "\n";

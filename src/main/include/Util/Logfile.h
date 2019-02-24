@@ -13,25 +13,11 @@
 
 using namespace std;
 
-class SwerveWheelLog {
+class Logfile {
  public:
-  SwerveWheelLog(std::string name);
-  void Log(
-    double timestamp,
-    double baseCurrentPosition,
-    double setpoint,
-    double currentPosition,
-    double setpointRotations,
-    double diff,
-    double wholeRotations,
-    double finalSetpoint);
-
-  void Enable() { enabled = true; }
-  void Disable() { enabled = false; }
-
+  Logfile(string name, string header) :
+    name(name), header(header) {}
  private:
-  const std::string name;
-  bool enabled = true;
-  bool headerWritten = false;
-  ofstream logfile;
+  string name;
+  string header;
 };

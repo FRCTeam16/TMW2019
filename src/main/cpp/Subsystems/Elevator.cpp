@@ -21,6 +21,9 @@ Elevator::Elevator() {
 	elevatorMotor->SetSensorPhase(false);
 	// elevatorMotor->SetInverted(true);
 
+	elevatorMotor->ConfigReverseSoftLimitThreshold(PrefUtil::getSetInt("Elevator.Pos.MaxHeight", -110000));
+	elevatorMotor->ConfigReverseSoftLimitEnable(true);
+
 	followerMotor->SetNeutralMode(NeutralMode::Brake);
 	followerMotor->ConfigPeakOutputForward(1);
 	followerMotor->ConfigPeakOutputReverse(-1);
@@ -37,7 +40,6 @@ Elevator::Elevator() {
 
 void Elevator::Init() {
 	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
-	kElevatorMaxPosition = PrefUtil::getSetInt("Elevator.Pos.MaxHeight", -110000);
 	SetInitialPosition();
 
 	runMode = kManual;
@@ -54,6 +56,7 @@ void Elevator::SetInitialPosition() {
 
 
 void Elevator::Run() {
+	const double now = frc::Timer::GetFPGATimestamp();
 	RunMode mode = runMode;
 
     if (!initializeFinished && (initializeScanCounts++ < kInitializeScanCountMax)) {
@@ -73,14 +76,13 @@ void Elevator::Run() {
 	// Check for homing signal
 	auto sensors = elevatorMotor->GetSensorCollection();
 	if (elevatorMotor->GetSensorCollection().IsFwdLimitSwitchClosed()) {
-		if (ElevatorPosition::kFloor != elevatorPosition) {
-			std::cout << "Elevator :: Reset to Floor Position to due RevLimitSwitch\n";
-			elevatorPosition = ElevatorPosition::kFloor;
+		if ((now - setpointStartMoveTime) > kFloorResetWaitPeriod) {
+			setpointStartMoveTime = -1;
+			if (ElevatorPosition::kFloor != elevatorPosition) {
+				std::cout << "Elevator :: Reset to Floor Position to due RevLimitSwitch\n";
+				elevatorPosition = ElevatorPosition::kFloor;
+			}
 		}
-	}
-
-	if (fabs(setpoint) > fabs(kElevatorMaxPosition)) {
-		setpoint = kElevatorMaxPosition;
 	}
 
 
@@ -131,6 +133,7 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
 			
 	}
+	setpointStartMoveTime = frc::Timer::GetFPGATimestamp();
 	std::cout << "Elevator::SetElevatorPosition(" << static_cast<int>(elevatorPosition) << ")| " << setpoint << "\n";
 }
 

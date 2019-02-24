@@ -302,7 +302,10 @@ void Robot::TeleopPeriodic() {
 			double xMove = oi->GetJoystickX();
 			bool useGyro = true;
 			if (visionMode) { 
-				xMove = visionSystem->GetLastDriveInfo()->xspeed;
+				// Ignore xMove if we are level2 position which blocks the camera
+				if (Elevator::ElevatorPosition::kLevel2 != elevator->GetElevatorPosition()) {
+					xMove = visionSystem->GetLastVisionInfo()->xSpeed;
+				}
 				useGyro = false;
 			} else if (oi->DR4->Pressed()) {
 				// robot centric
