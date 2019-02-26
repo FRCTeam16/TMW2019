@@ -206,7 +206,7 @@ void Elevator::SetHomePosition() {
 
 
 void Elevator::ToggleCargoShotMode() {
-	std::cout << "Elevator::ToggleCargoShotMode(" << cargoShotMode << " to " << cargoShotMode ")\n";
+	std::cout << "Elevator::ToggleCargoShotMode(" << cargoShotMode << " to " << !cargoShotMode << ")\n";
 	cargoShotMode = !cargoShotMode;
 	ElevatorPosition nextPosition = ElevatorPosition::kFloor;
 	if (cargoShotMode) {
