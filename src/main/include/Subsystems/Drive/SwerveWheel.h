@@ -18,6 +18,7 @@ public:
   virtual void ZeroDriveEncoder() = 0;
   virtual double GetDriveOutputCurrent() = 0;
   virtual bool HasCANError() = 0;
+  virtual void SetDriveSoftMinMaxOutput(double minOutput, double maxOutput) = 0;
 
   virtual void UseOpenLoopSteer(double speed = 0.0) = 0;
   virtual void UseClosedLoopSteer(double value = 0.0) = 0;

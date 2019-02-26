@@ -143,12 +143,12 @@ void JackScrews::ConfigureOpenLoop(double speed, JackScrewControl::EndStateActio
   if (toInit.RR) { jackScrews->RR->InitOpenLoop(speed, endStateAction); }
 }
 
-void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition_, JackScrewControl::EndStateAction endStateAction) {
+void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition_, JackScrewControl::EndStateAction endStateAction, bool doRamp) {
   currentLiftMode = liftMode;
   this->SetLiftMode(liftMode);
   targetPosition = targetPosition_;
   controlTimeStart = frc::Timer::GetFPGATimestamp();
-  SetMaxJackScrewSpeed(1.0);
+  SetMaxJackScrewSpeed(1.0);  // reset
 
   frc::Preferences *prefs = frc::Preferences::GetInstance();
 
@@ -156,11 +156,12 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition
   DriveInfo<bool> toInit = DetermineJackScrewsToInit();
   
   int dirMul = Direction::kUp == targetPosition ? -1 : 1;
+  const double controlSpeed = maxJackScrewSpeed * dirMul;
   const double distance = prefs->GetDouble("JackScrew.dist") * dirMul;
-  if (toInit.FL) { jackScrews->FL->ConfigureControlled(distance, controlTimeStart, endStateAction); }
-  if (toInit.FR) { jackScrews->FR->ConfigureControlled(distance, controlTimeStart, endStateAction); }
-  if (toInit.RL) { jackScrews->RL->ConfigureControlled(distance, controlTimeStart, endStateAction); }
-  if (toInit.RR) { jackScrews->RR->ConfigureControlled(distance, controlTimeStart, endStateAction); }
+  if (toInit.FL) { jackScrews->FL->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
+  if (toInit.FR) { jackScrews->FR->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
+  if (toInit.RL) { jackScrews->RL->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
+  if (toInit.RR) { jackScrews->RR->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
 }
 
 DriveInfo<bool> JackScrews::DetermineJackScrewsToInit() {

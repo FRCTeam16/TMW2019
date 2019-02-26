@@ -14,8 +14,13 @@
 void SecondStep::Execute() {
     const double kThreshold = 0.1;
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+    auto wheels = Robot::driveBase->GetWheels();
 
     if (IsFirstRun()) {
+        wheels.FL->SetDriveSoftMinMaxOutput(-1.0, 0.0);
+        wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
+        // rl & rr in control mode
+
         std::cout << "Lift Second Step\n";
         Robot::jackScrews->ConfigureControlled(
                 JackScrews::LiftMode::kFront,
@@ -33,9 +38,12 @@ void SecondStep::Execute() {
             if (!shiftedFrontToSwerve) {
                 Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
                 Robot::jackScrews->SetLiftMode(JackScrews::LiftMode::kNone);
-                
-                shiftedFrontToSwerve = true;
+
+                wheels.FL->SetDriveSoftMinMaxOutput(-1.0, 1.0);
+                wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
+
                 Robot::driveBase->SetTargetAngle(-180.0);
+                shiftedFrontToSwerve = true;
             } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
                 const double kLowJoyThreshold = 0.15;
@@ -62,8 +70,8 @@ void SecondStep::Execute() {
                 
                 // JackScrewControl does not handle swerve inputs so we must send motor inputs
                 auto jsCtrls = Robot::jackScrews->GetJackScrewControls();
-                jsCtrls->RL->Run();
-                jsCtrls->RR->Run();
+                // jsCtrls->RL->Run();
+                // jsCtrls->RR->Run();
                 // finished = true (driver must transition to next step)
             }
         }

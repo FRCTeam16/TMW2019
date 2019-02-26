@@ -8,6 +8,7 @@
 #include "Lift/FirstStep.h"
 #include "Robot.h"
 #include "Subsystems/JackScrews.h"
+#include "Subsystems/Drive/TMW2019SwerveWheel.h"
 
 FirstStep::FirstStep() = default;
 
@@ -16,6 +17,12 @@ void FirstStep::Execute() {
 
     if (IsFirstRun()) {
         std::cout << "JackScrew First Step Shifting\n";
+        auto wheels = Robot::driveBase->GetWheels();
+        wheels.FL->SetDriveSoftMinMaxOutput(0.0, 1.0);
+        wheels.FR->SetDriveSoftMinMaxOutput(0.0, 1.0);
+        wheels.RL->SetDriveSoftMinMaxOutput(0.0, 1.0);
+        wheels.RR->SetDriveSoftMinMaxOutput(0.0, 1.0);
+
         Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
         Robot::jackScrews->ConfigureOpenLoop(0.0);
     } else {
@@ -27,12 +34,12 @@ void FirstStep::Execute() {
             std::cout << "JackScrew First Step Running Controlled\n";
             if (firstAfterShifting) {
                 firstAfterShifting = false;
-                Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Direction::kDown, JackScrewControl::EndStateAction::kSwitchToControl);    //
+                Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Direction::kDown, JackScrewControl::EndStateAction::kSwitchToControl, true);    //
                 std::cout << "Configured wheels for control\n";
-                jackScrewControls->FL->SetControlSpeed(1.0);
-                jackScrewControls->FR->SetControlSpeed(1.0);
-                jackScrewControls->RL->SetControlSpeed(1.0);
-                jackScrewControls->RR->SetControlSpeed(1.0);
+                // jackScrewControls->FL->SetControlSpeed(1.0);
+                // jackScrewControls->FR->SetControlSpeed(1.0);
+                // jackScrewControls->RL->SetControlSpeed(1.0);
+                // jackScrewControls->RR->SetControlSpeed(1.0);
             }
         } else {
             std::cout << "now: " << now << " | startTime: " << startTime << " | delta: " << delta << "\n";

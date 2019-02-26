@@ -19,7 +19,7 @@ public:
     enum class JackScrewState { kSwerve, kOpenLoop, kClosedLoop };
     enum class EndStateAction { kNone, kSwitchToControl, kSwitchToAmpDetect };
 
-    void ConfigureControlled(double targetDistance, double controlTimeStart, EndStateAction action);
+    void ConfigureControlled(double targetDistance, double controlSpeed, double controlTimeStart, EndStateAction action, bool _doRamp = false);  // only do ramping on first "move"
     void InitOpenLoop(double speed, EndStateAction action);
     void Run();
     void Hold();

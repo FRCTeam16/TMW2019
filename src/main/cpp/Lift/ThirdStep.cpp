@@ -17,37 +17,41 @@ void Thirdstep::Execute() {
 
     if (IsFirstRun()) {
         std::cout << "Lift Third Step\n";
+        wheels.RL->SetDriveSoftMinMaxOutput(-1.0, 0.0);
+        wheels.RR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
+
         Robot::jackScrews->ConfigureControlled(
             JackScrews::LiftMode::kBack,
             JackScrews::Direction::kUp,
             JackScrewControl::EndStateAction::kSwitchToAmpDetect);
-
 
             wheels.FL->SetDriveBrakeMode();
             wheels.FR->SetDriveBrakeMode();
             jackScrewControls->FL->SetControlSpeed(0.0);
             jackScrewControls->FR->SetControlSpeed(0.0);
 
-            jackScrewControls->FL->Run();
-            jackScrewControls->FR->Run();
+            // jackScrewControls->FL->Run();
+            // jackScrewControls->FR->Run();
     } else {
         if (!liftFinished) {
             bool leftFinished = jackScrewControls->RL->IsFinished();
             bool rightFinished = jackScrewControls->RR->IsFinished();
             liftFinished = leftFinished && rightFinished;
             
-            jackScrewControls->FL->Run();
-            jackScrewControls->FR->Run();
+            // jackScrewControls->FL->Run();
+            // jackScrewControls->FR->Run();
         } else {
             if (!shiftedToSwerve) {
                 // Safety set output
+                wheels.FL->SetDriveSoftMinMaxOutput(-1.0, 1.0);
+                wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
+                wheels.RL->SetDriveSoftMinMaxOutput(-1.0, 1.0);
+                wheels.RR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
                 jackScrewControls->FL->SetControlSpeed(0.0);
                 jackScrewControls->FR->SetControlSpeed(0.0);
                 jackScrewControls->RL->SetControlSpeed(0.0);
                 jackScrewControls->RR->SetControlSpeed(0.0);
                 Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
-
-                // TODO: Put drive wheels in brake mode
                 
                 wheels.FL->SetDriveBrakeMode();
                 wheels.FR->SetDriveBrakeMode();
@@ -56,8 +60,8 @@ void Thirdstep::Execute() {
                 shiftedToSwerve = true;
                 Robot::driveBase->SetTargetAngle(-180.0);
 
-                jackScrewControls->FL->Run();
-                jackScrewControls->FR->Run();
+                // jackScrewControls->FL->Run();
+                // jackScrewControls->FR->Run();
             } else {
                 wheels.FL->SetDriveCoastMode();
                 wheels.FR->SetDriveCoastMode();

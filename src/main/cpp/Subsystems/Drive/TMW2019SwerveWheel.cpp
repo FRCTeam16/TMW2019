@@ -97,7 +97,12 @@ void TMW2019SwerveWheel::InitAuto() {
 
 void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
     // driveMotor->Set(ControlMode::PercentOutput, 0.0);
+    if (speed < driveMinOutput) { speed = driveMinOutput; }
+    if (speed > driveMaxOutput) { speed = driveMaxOutput; }
+    
     frc::SmartDashboard::PutNumber(name + " Drive Speed", speed);
+    std::cout << "TMW2019SwerveWheel OpenLoop: " << speed << "\n";
+
     driveMotor->Set(speed);
     isOpenLoop = true;
 }
@@ -134,6 +139,11 @@ bool TMW2019SwerveWheel::HasCANError() {
     // require sending configuration information
     rev::CANError error = driveMotor->ClearFaults();
     return error != rev::CANError::kOK;
+}
+
+void TMW2019SwerveWheel::SetDriveSoftMinMaxOutput(double minOutput, double maxOutput) {
+    driveMinOutput = minOutput;
+    driveMaxOutput = maxOutput;
 }
 
 

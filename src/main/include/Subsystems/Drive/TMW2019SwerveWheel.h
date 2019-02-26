@@ -37,6 +37,7 @@ public:
   double GetDriveOutputCurrent() override;
   bool HasCANError() override;
   std::shared_ptr<rev::CANSparkMax> GetDriveMotor();
+  void SetDriveSoftMinMaxOutput(double minOutput, double maxOutput);
   
   void UseOpenLoopSteer(double speed = 0.0) override;
   void UseClosedLoopSteer(double value = 0.0) override;
@@ -56,6 +57,9 @@ private:
   std::shared_ptr<WPI_TalonSRX> steerMotor;
   bool isOpenLoop = true;
   double kSteerP = 3.0;
+
+  double driveMinOutput = -1.0;
+  double driveMaxOutput = 1.0;
 
   SwerveWheelLog steerLog;
 };

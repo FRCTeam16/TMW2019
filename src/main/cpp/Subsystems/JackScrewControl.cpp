@@ -2,19 +2,19 @@
 #include "Subsystems/JackScrewControl.h"
 
 
-void JackScrewControl::ConfigureControlled(double targetDistance_, double controlTimeStart_, EndStateAction action) {
+void JackScrewControl::ConfigureControlled(double targetDistance_, double controlSpeed_, double controlTimeStart_, EndStateAction action, bool _doRamp) {
     std::cout << "JackScrewControl::Init()\n";
     targetDistance = targetDistance_;
     controlTimeStart = controlTimeStart_;
     startPosition = currentPosition = lastPosition = wheel->GetDriveEncoderPosition();
     accumulatedPosition = 0.0;
     SetCurrentState(JackScrewState::kOpenLoop);
-    controlSpeed = 0.0;
+    controlSpeed = controlSpeed_;
     endStateAction = action;
     firstThresholdRun = true;
     finished = false;
     ampDetector.Reset();
-    doRamp = true;
+    doRamp = _doRamp;
 }
 
 void JackScrewControl::InitOpenLoop(double speed, EndStateAction action) {
@@ -34,11 +34,13 @@ void JackScrewControl::Run() {
     double speed = controlSpeed;
     
     if (doRamp) {
+        const double kMinSpeed = 0.10;
         if (elapsed < 0.25) {
-            std::cout << "Running constant speed\n";
-            speed = 0.10;
+            std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
+            speed = kMinSpeed;
         } else {
-            speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, 0.0);
+            speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, kMinSpeed);
+            std::cout << "JSC " << name << " ramped to " << speed << "\n";
         }
     }
     
@@ -71,6 +73,7 @@ void JackScrewControl::Run() {
         case EndStateAction::kSwitchToControl:
             if (!IsClosedLoop() && inThreshold) {
                 std::cout << " JackScrewControl::Run flipping to closed loop\n";
+                wheel->SetDriveSoftMinMaxOutput(-1.0, 1.0);
                 SetCurrentState(JackScrewState::kClosedLoop);
                 finished = true;
             }
