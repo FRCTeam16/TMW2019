@@ -88,7 +88,7 @@ void DriveBase::InitializePIDs() {
 	driveControlTwist->SetContinuous(true);
 	driveControlTwist->SetAbsoluteTolerance(2.0);
 	driveControlTwist->Enable();
-	driveControlTwist->SetOutputRange(-0.5, 0.5);
+	driveControlTwist->SetOutputRange(-0.6, 0.6);
 	driveControlTwist->SetInputRange(-180, 180);
 
 	// Drive Motor PID	
