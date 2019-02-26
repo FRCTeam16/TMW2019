@@ -13,11 +13,28 @@
 
 using namespace std;
 
+/**
+ * Utility class for emitting logfiles.  Will automatically write the header
+ * at first Get() invocation of the logger stream.
+ **/
 class Logfile {
  public:
-  Logfile(string name, string header) :
-    name(name), header(header) {}
+  Logfile(string filename, string header) :
+    filename(filename), header(header) {}
+
+  ofstream& Log() {
+    if (!headerWritten) {
+      string filename = "/home/lvuser/" + filename;
+      logfile.open(filename, ios::out);
+      logfile << header << "\n";
+    }
+    return logfile;
+  }
+
  private:
-  string name;
+  string filename;
   string header;
+  ofstream logfile;
+  bool enabled = true;
+  bool headerWritten = false;
 };

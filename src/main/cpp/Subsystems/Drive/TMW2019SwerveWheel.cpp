@@ -19,8 +19,8 @@ void TMW2019SwerveWheel::InitializeSteering() {
     steerMotor->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 0);
     steerMotor->SetInverted(false);
     steerMotor->Config_kP(0, kSteerP, 0);
-    steerMotor->ConfigPeakOutputForward(0.75, 0);
-    steerMotor->ConfigPeakOutputReverse(-0.75, 0);
+    steerMotor->ConfigPeakOutputForward(0.50, 0);
+    steerMotor->ConfigPeakOutputReverse(-0.50, 0);
     steerMotor->ConfigPeakCurrentLimit(0);
     steerMotor->ConfigContinuousCurrentLimit(PrefUtil::getSet("Steer.ContinuousCurrentLimit", 20.0));
 }
@@ -203,15 +203,15 @@ void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset,
     // }
 	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.0);
 
-    // steerLog.Log(
-    //     frc::Timer::GetFPGATimestamp(),
-    //     baseCurrentPosition,
-    //     setpoint,
-    //     currentPosition,
-    //     setpointRotations,
-    //     diff,
-    //     wholeRotations,
-    //     finalSetpoint);
+    steerLog.Log(
+        frc::Timer::GetFPGATimestamp(),
+        baseCurrentPosition,
+        setpoint,
+        currentPosition,
+        setpointRotations,
+        diff,
+        wholeRotations,
+        finalSetpoint);
 }
 
 int TMW2019SwerveWheel::GetSteerEncoderPosition() {
