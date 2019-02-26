@@ -66,6 +66,7 @@ private:
 
   double startTime = -1;  // state activity start time
   bool runningSequence = false; // whether we are in a timed sequence
+  bool ejectNeedsArms = false;
 
   void SetState(IntakeState state);
   void SetBottomBeaterSpeed(double speed);

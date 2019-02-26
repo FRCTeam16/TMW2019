@@ -79,6 +79,7 @@ void Intake::Run() {
             runningSequence = true;
 
             ejectorSolenoidState = false;
+            ejectNeedsArms = !gripperSolenoidState; // only use arms if gripper was not on
             // gripperSolenoidState = true;
             hatchSolenoidState = false;
             if (elapsed > 0.25 && elapsed < 0.5) {
@@ -88,7 +89,7 @@ void Intake::Run() {
             } else if (elapsed >= 0.5 && elapsed < 2.5) {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = false;
-                hatchSolenoidState = true;
+                hatchSolenoidState = ejectNeedsArms;
             } else if (elapsed >= 2.5) {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = false;
