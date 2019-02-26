@@ -18,10 +18,10 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
 {
   auto wheels = Robot::driveBase->GetWheels();
   auto di = new DriveInfo<std::shared_ptr<JackScrewControl>>();
-  di->FL.reset(new JackScrewControl(wheels.FL));
-  di->FR.reset(new JackScrewControl(wheels.FR));
-  di->RL.reset(new JackScrewControl(wheels.RL));
-  di->RR.reset(new JackScrewControl(wheels.RR));
+  di->FL.reset(new JackScrewControl("FL", wheels.FL));
+  di->FR.reset(new JackScrewControl("FR", wheels.FR));
+  di->RL.reset(new JackScrewControl("RL", wheels.RL));
+  di->RR.reset(new JackScrewControl("RR", wheels.RR));
   jackScrews.reset(di);
 }
 
@@ -214,6 +214,7 @@ void JackScrews::DoControlled() {
 
 
   // Capture accumulated positions
+  // Calculate lowest jackscrew based on accumulation
   bool inHoldPosition = false;
   auto lowest = activeCalcs[0].get();
   std::vector<double> positions(activeCalcs.size());
@@ -227,6 +228,8 @@ void JackScrews::DoControlled() {
       inHoldPosition |= activeCalcs[i]->IsClosedLoop();
     }
   }
+  std::cout << "Configured lowest\n";
+
 
   // If any of the stored accumulated positions exceed the halt threshold then we
   // stop climbing
@@ -239,6 +242,8 @@ void JackScrews::DoControlled() {
       emergencyHalt = true;
     }
   }
+
+  // Emergency Halt Handler
   if (emergencyHalt) {
     jackScrews->FL->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
     jackScrews->FR->InitOpenLoop(0.0, JackScrewControl::EndStateAction::kNone);
@@ -258,7 +263,6 @@ void JackScrews::DoControlled() {
     std::cout << "Detected active jack screw control in hold position\n";
     return;
   }
-  std::cout << "Configured lowest\n";
 
   const double kMinAccumulatedPosition = lowest->GetAccumulatedPosition();
   const auto speedDir = static_cast<int>(targetPosition);
@@ -272,6 +276,7 @@ void JackScrews::DoControlled() {
   bool exitOpenLoop = false;
   for (int i=0; i<activeCalcs.size(); i++) {
     auto currentCalc = activeCalcs[i].get();
+    
     if (currentCalc->IsClosedLoop()) {
       std::cout << "Closed Loop detected, exiting loop\n";
       exitOpenLoop = true;
@@ -282,7 +287,13 @@ void JackScrews::DoControlled() {
     if (diff >= kMaximumDisplacementThreshold) {
       if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
         const double delta = speedDir * 0.02; // alternate do ratio? // FIXME
-        const double newSpeed = currentCalc->GetControlSpeed() - delta;
+        double newSpeed = currentCalc->GetControlSpeed() - delta;
+
+        // Make sure we never go below zero
+        if (newSpeed < 0.0) {
+          std::cout << "!!! Safety stop to 0.0 because adjusted speed went negative\n";
+          newSpeed = 0.0;
+        }
         currentCalc->SetControlSpeed(newSpeed);
       }
     }

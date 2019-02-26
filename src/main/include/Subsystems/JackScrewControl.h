@@ -8,10 +8,11 @@
 #include "Util/MovingAverageThreshold.h"
 #include <memory>
 #include <iostream>
+#include <string>
 
 class JackScrewControl {
 public:
-    explicit JackScrewControl(std::shared_ptr<SwerveWheel> wheel) : wheel(wheel) {
+    explicit JackScrewControl(std::string name, std::shared_ptr<SwerveWheel> wheel) : name(name), wheel(wheel) {
         std::cout << "********************* JackScrewControl *********************\n";
         currentState = JackScrewState::kSwerve;
     }
@@ -38,6 +39,7 @@ public:
     EndStateAction GetEndStateAction() { return endStateAction; }
 
 private:
+    const std::string name;
     const std::shared_ptr<SwerveWheel> wheel;
     JackScrewState currentState;
     double controlTimeStart = -1;
@@ -50,10 +52,11 @@ private:
     bool finished = false;
 
     double kJackScrewApproachSpeed = -0.10;
-    double controlSpeed = 1.0;
+    double controlSpeed = 0.0;
     const double jackScrewRampTime = 0.25;
     const double rotationCloseLoopThreshold = 7;
     bool firstThresholdRun = true;
+    bool doRamp = false;
 
     EndStateAction endStateAction = EndStateAction::kNone;
 

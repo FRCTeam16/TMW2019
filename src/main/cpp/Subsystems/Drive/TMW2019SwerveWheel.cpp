@@ -11,6 +11,7 @@
 #include "rev/CANError.h"
 #include "Util/PrefUtil.h"
 #include <string>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 void TMW2019SwerveWheel::InitializeSteering() {
     assert(steerMotor.get() != nullptr);
@@ -96,6 +97,7 @@ void TMW2019SwerveWheel::InitAuto() {
 
 void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
     // driveMotor->Set(ControlMode::PercentOutput, 0.0);
+    frc::SmartDashboard::PutNumber(name + " Drive Speed", speed);
     driveMotor->Set(speed);
     isOpenLoop = true;
 }

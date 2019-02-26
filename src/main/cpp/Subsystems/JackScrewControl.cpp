@@ -14,12 +14,14 @@ void JackScrewControl::ConfigureControlled(double targetDistance_, double contro
     firstThresholdRun = true;
     finished = false;
     ampDetector.Reset();
+    doRamp = true;
 }
 
 void JackScrewControl::InitOpenLoop(double speed, EndStateAction action) {
     SetCurrentState(JackScrewState::kOpenLoop);
     controlSpeed = speed;
     endStateAction = action;
+    doRamp = false;
 }
 
 void JackScrewControl::Run() {
@@ -30,11 +32,14 @@ void JackScrewControl::Run() {
     const double now = frc::Timer::GetFPGATimestamp();
     double elapsed = now - controlTimeStart;
     double speed = controlSpeed;
-    if (elapsed < 0.25) {
-        std::cout << "Running constant speed\n";
-        speed = 0.10;
-    } else {
-        speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, 0.0);
+    
+    if (doRamp) {
+        if (elapsed < 0.25) {
+            std::cout << "Running constant speed\n";
+            speed = 0.10;
+        } else {
+            speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, 0.0);
+        }
     }
     
     currentPosition = wheel->GetDriveEncoderPosition();
