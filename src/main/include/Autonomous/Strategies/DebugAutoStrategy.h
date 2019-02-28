@@ -19,7 +19,7 @@ public:
 	void Init(std::shared_ptr<World> world) override;
 
 private:
-	void Debug();
+	void DebugStraight();
 };
 
 #endif /* SRC_AUTONOMOUS_DEBUGAUTOSTRATEGY_H_ */

@@ -82,7 +82,7 @@ private:
 
 	bool hardStopsContinueFromStep = true;	// when collisions or timeouts occur, whether to stay on step or continue
 
-	const bool debug = false;
+	const bool debug = true;
 
 	std::unique_ptr<DistanceControl> distanceControl;	// optional distance control
 	double distanceControlIgnoreTime;

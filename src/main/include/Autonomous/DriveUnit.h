@@ -1,12 +1,7 @@
-/*
- * DriveUnit.h
- *
- *  Created on: Feb 17, 2018
- *      Author: smithj11
- */
-
 #ifndef SRC_AUTONOMOUS_DRIVEUNIT_H_
 #define SRC_AUTONOMOUS_DRIVEUNIT_H_
+
+#include <string>
 
 class DriveUnit {
 public:

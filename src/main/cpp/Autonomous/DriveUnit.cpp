@@ -1,14 +1,14 @@
 #include <iostream>
-#include <Autonomous/DriveUnit.h>
+#include "Autonomous/DriveUnit.h"
 #include "frc/WPILib.h"
+#include "Util/PrefUtil.h"
 
 using namespace frc;
 
 const std::string DriveUnit::PULSES_PER_INCH = "PulsesPerInch";
 
 double DriveUnit::ToPulses(double value, DriveUnit::Units unit) {
-	Preferences *prefs = Preferences::GetInstance();
-	const double pulsesPerInch = prefs->GetDouble(PULSES_PER_INCH, 1081.95);
+	const double pulsesPerInch = PrefUtil::getSet(PULSES_PER_INCH, 0.5);
 	double converted = 0;
 	switch (unit) {
 	case kInches:

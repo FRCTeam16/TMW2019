@@ -12,9 +12,14 @@
 #include "Autonomous/Steps/SetGyroOffset.h"
 #include "Autonomous/Steps/RunIntakeWithDelay.h"
 
+#include "Autonomous/Steps/VisionControlledDrive.h"
+#include "Autonomous/Steps/DriveToTarget.h"
+#include "Autonomous/Steps/RotateIntake.h"
+#include "Autonomous/Steps/DoIntakeAction.h"
+
 
 DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
-	Debug();
+	DebugStraight();
 }
 
 void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
@@ -23,32 +28,33 @@ void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
 	const bool isRight = AutoStartPosition::kRight == startPosition;
 
 	const int inv = isRight ? 1 : -1;
-	const double angle = -180;
-	SetGyroOffset *step = new SetGyroOffset(angle);
-	step->Run(world);
+	// const double angle = -180;
+	// SetGyroOffset *step = new SetGyroOffset(angle);
+	// step->Run(world);
 }
 
-void DebugAutoStrategy::Debug() {
-	const double angle = -180.0;
+void DebugAutoStrategy::DebugStraight() {
 
+
+	// steps.push_back(new VisionControlledDrive(0.0, 0.15, 0, 60, -1, DriveUnit::kInches, 5.0, 0.5, 6));
+	// steps.push_back(new VisionControlledDrive(0.0, 0.15, 0.0, 0.5));
+
+	
 	steps.push_back(new ConcurrentStep({
-		new TimedDrive(angle, 0.0001, 0.0, 0.1, false),
-		// new PositionMast(Mast::MastPosition::kDrive, DelayParam(DelayParam::DelayType::kNone, 0.0), true),
-		// new IntakeSolenoidWithDelay(false, DelayParam(DelayParam::DelayType::kNone, 0.0), 5.0)
-	}, true));
-
-
-	const double firstDriveSpeed = 0.75;
-	const double firstDriveX = 0.0;
-	const double firstDriveY = 72.0;
-
-	steps.push_back(new ConcurrentStep({
-		new ClosedLoopDrive2(angle, firstDriveSpeed, firstDriveX, firstDriveY, -1, DriveUnit::Units::kInches, 8.0, 0.5, -1)
-		// new PositionElevator(Elevator::ElevatorPosition::kSwitch, DelayParam(DelayParam::DelayType::kNone, 0.0)),
+		new TimedDrive(0.0, 0.3, 0.0, 1.0),
+		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne)
 	}));
+	steps.push_back(new DriveToTarget(0.0, 0.3, 5.0, 3.5));
+	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
+	steps.push_back(new TimedDrive(0.0, -0.15, 0.0, 0.5));
 
-	// 	DriveToBump *bumpDrive = new DriveToBump(startAngle, ySpeed, xSpeed, timeout, 1.0, collisionThreshold );
-	// 	bumpDrive->SetRampTime(0.5);
+	// Move to hatch pickup
+	const double lateralX = 0.3;
+	const double lateralY = lateralX * 0.56;	// ratio of distances, FIXME for other side
+	steps.push_back(new TimedDrive(-180.0, -lateralY, -lateralX, 2.5, 0.5));
 
+	steps.push_back(new DriveToTarget(-180.0, 0.2, 5, 3.0));
+	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
+	steps.push_back(new TimedDrive(-180.0, 0.15, 0.0, 0.5)); // FIXME no gyro robot centric
 
 }

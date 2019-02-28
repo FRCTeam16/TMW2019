@@ -18,7 +18,7 @@ private:
 	std::vector<WrappedStep*> steps;
 	const std::unique_ptr<CrabInfo> STOP { new CrabInfo() };
 	bool haltOnEnd = true;
-	const bool debug = false;
+	const bool debug = true;
 };
 
 class WrappedStep {
