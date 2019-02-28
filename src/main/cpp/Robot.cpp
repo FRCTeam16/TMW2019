@@ -299,12 +299,14 @@ void Robot::TeleopPeriodic() {
 			true);
 	} else {
 		if (!lockWheels) {
-
+			const double yMove = -oi->GetJoystickY(threshold);
 			double xMove = oi->GetJoystickX();
 			bool useGyro = true;
 			if (visionMode) { 
-				// Ignore xMove if we are level2 position which blocks the camera
-				if (Elevator::ElevatorPosition::kLevel2 != elevator->GetElevatorPosition()) {
+				// Ignore xMove if we are level2 position which blocks the camera or if we are moving backwards
+				const bool notAtLevel2 = Elevator::ElevatorPosition::kLevel2 != elevator->GetElevatorPosition();
+				const bool movingForward = yMove > 0.0;
+				if (notAtLevel2 || movingForward) {
 					xMove = visionSystem->GetLastVisionInfo()->xSpeed;
 				}
 				useGyro = false;
@@ -314,7 +316,7 @@ void Robot::TeleopPeriodic() {
 			}
 			driveBase->Crab(
 				twistInput,
-				-oi->GetJoystickY(threshold),
+				yMove,
 				xMove,
 				useGyro);
 		} else {

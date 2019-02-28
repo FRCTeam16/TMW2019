@@ -101,7 +101,7 @@ void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
     if (speed > driveMaxOutput) { speed = driveMaxOutput; }
     
     frc::SmartDashboard::PutNumber(name + " Drive Speed", speed);
-    std::cout << "TMW2019SwerveWheel OpenLoop: " << speed << "\n";
+    std::cout << "TMW2019SwerveWheel " << name << " OpenLoop: " << speed << "\n";
 
     driveMotor->Set(speed);
     isOpenLoop = true;
