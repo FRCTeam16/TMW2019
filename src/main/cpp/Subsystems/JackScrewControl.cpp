@@ -3,7 +3,7 @@
 
 
 void JackScrewControl::ConfigureControlled(double targetDistance_, double controlSpeed_, double controlTimeStart_, EndStateAction action, bool _doRamp) {
-    std::cout << "JackScrewControl::Init()\n";
+    std::cout << "JackScrewControl::Init() " << name << "\n";
     targetDistance = targetDistance_;
     controlTimeStart = controlTimeStart_;
     startPosition = currentPosition = lastPosition = wheel->GetDriveEncoderPosition();
@@ -38,7 +38,7 @@ void JackScrewControl::Run() {
         if (elapsed < 0.25) {
             std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
             speed = kMinSpeed;
-        } else {
+        } else if (elapsed <= (jackScrewRampTime + 0.25)) {
             speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, kMinSpeed);
             std::cout << "JSC " << name << " ramped to " << speed << "\n";
         }
@@ -62,7 +62,7 @@ void JackScrewControl::Run() {
                 if (!ampDetector.Check()) {
                     ampDetector.AddValue(wheel->GetDriveOutputCurrent());
                 } else {
-                    std::cout << "JackScrewControl::Run detected amp spike\n";
+                    std::cout << "JackScrewControl " << name << " detected amp spike\n";
                     SetControlSpeed(0.0);
                     speed = 0.0;
                     finished = true;
@@ -72,7 +72,7 @@ void JackScrewControl::Run() {
 
         case EndStateAction::kSwitchToControl:
             if (!IsClosedLoop() && inThreshold) {
-                std::cout << " JackScrewControl::Run flipping to closed loop\n";
+                std::cout << " JackScrewControl " << name << " flipping to closed loop\n";
                 wheel->SetDriveSoftMinMaxOutput(-1.0, 1.0);
                 SetCurrentState(JackScrewState::kClosedLoop);
                 finished = true;
@@ -88,7 +88,7 @@ void JackScrewControl::Run() {
             wheel->UseClosedLoopDrive(GetTargetDistance());     // FIXME? only works positive direction
             break;
         default:
-            std::cout << "!!! Warning : JackScrew in swerve state but run() reaching control !!!\n";
+            std::cout << "!!! Warning : JackScrew " << name << " in swerve state but run() reaching control !!!\n";
     }
     lastPosition = currentPosition;
 }

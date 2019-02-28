@@ -25,7 +25,7 @@ void LiftDrive::DriveTank(double leftInput, double rightInput) {
 	int invFL = Robot::driveBase->inv.FL;
 	int invFR = Robot::driveBase->inv.FR;
 	std::cout << " | INV.FL = " << invFL << " - INV.FR = " << invFR << "\n";
-	wheels.FL->UseOpenLoopDrive(leftInput * invFL);
+	wheels.FL->UseOpenLoopDrive(-leftInput * invFL);
 	wheels.FR->UseOpenLoopDrive(rightInput * invFR);
 }
 

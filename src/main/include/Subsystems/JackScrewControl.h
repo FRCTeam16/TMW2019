@@ -32,7 +32,7 @@ public:
     double GetTargetDistance() { return startPosition + targetDistance; }
     JackScrewState GetCurrentState() { return currentState; }
     void SetCurrentState(JackScrewState newState) { 
-        std::cout << "Setting JackScrewControl " << this << " to state " << static_cast<int>(newState) << "\n";
+        std::cout << "Setting JackScrewControl " << name << " to state " << static_cast<int>(newState) << "\n";
         currentState = newState; 
     }
     bool IsFinished() { return finished; }

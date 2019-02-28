@@ -48,7 +48,7 @@ double BSGyro::ReadYaw() {
 	double trimmedYaw = fmod(ypr[0],360.0);
 
 	SmartDashboard::PutNumber("YawOffset", GetOffset());
-	SmartDashboard::PutNumber("PigeonYaw", ypr[0]);
+	// SmartDashboard::PutNumber("PigeonYaw", ypr[0]);
 	SmartDashboard::PutNumber("TrimmedYaw", trimmedYaw);
 
 	return GetOffset() + trimmedYaw;

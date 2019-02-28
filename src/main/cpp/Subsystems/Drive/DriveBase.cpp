@@ -414,11 +414,6 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		frontRight->UseOpenLoopDrive(speeds.FR);
 		rearLeft->UseOpenLoopDrive(speeds.RL);
 		rearRight->UseOpenLoopDrive(speeds.RR);
-		SmartDashboard::PutNumber("RearRightOutput",speeds.RR);
-		SmartDashboard::PutNumber("RearRightCalcSpeed", speed.RR);
-		SmartDashboard::PutNumber("RearRightInv",inv.RR);
-		SmartDashboard::PutNumber("RearRightGetSpeed",RobotMap::driveBaseRearRightDrive->Get());
-		SmartDashboard::PutNumber("RearRightVelocity",RobotMap::driveBaseRearRightDrive->GetEncoder().GetVelocity());
 	} else {
 		frontLeft->UseClosedLoopDrive(speeds.FL);
 		frontRight->UseClosedLoopDrive(speeds.FR);

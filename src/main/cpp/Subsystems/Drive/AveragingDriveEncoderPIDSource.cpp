@@ -80,11 +80,6 @@ double AveragingDriveEncoderPIDSource::PIDGet() {
 	}
 	if (showDebug) { std::cout << "AvgDrivePID returnedError = " << returnedError << "\n"; }
 
-	SmartDashboard::PutBoolean("PID.FL", motorEnabled.FL);
-	SmartDashboard::PutBoolean("PID.FR", motorEnabled.FR);
-	SmartDashboard::PutBoolean("PID.RL", motorEnabled.RL);
-	SmartDashboard::PutBoolean("PID.RR", motorEnabled.RR);
-
 	return returnedError;
 }
 

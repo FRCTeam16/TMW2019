@@ -21,6 +21,7 @@ public:
   bool inThreshold = false;
   double xOffset = 0.0;
   double xSpeed = 0.0;
+  double targetArea = 0.0;
 };
 
 /**

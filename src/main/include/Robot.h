@@ -25,6 +25,8 @@
 #include "Subsystems/Crawler.h"
 #include "Lift/LiftDrive.h"
 #include "Subsystems/Elevator.h"
+#include "Autonomous/World.h"
+#include "Autonomous/AutoManager.h"
 
 
 struct ManualSolenoidState {
@@ -56,6 +58,7 @@ class Robot : public frc::TimedRobot {
   static std::unique_ptr<Intake> intake;
   static std::shared_ptr<IntakeRotate> intakeRotate;
   static std::shared_ptr<Elevator> elevator;
+  static std::unique_ptr<VisionSystem> visionSystem;
 
 private:
   void InitSubsystems();
@@ -65,7 +68,9 @@ private:
   std::unique_ptr<RobotMap> robotMap;
   std::shared_ptr<StatusReporter> statusReporter;
   std::unique_ptr<DmsProcessManager> dmsProcessManager;
-  std::unique_ptr<VisionSystem> visionSystem;
+  std::unique_ptr<AutoManager> autoManager;
+  std::shared_ptr<World> world;
+  bool autoInitialized = false;
   
   // teleop control variables
   bool runningScrews = false;	// true when running jackscrews

@@ -16,6 +16,7 @@ std::shared_ptr<JackScrews> Robot::jackScrews;
 std::unique_ptr<Intake> Robot::intake;
 std::shared_ptr<IntakeRotate> Robot::intakeRotate;
 std::shared_ptr<Elevator> Robot::elevator;
+std::unique_ptr<VisionSystem> Robot::visionSystem;
 
 
 void Robot::RobotInit() {
@@ -37,6 +38,9 @@ void Robot::RobotInit() {
     statusReporter.reset(new StatusReporter());
     // statusReporter->Launch();
     dmsProcessManager.reset(new DmsProcessManager(statusReporter));
+
+	autoManager.reset(new AutoManager());
+
 	std::cout << "Robot::TeleopInit <=\n";
 }
 
@@ -56,7 +60,7 @@ void Robot::AutonomousInit() {
 	TeleopInit();
 }
 void Robot::AutonomousPeriodic() {
-	cout << "AutonomousPeriodic => TeleopPeriodic\n";
+	// cout << "AutonomousPeriodic => TeleopPeriodic\n";
 	// if teleop call removed add frc::Scheduler::GetInstance()->Run();
 	TeleopPeriodic();
 }
@@ -69,6 +73,7 @@ void Robot::TeleopInit() {
 
 	runningScrews = false;				// flag for when jackscrew control is manual
 	runningLiftSequence = false;		// flag for when jackscrew control is automatic
+	autoInitialized = false;			// flag for when autonomous routines are running
 
     std::cout << "Robot::TeleopInit <=\n";
 }
@@ -77,7 +82,8 @@ void Robot::TeleopPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
 	
 	double threshold = 0.1;	// Used as general joystick deadband default
-	const bool lockWheels = oi->DL6->Pressed();
+	// const bool lockWheels = oi->DL6->Pressed();  Removed for auto testing
+	const bool lockWheels = false;
 
 	/**********************************************************/
 	// Jackscrew Manual Control
@@ -253,6 +259,24 @@ void Robot::TeleopPeriodic() {
 
 
 	/**********************************************************
+	 * Testing and Diagnostics
+	**********************************************************/
+	if (oi->DL6->Pressed()) {
+		if (!autoInitialized) {
+			std::cout << "!!! Running Auto !!!\n";
+			world.reset(new World());
+			autoManager->Init(world);
+			autoInitialized = true;
+		}
+	} else {
+		if (autoInitialized) {
+			std::cout << "Reset autoinitialized flag to false\n";
+		}
+		autoInitialized = false;
+	}
+
+
+	/**********************************************************
 	 * Drive Control
 	**********************************************************/
 	double twistInput = oi->GetJoystickTwist(threshold);
@@ -297,6 +321,8 @@ void Robot::TeleopPeriodic() {
 			0.2,
 			0,
 			true);
+	} else if (autoInitialized) {
+		autoManager->Periodic(world);
 	} else {
 		if (!lockWheels) {
 			const double yMove = -oi->GetJoystickY(threshold);
