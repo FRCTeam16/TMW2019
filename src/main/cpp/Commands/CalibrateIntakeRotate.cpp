@@ -20,9 +20,7 @@ CalibrateIntakeRotate::CalibrateIntakeRotate() {
 // Called just before this Command runs the first time
 void CalibrateIntakeRotate::Initialize() {
   // Get intake current position, then set offsets
-  const int currentPosition = RobotMap::rotateLeftMotor->GetSelectedSensorPosition();
-  frc::Preferences::GetInstance()->PutInt("Intake.position.base", currentPosition);
-  std::cout << "*** CalibrateIntakeRotate: Base is now " << currentPosition << "\n";
+  Robot::intakeRotate->CalibrateHome();
   Robot::intakeRotate->SetPositionSpeed(0.0, true); // setup open loop to clear closed loop flag
   Robot::intakeRotate->SetPositionSpeed(0.0, false); // setup open loop to clear closed loop flag
 

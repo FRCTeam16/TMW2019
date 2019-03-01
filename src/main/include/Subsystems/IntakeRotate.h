@@ -22,14 +22,14 @@ class IntakeRotate : public SubsystemManager{
   void Instrument() override;
   void SetPositionSpeed(double speed, bool flipMode); // flip mode: true for open loop, false for closed if not already closed
   void DisabledHoldCurrentPosition();
- private:
+  void CalibrateHome();
 
+ private:
   std::shared_ptr<WPI_TalonSRX> rotateLeft;
   std::shared_ptr<WPI_VictorSPX> rotateRight;
   std::map<IntakeRotate::IntakePosition, int> positionLookup;
   IntakePosition targetPosition = IntakePosition::kStarting;
 
-  int rotateOffset = 0;   // how much hadditional offset to account for if passed a full turn and power cycled
   int targetPositionValue = 0;
   double computedTargetValue = 0; // includes base and offset
   double positionSpeed = 0.0; // testing

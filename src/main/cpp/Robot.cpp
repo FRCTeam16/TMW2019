@@ -30,6 +30,8 @@ void Robot::RobotInit() {
 
 	intake.reset(new Intake());
 	intakeRotate.reset(new IntakeRotate());
+	intakeRotate->CalibrateHome();
+
 	crawler.reset(new Crawler());
 
 	elevator.reset(new Elevator());
@@ -53,6 +55,7 @@ void Robot::DisabledPeriodic() {
 	frc::Scheduler::GetInstance()->Run();
 	intakeRotate->DisabledHoldCurrentPosition();
 	elevator->DisabledZeroOutput();
+	InstrumentSubsystems();
 }
 
 void Robot::AutonomousInit() {

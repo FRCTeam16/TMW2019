@@ -75,7 +75,7 @@ void IntakeRotate::Run() {
              
     rotateLeft->Config_kF(0, k);
     frc::SmartDashboard::PutNumber("Intake Target (non-computed)", targetPositionValue);
-    computedTargetValue = targetPositionValue + base + rotateOffset;
+    computedTargetValue = targetPositionValue + base;
 
     
     // std::cout << "IntakeRotate::Run() curPos = " << currentPosition << " | "
@@ -95,8 +95,8 @@ void IntakeRotate::Run() {
 
     bool doPositionControl = positionControl;
     if (!initializeFinished && (initializeScanCounts++ < kInitializeScanCountMax)) {
-        std::cout << "Overriding intitialization - current draw: " 
-                  << rotateLeft->GetOutputCurrent() << "\n";
+        // std::cout << "Overriding intitialization - current draw: " 
+        //           << rotateLeft->GetOutputCurrent() << "\n";
         doPositionControl = false;
         positionSpeed = 0.0;
     } else {
@@ -146,11 +146,10 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
         // std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
         double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
         const double base = PrefUtil::getSetInt("Intake.position.base", 0);
-        targetPositionValue = currentPosition - base - rotateOffset;
+        targetPositionValue = currentPosition - base;
         positionControl = true;
         // std::cout << "SetPositionSpeed() -> Current Pos: " << currentPosition << " | "
         //           << "Base: " << base << " = "
-        //           << "Offset: " << rotateOffset << " = "
         //           << targetPositionValue << "\n";
     }
 }
@@ -158,15 +157,25 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
 void IntakeRotate::DisabledHoldCurrentPosition() {
     // double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
     // const double base = PrefUtil::getSetInt("Intake.position.base", 0);
-    // targetPositionValue = currentPosition - base - rotateOffset;
+    // targetPositionValue = currentPosition - base;
     // positionControl = true;
     // rotateLeft->Set(ControlMode::MotionMagic, currentPosition);      // make sure to signal
     rotateLeft->Set(ControlMode::PercentOutput, 0.0);
 }
 
+void IntakeRotate::CalibrateHome() {
+    const int currentPosition = rotateLeft->GetSelectedSensorPosition();
+    frc::Preferences::GetInstance()->PutInt("Intake.position.base", currentPosition);
+    std::cout << "*** CalibrateIntakeRotate: Base is now " << currentPosition << "\n";
+}
+
 void IntakeRotate::Instrument() {
-    frc::SmartDashboard::PutNumber("Intake Pos", rotateLeft->GetSelectedSensorPosition(0));
+    const int currentPosition = rotateLeft->GetSelectedSensorPosition();
+    const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+
+    frc::SmartDashboard::PutNumber("Intake Pos", currentPosition);
     frc::SmartDashboard::PutNumber("Intake Target", computedTargetValue);
+    frc::SmartDashboard::PutNumber("Virtual Pos", base + currentPosition);
     frc::SmartDashboard::PutNumber("RotateLeft Amps", rotateLeft->GetOutputCurrent());
     frc::SmartDashboard::PutNumber("Rotate Angle", rotateAngle);
 }
