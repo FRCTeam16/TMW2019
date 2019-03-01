@@ -57,6 +57,9 @@ void Intake::Run() {
         case IntakeState::kIntakeHatch:
             std::cout << "IntakeState::Run() -> kIntakeHatch (elapsed = " << elapsed << ")\n";
             runningSequence = true;
+            if (!intakeBumpState.started) {
+                intakeBumpState.started = true;
+            }
 
             ejectorSolenoidState = true;
             gripperSolenoidState = false;
@@ -65,16 +68,21 @@ void Intake::Run() {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
-                Robot::elevator->BumpUp();
-            } else if (elapsed >= 0.5 && elapsed < 1.0) {
+                if (!intakeBumpState.bumpedUp) {
+                    Robot::elevator->BumpUp();
+                    intakeBumpState.bumpedUp = true;
+                }
+            } else if (elapsed >= 0.5 && elapsed < 2.0) {
                 ejectorSolenoidState = false;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
-            } else if (elapsed >= 1.0) {
+            } else if (elapsed >= 2.0) {
                 ejectorSolenoidState = false;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
+                
                 Robot::elevator->BumpDown();
+                intakeBumpState.Reset();            
                 runningSequence = false;
                 currentState = IntakeState::kNone; // human will tigger next state
             }

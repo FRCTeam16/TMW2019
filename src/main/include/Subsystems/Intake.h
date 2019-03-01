@@ -14,6 +14,18 @@
 #include <frc/DoubleSolenoid.h>
 
 
+class IntakeBumpState {
+public:
+  bool started = false;
+  bool bumpedUp = false;
+  // bool bumpedDown = false; last move
+
+  void Reset() {
+    started = false;
+    bumpedUp = false;
+  }
+};
+
 class Intake: SubsystemManager {
 
 public:
@@ -71,6 +83,8 @@ private:
   void SetState(IntakeState state);
   void SetBottomBeaterSpeed(double speed);
   void SetTopBeaterSpeed(double speed);
+
+  IntakeBumpState intakeBumpState;
 };
 
 
