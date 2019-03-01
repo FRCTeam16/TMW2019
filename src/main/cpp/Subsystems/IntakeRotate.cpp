@@ -175,7 +175,7 @@ void IntakeRotate::Instrument() {
 
     frc::SmartDashboard::PutNumber("Intake Pos", currentPosition);
     frc::SmartDashboard::PutNumber("Intake Target", computedTargetValue);
-    frc::SmartDashboard::PutNumber("Virtual Pos", base + currentPosition);
+    frc::SmartDashboard::PutNumber("Virtual Pos", currentPosition - base);
     frc::SmartDashboard::PutNumber("RotateLeft Amps", rotateLeft->GetOutputCurrent());
     frc::SmartDashboard::PutNumber("Rotate Angle", rotateAngle);
 }

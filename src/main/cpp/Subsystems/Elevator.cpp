@@ -40,6 +40,7 @@ Elevator::Elevator() {
 
 void Elevator::Init() {
 	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
+	PrefUtil::getSet("Elevator.BumpUp", -50);
 	SetInitialPosition();
 
 	runMode = kManual;
@@ -141,6 +142,30 @@ void Elevator::SetElevatorSetpoint(int _setpoint) {
 	setpoint = _setpoint;
 }
 
+
+void Elevator::BumpUp() {
+	if (RunMode::kMagic == runMode) {
+		std::cout << "Elevator::BumpUp\n";
+		const double bumpUpAmt = PrefUtil::getSet("Elevator.BumpUp", -50);
+			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
+		setpointStartMoveTime = frc::Timer::GetFPGATimestamp();
+		SetElevatorSetpoint(setpoint + bumpUpAmt);
+	} else {
+		std::cout << "Elevator::BumpUp - Unable to bump because we are in open loop\n";
+	}
+}
+
+void Elevator::BumpDown() {
+	if (RunMode::kMagic == runMode) {
+		std::cout << "Elevator::BumpDown\n";
+		const double bumpUpAmt = PrefUtil::getSet("Elevator.BumpUp", -50);
+			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
+		setpointStartMoveTime = frc::Timer::GetFPGATimestamp();
+		SetElevatorSetpoint(setpoint - bumpUpAmt);
+	} else {
+		std::cout << "Elevator::BumpDown - Unable to bump because we are in open loop\n";
+	}
+}
 
 bool Elevator::InPosition() {
     double error = setpoint - GetElevatorEncoderPosition();

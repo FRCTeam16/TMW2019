@@ -53,6 +53,9 @@ public:
 
 	void ToggleCargoShotMode();
 
+	void BumpUp();
+	void BumpDown();
+
 
 private:
 	std::shared_ptr<WPI_TalonSRX> elevatorMotor = RobotMap::elevatorMotor;

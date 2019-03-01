@@ -9,6 +9,7 @@
 #include "RobotMap.h"
 #include "frc/Preferences.h"
 #include "Util/PrefUtil.h"
+#include "Robot.h"
 
 
 
@@ -64,18 +65,23 @@ void Intake::Run() {
                 ejectorSolenoidState = true;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
-            } else if (elapsed >= 0.5) {
+                Robot::elevator->BumpUp();
+            } else if (elapsed >= 0.5 && elapsed < 1.0) {
                 ejectorSolenoidState = false;
                 gripperSolenoidState = true;
                 hatchSolenoidState = false;
-
+            } else if (elapsed >= 1.0) {
+                ejectorSolenoidState = false;
+                gripperSolenoidState = true;
+                hatchSolenoidState = false;
+                Robot::elevator->BumpDown();
                 runningSequence = false;
                 currentState = IntakeState::kNone; // human will tigger next state
             }
             break;
 
         case IntakeState::kEjectHatch:
-            std::cout << "IntakeState::Run() -> kEjectHatch (elapsed = " << elapsed << ") " << ejectorSolenoidState << " - ";
+            std::cout << "IntakeState::Run() -> kEjectHatch (elapsed = " << elapsed << ") " << ejectorSolenoidState << "\n";
             runningSequence = true;
 
             ejectorSolenoidState = false;
