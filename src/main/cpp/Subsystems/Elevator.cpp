@@ -243,6 +243,7 @@ void Elevator::ToggleCargoShotMode() {
 
 void Elevator::Instrument() {
 	SmartDashboard::PutNumber("Elevator Position", GetElevatorEncoderPosition());
+	SmartDashboard::PutNumber("Elevator Level", static_cast<int>(elevatorPosition));
 	SmartDashboard::PutNumber("Elevator Current (Main)", elevatorMotor->GetOutputCurrent());
 	SmartDashboard::PutNumber("Elevator Output (Main)", elevatorMotor->Get());
 	SmartDashboard::PutBoolean("Elevator Limit Switch FWD", elevatorMotor->GetSensorCollection().IsFwdLimitSwitchClosed());
