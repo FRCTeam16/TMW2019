@@ -5,9 +5,9 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#include "Lift/Thirdstep.h"
+#include "Lift/ThirdStep.h"
 #include <iostream>
-#include"Robot.h"
+#include "Robot.h"
 #include "Subsystems/JackScrews.h"
 
 

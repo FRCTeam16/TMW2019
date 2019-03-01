@@ -8,7 +8,7 @@
 #pragma once
 
 #include "Subsystems/SubsystemManager.h"
-#include "frc/WPIlib.h"
+#include "frc/WPILib.h"
 #include "Limelight.h"
 #include "XOffsetController.h"
 #include "Util/UtilityFunctions.h"
