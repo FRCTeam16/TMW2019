@@ -8,7 +8,7 @@
 #include "Lift/LiftController.h"
 #include "Lift/FirstStep.h"
 #include "Lift/SecondStep.h"
-#include "Lift/Thirdstep.h"
+#include "Lift/ThirdStep.h"
 #include "Robot.h"
 
 LiftController::LiftController() = default;
