@@ -34,7 +34,6 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 
     // Drive down ramp
     const double initialDriveSpeed = putSet(autoTbl.get(), "D1.y", 0.3);
-
     steps.push_back(new ConcurrentStep({
 		new TimedDrive(0.0, initialDriveSpeed, 0.0, 1.0),
 		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne)
@@ -48,10 +47,10 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	steps.push_back(new TimedDrive(0.0, pushBackSpeed, 0.0, 0.5));
 
 	// Move to hatch pickup
-	const double lateralX = putSet(autoTbl.get(), "D2.x", 0.3);
-	const double lateralYRatio = putSet(autoTbl.get(), "D2.yratio", -0.56);
-	const double lateralY = lateralX * lateralYRatio;	// ratio of distances (y/x)
-	steps.push_back(new TimedDrive(-180.0, lateralY, lateralX * inv, 2.5, 0.5));
+	const double toPickupX = putSet(autoTbl.get(), "D2.x", 0.3) * inv;
+	const double toPickupY = putSet(autoTbl.get(), "D2.y", -0.168);		// ratio is 0.56
+	const double toPickupTime = putSet(autoTbl.get(), "D2.time", 2.5);
+	steps.push_back(new TimedDrive(-180.0, toPickupY, toPickupX, toPickupTime, 0.5));
 
 	// Do Hatch pickup
 	const double d3PickupSpeed = putSet(autoTbl.get(), "D3.y", 0.2);
@@ -60,14 +59,10 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	steps.push_back(new TimedDrive(-180.0, -pushBackSpeed, 0.0, 0.5));
 
 	// Move to scoring position
+	// Ratio 228 Y / 72 X 
 	const double toCargoY = 0.3;
-	const double toCargoX = 0.3;
+	const double toCargoX = 0.09;
 	const double toCargoTime = 0.3;
-	steps.push_back(new TimedDrive(-90.0, toCargoY, toCargoX, toCargoTime));
-
-
-	// 228 Y
-	// 72
-
+	steps.push_back(new TimedDrive(90.0, toCargoY, toCargoX, toCargoTime));
 
 }
