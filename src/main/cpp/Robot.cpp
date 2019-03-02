@@ -168,10 +168,11 @@ void Robot::TeleopPeriodic() {
 			} else if (oi->GPB->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoPickup);
 			} else if (oi->GPX->RisingEdge()) {
-				// intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
 				elevator->ToggleCargoShotMode();
 			} else if (oi->GPA->RisingEdge()) {
 				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kFloor);
+			} else if (oi->GPBack->RisingEdge()) {
+				intakeRotate->SetIntakePosition(IntakeRotate::IntakePosition::kCargoShot);
 			}
 			
 		}
