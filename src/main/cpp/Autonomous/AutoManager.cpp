@@ -1,8 +1,10 @@
 #include "Autonomous/AutoManager.h"
 #include "Autonomous/AutoPositions.h"
 #include "RobotMap.h"
-#include "Autonomous/Strategies/DebugAutoStrategy.h"
 #include "Robot.h"
+
+#include "Autonomous/Strategies/DebugAutoStrategy.h"
+#include "Autonomous/Strategies/TwoHatchCenterStartStrategy.h"
 
 
 
@@ -11,7 +13,8 @@ AutoManager::AutoManager() :
 		strategies(new frc::SendableChooser<int>())
 {
 	// strategies->AddDefault("1 - Side Start", AutoStrategy::kSide);
-	strategies->SetDefaultOption("99 - Debug Auto Strategy", AutoStrategy::kDebug);
+	strategies->SetDefaultOption("1 - TwoHatchCenterStartStrategy", AutoStrategy::kTwoHatchCenterStartStrategy);
+	strategies->AddOption("99 - Debug Auto Strategy", AutoStrategy::kDebug);
 
 	positions->SetDefaultOption("2 - Right", AutoStartPosition::kRight);
 	positions->AddOption("1 - Center", AutoStartPosition::kCenter);
@@ -33,6 +36,10 @@ std::unique_ptr<Strategy> AutoManager::CreateStrategy(const AutoStrategy &key, s
 	case kDebug:
 		std::cout << "AUTOMAN: Selected DEBUG \n";
 		strategy = new DebugAutoStrategy(world);
+		break;
+	case kTwoHatchCenterStartStrategy:
+		std::cout << "AUTOMAN: Selected kTwoHatchCenterStartStrategy \n";
+		strategy = new TwoHatchCenterStartStrategy(world);
 		break;
 	default:
 		// TODO: Fill in sane default

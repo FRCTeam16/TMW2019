@@ -1,8 +1,8 @@
 #include "Autonomous/Steps/StopAtTarget.h"
 #include "Robot.h"
 
-StopAtTarget::StopAtTarget(Step *step, double _targetArea, int numScans, double _timeOutTime) 
-  : step(step), targetArea(_targetArea), numScansToHold(numScans), timeOutTime(_timeOutTime) {}
+StopAtTarget::StopAtTarget(Step *step, double xThreshold, int numScans, double _ignoreTime, double _timeOutTime) 
+  : step(step), xThreshold(xThreshold), numScans(numScans), ignoreTime(_ignoreTime), timeOutTime(_timeOutTime) {}
 
 bool StopAtTarget::Run(std::shared_ptr<World> world) {
     if (startTime < 0) {
@@ -11,42 +11,41 @@ bool StopAtTarget::Run(std::shared_ptr<World> world) {
     const double elapsed = frc::Timer::GetFPGATimestamp() - startTime;
     timedOut = (elapsed > timeOutTime);
     if (timedOut) {
-        std::cout << "StopAtTarget: Stopped due to vision threshold met\n";
+        std::cout << "StopAtTarget: TIMEOUT\n";
         return true;
     }
 
-    const auto vision = Robot::visionSystem->GetLastVisionInfo();
-    const bool hasTarget = vision->hasTarget;
-
     bool visionThresholdMet = false;
-    if (targetArea > 0) {
-        // Using target area as determiner
-        visionThresholdMet = vision->targetArea >= targetArea;
-        if (visionThresholdMet) {
-            scanCount++;
+    if (elapsed >= ignoreTime) {
+        const auto vision = Robot::visionSystem->GetLastVisionInfo();
+        const bool hasTarget = vision->hasTarget;
+        
+        if (hasTarget) {
+            if (fabs(vision->xOffset) <= xThreshold) {
+                if (++scanCount >= numScans) {
+                    visionThresholdMet = true;
+                }
+            } // outside of threshold
         } else {
             scanCount = 0;
         }
+
+        std::cout << "StopAtTarget(scans = " << scanCount << "):" 
+                    << " | tgt? " << vision->hasTarget
+                    << " | xspeed: " << vision->xSpeed
+                    << " | ta: " << vision->targetArea
+                    << " | tx: " << vision->xOffset
+                    << " | ta met? " << visionThresholdMet
+                    << "\n"; 
     } else {
-        // Only using hasTarget as determiner
-        if (vision->hasTarget) {
-            scanCount++; 
-        } else {
-            scanCount = 0;
-        }
+        std::cout << "StopAtTarget(Waiting " << elapsed << " / " << ignoreTime << ")\n";
     }
 
-    std::cout << "StopAtTarget(scans = " << scanCount << "):" 
-                  << " | tgt? " << vision->hasTarget
-                  << " | xspeed: " << vision->xSpeed
-                  << " | ta: " << vision->targetArea
-                  << " | ta met? " << visionThresholdMet
-                  << "\n";
-
-    if (scanCount >= numScansToHold) {
+    
+    if (visionThresholdMet) {
         std::cout << "StopAtTarget: Exiting due to vision threshold met\n";
         return true;
     } else {
-        return step->Run(world);;
+        return step->Run(world);
     }
 }

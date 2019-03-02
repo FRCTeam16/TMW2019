@@ -20,6 +20,7 @@ bool DriveToTarget::Run(std::shared_ptr<World> world) {
 
     std::cout << "DriveToTarget: tgt? " << vision->hasTarget
                   << " | xspeed: " << vision->xSpeed
+                  << " | tx: " << vision->xOffset
                   << " | ta: " << vision->targetArea
                   << " | ta met? " << visionThresholdMet
                   << "\n";

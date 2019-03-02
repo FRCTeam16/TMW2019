@@ -94,19 +94,19 @@ void IntakeRotate::Run() {
     }
 
     bool doPositionControl = positionControl;
-    if (!initializeFinished && (initializeScanCounts++ < kInitializeScanCountMax)) {
-        // std::cout << "Overriding intitialization - current draw: " 
-        //           << rotateLeft->GetOutputCurrent() << "\n";
-        doPositionControl = false;
-        positionSpeed = 0.0;
-    } else {
-        if (initializeScanCounts > 0) {
-            initializeFinished = true;
-            initializeScanCounts = 0;
-            positionControl = true;
-            targetPositionValue = currentPosition - base;
-        }   
-    }
+    // if (!initializeFinished && (initializeScanCounts++ < kInitializeScanCountMax)) {
+    //     // std::cout << "Overriding intitialization - current draw: " 
+    //     //           << rotateLeft->GetOutputCurrent() << "\n";
+    //     doPositionControl = false;
+    //     positionSpeed = 0.0;
+    // } else {
+    //     if (initializeScanCounts > 0) {
+    //         initializeFinished = true;
+    //         initializeScanCounts = 0;
+    //         positionControl = true;
+    //         targetPositionValue = currentPosition - base;
+    //     }   
+    // }
    
     if (doPositionControl) {
         rotateLeft->Set(ControlMode::MotionMagic, computedTargetValue);

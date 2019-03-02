@@ -85,4 +85,6 @@ private:
 
   LiftDrive liftDrive;
 
+  bool initialized = false;
+
 };

@@ -48,7 +48,8 @@ void Robot::RobotInit() {
 
 void Robot::DisabledInit() {
 	intakeRotate->DisabledHoldCurrentPosition();
-	elevator->DisabledZeroOutput();;
+	elevator->DisabledZeroOutput();
+	initialized = false;
 }
 
 void Robot::DisabledPeriodic() {
@@ -70,13 +71,20 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
     std::cout << "Robot::TeleopInit =>\n";
-    InitSubsystems();
-	driveBase->InitTeleop();
-	liftController.reset();
+	if (!initialized) {
+		InitSubsystems();
+		driveBase->InitTeleop();
+		liftController.reset();
 
-	runningScrews = false;				// flag for when jackscrew control is manual
-	runningLiftSequence = false;		// flag for when jackscrew control is automatic
-	autoInitialized = false;			// flag for when autonomous routines are running
+		runningScrews = false;				// flag for when jackscrew control is manual
+		runningLiftSequence = false;		// flag for when jackscrew control is automatic
+		autoInitialized = false;			// flag for when autonomous routines are running
+
+		initialized = true;
+	} else {
+		std::cout << " --- already initialized, ignoring\n";
+	}
+    
 
     std::cout << "Robot::TeleopInit <=\n";
 }
