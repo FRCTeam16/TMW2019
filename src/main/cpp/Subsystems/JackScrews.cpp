@@ -33,6 +33,11 @@ void JackScrews::Init() {
   speedDeltaDown = PrefUtil::getSet("JackScrew.deltaDown", 0.05);
   speedDeltaUp = PrefUtil::getSet("JackScrew.deltaUp", 0.05);
   enableEmergencyHalt = PrefUtil::getSetBool("JackScrew.EnableEStop", true);
+
+  jackScrews->FL->Init();
+  jackScrews->FR->Init();
+  jackScrews->RL->Init();
+  jackScrews->RR->Init();
 }
 
 void JackScrews::Run()
