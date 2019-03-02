@@ -38,11 +38,11 @@ public:
     }
 
     void Forward() {
-        Crawl(crawlSpeed);
+        Crawl(-crawlSpeed);
     }
 
     void Back() {
-        Crawl(-crawlSpeed);
+        Crawl(crawlSpeed);
     }
 
     void Stop() {
