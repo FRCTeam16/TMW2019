@@ -33,8 +33,7 @@ public:
             const int direction = targetSpeed < 0 ? -1 : 1;
             speed = RampUtil::RampUp(fabs(targetSpeed), (now - startTime), kRampTime, 0.0) * direction;
         }
-        // FIXME: Disabled until controller available on practice bot for 2nd elevator motor
-        //RobotMap::crawlMotor->Set(speed);
+        RobotMap::crawlMotor->Set(speed);
     }
 
     void Forward() {
