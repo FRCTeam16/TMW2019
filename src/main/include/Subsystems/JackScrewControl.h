@@ -13,9 +13,10 @@
 class JackScrewControl {
 public:
     explicit JackScrewControl(std::string name, std::shared_ptr<SwerveWheel> wheel) : name(name), wheel(wheel) {
-        std::cout << "********************* JackScrewControl *********************\n";
+        std::cout << "JackScrewControl(" << name << ")\n";
         currentState = JackScrewState::kSwerve;
     }
+    void Init();
     enum class JackScrewState { kSwerve, kOpenLoop, kClosedLoop };
     enum class EndStateAction { kNone, kSwitchToControl, kSwitchToAmpDetect };
 
@@ -51,12 +52,16 @@ private:
     double accumulatedPosition = 0;
     bool finished = false;
 
-    double kJackScrewApproachSpeed = -0.10;
     double controlSpeed = 0.0;
     const double jackScrewRampTime = 0.25;
-    const double rotationCloseLoopThreshold = 7;
+    double rotationCloseLoopThreshold = 7;
+    double pullUpApproachThreshold = 7;
+    double pullUpApproachSpeed = -0.10;
     bool firstThresholdRun = true;
     bool doRamp = false;
+
+    const int kAmpSkipScanCount = 10;
+    int currentAmpDelayScan = 0;
 
     EndStateAction endStateAction = EndStateAction::kNone;
 

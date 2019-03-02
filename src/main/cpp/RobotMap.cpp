@@ -20,7 +20,7 @@
 
   std::shared_ptr<WPI_TalonSRX> RobotMap::elevatorMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::elevatorFollowerMotor;
-  std::shared_ptr<WPI_TalonSRX> RobotMap::crawlMotor;
+  std::shared_ptr<WPI_VictorSPX> RobotMap::crawlMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::rotateLeftMotor;
   std::shared_ptr<WPI_VictorSPX> RobotMap::rotateRightMotor;
   std::shared_ptr<WPI_TalonSRX> RobotMap::beaterTopMotor;
@@ -50,7 +50,7 @@ RobotMap::RobotMap() {
 
   elevatorMotor.reset(new WPI_TalonSRX{9});
   elevatorFollowerMotor.reset(new WPI_TalonSRX{15});
-  // crawlMotor.reset(new WPI_TalonSRX{10});
+  crawlMotor.reset(new WPI_VictorSPX{10});
   rotateLeftMotor.reset(new WPI_TalonSRX{11});
   rotateRightMotor.reset(new WPI_VictorSPX{12});
   beaterTopMotor.reset(new WPI_TalonSRX{13});
