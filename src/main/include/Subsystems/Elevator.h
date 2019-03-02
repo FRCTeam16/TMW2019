@@ -75,7 +75,7 @@ private:
 	int kInitializeScanCountMax = 25;
 
 	double setpointStartMoveTime = -1;
-	double kFloorResetWaitPeriod = 0.5;		// time to wait before resetting to floor position
+	double kFloorResetWaitPeriod = 1.0;		// time to wait before resetting to floor position
 
 	bool cargoShotMode = false;
 };
