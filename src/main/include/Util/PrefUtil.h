@@ -34,6 +34,17 @@ public:
 //		std::cout << "key: " << key << " | value: " << returnValue << "\n";
 		return returnValue;
 	}
+
+    static bool getSetBool(const std::string &key, bool defaultValue) {
+        std::cout << "key: " << key << " | value: " << defaultValue << "\n";
+		Preferences *prefs = Preferences::GetInstance();
+		int returnValue = prefs->GetBoolean(key, defaultValue);
+		if (!prefs->ContainsKey(key)) {
+			prefs->PutBoolean(key, returnValue);
+		}
+//		std::cout << "key: " << key << " | value: " << returnValue << "\n";
+		return returnValue;
+    }
 };
 
 #endif //PROJECT_PREFUTIL_H

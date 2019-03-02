@@ -27,6 +27,12 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
 
 void JackScrews::Init() {
   this->ShiftAll(JackScrews::ShiftMode::kDrive);
+
+  kMaximumDisplacementThreshold = PrefUtil::getSet("JackScrew.speedDisplacementThreshold", 2.0);
+  kHaltClimbDisplacementThreshold = PrefUtil::getSet("JackScrew.haltDisplacementThreshold", 2.0);
+  speedDeltaDown = PrefUtil::getSet("JackScrew.deltaDown", 0.05);
+  speedDeltaUp = PrefUtil::getSet("JackScrew.deltaUp", 0.05);
+  enableEmergencyHalt = PrefUtil::getSetBool("JackScrew.EnableEStop", true);
 }
 
 void JackScrews::Run()
@@ -225,11 +231,10 @@ void JackScrews::DoControlled() {
     positions[i] = accumulated;
     if (fabs(accumulated)  < fabs(lowest->GetAccumulatedPosition())) {
       lowest = activeCalcs[i].get();
-      std::cout << "lowest = " << i << " = " << accumulated;
+      std::cout << "lowest = " << i << " = " << accumulated << "\n";
       inHoldPosition |= activeCalcs[i]->IsClosedLoop();
     }
   }
-  std::cout << "Configured lowest\n";
 
 
   // If any of the stored accumulated positions exceed the halt threshold then we
@@ -240,7 +245,7 @@ void JackScrews::DoControlled() {
       std::cout << "****** Exceeded halt climb displacement threshold at position " << i
                 << ", displacement was " << diff << "*****\n";
       std::cout << "Position[" << i << "] = " << positions[i] << " | lowest = " << lowest->GetAccumulatedPosition() << "\n";
-      emergencyHalt = true;
+      emergencyHalt = enableEmergencyHalt ? true : false;
     }
   }
 
@@ -286,13 +291,14 @@ void JackScrews::DoControlled() {
 
     const double diff = fabs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
     if (diff >= kMaximumDisplacementThreshold) {
-      if (currentCalc->GetLastChange() > lowest->GetLastChange()) {
-        const double delta = speedDir * 0.02; // alternate do ratio? // FIXME
+      if (fabs(currentCalc->GetLastChange()) > fabs(lowest->GetLastChange())) {
+        const double baseDelta = (targetPosition == Direction::kDown) ? speedDeltaDown : speedDeltaUp;
+        const double delta = speedDir * baseDelta; // alternate do ratio? // FIXME
         double newSpeed = currentCalc->GetControlSpeed() - delta;
 
         // Make sure we never go below zero
-        if (newSpeed < 0.0) {
-          std::cout << "!!! Safety stop to 0.0 because adjusted speed went negative\n";
+        if ((targetPosition == Direction::kDown && newSpeed < 0.0) || (targetPosition == Direction::kUp && newSpeed > 0.0)) {
+          std::cout << "!!! Safety stop to 0.0 because adjusted speed rolled over zero\n";
           newSpeed = 0.0;
         }
         currentCalc->SetControlSpeed(newSpeed);
