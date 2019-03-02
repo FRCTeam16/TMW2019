@@ -2,6 +2,17 @@
 #include "Subsystems/JackScrewControl.h"
 
 
+void JackScrewControl::Init() {
+    rotationCloseLoopThreshold = PrefUtil::getSet("JackScrewControl.CloseLoopThreshold", 7);
+    pullUpApproachThreshold = PrefUtil::getSet("JackScrewControl.PullUpApproachThreshold", 15);
+    pullUpApproachSpeed = PrefUtil::getSet("JackScrewControl.PullUpApproachSpeed", -0.10);
+
+    const double ampThreshold = PrefUtil::getSet("JackScrewControl.PullUpAmps", 30);
+    const unsigned int ampCounts = PrefUtil::getSetInt("JackScrewControl.PullUpAmpsCounts", 3);
+
+    ampDetector = MovingAverageThreshold{ampThreshold, ampCounts};
+}
+
 void JackScrewControl::ConfigureControlled(double targetDistance_, double controlSpeed_, double controlTimeStart_, EndStateAction action, bool _doRamp) {
     std::cout << "JackScrewControl::Init() " << name << "\n";
     targetDistance = targetDistance_;
@@ -48,7 +59,11 @@ void JackScrewControl::Run() {
     lastChange = (currentPosition - lastPosition);  // removed fabs
     accumulatedPosition += lastChange;
     const double remaining = (targetDistance - accumulatedPosition);    // removed fabs
-    const bool inThreshold = fabs(remaining) < rotationCloseLoopThreshold;
+
+    const double fRemain = fabs(remaining);
+    const bool inApproachThreshold = fRemain < pullUpApproachThreshold;
+    const bool inCloseLoopThreshold = fRemain < rotationCloseLoopThreshold;
+    std::cout << "JSC: fRemain = " << fRemain << " | inApproachT? " << inApproachThreshold << " | inCloseLoopT? " << inCloseLoopThreshold << "\n";
 
     switch (endStateAction) {
         case EndStateAction::kNone:
@@ -56,25 +71,34 @@ void JackScrewControl::Run() {
 
         // Only when running amp
         case EndStateAction::kSwitchToAmpDetect:
-            if (inThreshold) {
+            
+            if (inApproachThreshold) {
+                SetControlSpeed(pullUpApproachSpeed);
+                speed = pullUpApproachSpeed;
+
                 if (firstThresholdRun) {
-                    Robot::jackScrews->ConfigureOpenLoop(kJackScrewApproachSpeed, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
+                    Robot::jackScrews->ConfigureOpenLoop(pullUpApproachSpeed, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
                     firstThresholdRun = false;
+                    currentAmpDelayScan = 0;
                 }
-                if (!ampDetector.Check()) {
-                    ampDetector.AddValue(wheel->GetDriveOutputCurrent());
-                } else {
-                    std::cout << "JackScrewControl " << name << " detected amp spike\n";
-                    SetControlSpeed(0.0);
-                    speed = 0.0;
-                    finished = true;
+            
+                if (currentAmpDelayScan++ >= kAmpSkipScanCount) {
+                    if (!ampDetector.Check()) {
+                        ampDetector.AddValue(wheel->GetDriveOutputCurrent());
+                    } else {
+                        std::cout << "JackScrewControl " << name << " detected amp spike\n";
+                        SetControlSpeed(0.0);
+                        speed = 0.0;
+                        finished = true;
+                    }
                 }
-            }
+            } // otherwise use jackscrew settings sent to us
             break;
 
         // Used when running down
         case EndStateAction::kSwitchToControl:
-            if (!IsClosedLoop() && inThreshold) {
+            
+            if (!IsClosedLoop() && inCloseLoopThreshold) {
                 std::cout << " JackScrewControl " << name << " flipping to closed loop\n";
                 wheel->SetDriveSoftMinMaxOutput(-1.0, 1.0);
                 SetCurrentState(JackScrewState::kClosedLoop);
