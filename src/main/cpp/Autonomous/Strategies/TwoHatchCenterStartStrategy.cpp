@@ -29,7 +29,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
     const int inv = isRight ? 1 : -1;
 
     auto defaultInstance = nt::NetworkTableInstance::GetDefault();
-    auto autoTbl = defaultInstance.GetTable("Auto")->GetTable("THCS");
+    auto autoTbl = defaultInstance.GetTable("Auto/THCS");
 	
 
     // Drive down ramp
@@ -60,9 +60,11 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 
 	// Move to scoring position
 	// Ratio 228 Y / 72 X 
-	const double toCargoY = 0.3;
-	const double toCargoX = 0.09;
+	const double toCargoY = 0.26;
+	const double toCargoX = -0.09 * inv;		// 31.5789%
 	const double toCargoTime = 0.3;
-	steps.push_back(new TimedDrive(90.0, toCargoY, toCargoX, toCargoTime));
+	const double cargoShipAngle = 90.0 * inv;
+	steps.push_back(new TimedDrive(cargoShipAngle, toCargoY, toCargoX, toCargoTime));
+	// steps.push_back(new DriveToTarget(cargoShipAngle, ))
 
 }

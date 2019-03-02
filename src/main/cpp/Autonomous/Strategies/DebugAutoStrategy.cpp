@@ -16,10 +16,12 @@
 #include "Autonomous/Steps/DriveToTarget.h"
 #include "Autonomous/Steps/RotateIntake.h"
 #include "Autonomous/Steps/DoIntakeAction.h"
+#include "Autonomous/Steps/StopAtTarget.h"
 
 
 DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
-	DebugStraight();
+	// DebugStraight();
+	DebugAutoHalt();
 }
 
 void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
@@ -31,6 +33,13 @@ void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
 	// const double angle = -180;
 	// SetGyroOffset *step = new SetGyroOffset(angle);
 	// step->Run(world);
+}
+
+void DebugAutoStrategy::DebugAutoHalt() {
+	const double angle = -90.0;
+	auto drive = new TimedDrive(angle, 0.2, 0.0, 5.0, 0.5);
+	steps.push_back(new StopAtTarget(drive, -1, 1, 5.0));
+	steps.push_back(new DriveToTarget(angle, 0.2, 5.0, 2.0));
 }
 
 void DebugAutoStrategy::DebugStraight() {

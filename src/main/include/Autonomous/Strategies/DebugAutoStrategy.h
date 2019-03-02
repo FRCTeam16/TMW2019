@@ -20,6 +20,7 @@ public:
 
 private:
 	void DebugStraight();
+	void DebugAutoHalt();
 };
 
 #endif /* SRC_AUTONOMOUS_DEBUGAUTOSTRATEGY_H_ */

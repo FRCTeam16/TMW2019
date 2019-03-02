@@ -19,7 +19,7 @@ public:
 	virtual ~Step() = default;
 	virtual bool Run(std::shared_ptr<World> world) = 0;
 	virtual const CrabInfo* GetCrabInfo() { return crab.get(); }
-	bool IsManualDriveControl() const { return manualDriveControl; }
+	virtual bool IsManualDriveControl() const { return manualDriveControl; }
 protected:
 	std::unique_ptr<CrabInfo> crab { new CrabInfo() };
 	bool manualDriveControl = false;
