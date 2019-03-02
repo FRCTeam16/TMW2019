@@ -67,8 +67,8 @@ public:
     DriveInfo<bool> DetermineJackScrewsToInit();
     bool CheckCANCommunications();
 
-    const double kMaximumDisplacementThreshold = 5;   // threshold before adjusting speeds
-    const double kHaltClimbDisplacementThreshold = 10;
+    const double kMaximumDisplacementThreshold = 2;   // threshold before adjusting speeds
+    const double kHaltClimbDisplacementThreshold = 5;
     bool emergencyHalt = false;
 
 

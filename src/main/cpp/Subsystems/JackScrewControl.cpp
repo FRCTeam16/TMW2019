@@ -53,6 +53,8 @@ void JackScrewControl::Run() {
     switch (endStateAction) {
         case EndStateAction::kNone:
             break;
+
+        // Only when running amp
         case EndStateAction::kSwitchToAmpDetect:
             if (inThreshold) {
                 if (firstThresholdRun) {
@@ -70,6 +72,7 @@ void JackScrewControl::Run() {
             }
             break;
 
+        // Used when running down
         case EndStateAction::kSwitchToControl:
             if (!IsClosedLoop() && inThreshold) {
                 std::cout << " JackScrewControl " << name << " flipping to closed loop\n";
