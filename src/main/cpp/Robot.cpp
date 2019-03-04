@@ -57,6 +57,7 @@ void Robot::DisabledPeriodic() {
 	intakeRotate->DisabledHoldCurrentPosition();
 	elevator->DisabledZeroOutput();
 	InstrumentSubsystems();
+	HandleGlobalInputs();
 }
 
 void Robot::AutonomousInit() {
@@ -245,16 +246,7 @@ void Robot::TeleopPeriodic() {
 	 * Vision
 	**********************************************************/
 	const bool visionMode = oi->DR3->Pressed();	// controls drive
-	if (oi->DR9->RisingEdge()) {
-		visionSystem->ToggleCameraMode();
-	}
-	if (oi->DR7->RisingEdge()) {
-		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::LimelightMain);
-	} else if (oi->DR8->RisingEdge()) {
-		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::USBMain);
-	} else if (oi->DR10->RisingEdge()) {
-		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::SideBySide);
-	}
+	HandleGlobalInputs();
 
 
 	
@@ -423,6 +415,19 @@ void Robot::InstrumentSubsystems() {
 	intakeRotate->Instrument();
 	crawler->Instrument();
 	elevator->Instrument();
+}
+
+void Robot::HandleGlobalInputs() {
+	if (oi->DR9->RisingEdge()) {
+		visionSystem->ToggleCameraMode();
+	}
+	if (oi->DR7->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::LimelightMain);
+	} else if (oi->DR8->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::USBMain);
+	} else if (oi->DR10->RisingEdge()) {
+		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::SideBySide);
+	}
 }
 
 

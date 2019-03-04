@@ -3,6 +3,6 @@
 
 class RocketBackStrategy : public StepStrategy {
  public:
-  explicit RocketBackStrategy() = default;
+  explicit RocketBackStrategy(std::shared_ptr<World> worldh) {};
   void Init(std::shared_ptr<World> world) override;
 };

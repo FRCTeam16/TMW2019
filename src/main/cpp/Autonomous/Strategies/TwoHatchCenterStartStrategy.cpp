@@ -57,7 +57,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double cargoShipAngle = -90.0 * inv;
 
 	// Fast drive to near cargo ship
-	steps.push_back(new TimedDrive(cargoShipAngle, 0.476, 0.148 * inv, 2.25, 0.5));
+	steps.push_back(new TimedDrive(cargoShipAngle, 0.476, -0.148 * inv, 2.25, 0.5));
 
 	// Ratio 228 Y / 72 X 
 	const double toCargoVizThresh = 10;

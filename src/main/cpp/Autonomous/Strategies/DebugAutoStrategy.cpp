@@ -17,11 +17,15 @@
 #include "Autonomous/Steps/RotateIntake.h"
 #include "Autonomous/Steps/DoIntakeAction.h"
 #include "Autonomous/Steps/StopAtTarget.h"
+#include "Autonomous/Steps/OpenDriveToDistance.h"
 
 
 DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
 	// DebugStraight();
-	DebugAutoHalt();
+	// DebugAutoHalt();
+	// DebugControlled();
+	auto drive = new TimedDrive(150.00, -0.15, 0.0, 1.5, -1, false);
+	steps.push_back(drive);
 }
 
 void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
@@ -66,4 +70,10 @@ void DebugAutoStrategy::DebugStraight() {
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
 	steps.push_back(new TimedDrive(-180.0, 0.15, 0.0, 0.5)); // FIXME no gyro robot centric
 
+}
+
+void DebugAutoStrategy::DebugControlled() {
+	// auto drive = new ClosedLoopDrive2(0.0, 0.3, 36, 36, -1, DriveUnit::kInches, 3.0, 0.5, 6);
+	auto drive = new OpenDriveToDistance(0.0, 0.3, 0.3, 36, 5, 0.6, 6, 4.0);
+	steps.push_back(drive);
 }

@@ -108,6 +108,7 @@ public:
 
 	void SetTargetDriveDistance(double distance, double maxSpeed = 0.5);
 	void UseClosedLoopDrive();
+	void UseClosedLoopSpeedDrive();
 	void UseOpenLoopDrive();
 
 	double GetDriveControlEncoderPosition();

@@ -208,6 +208,13 @@ void DriveBase::UseClosedLoopDrive() {
 	}
 }
 
+void DriveBase::UseClosedLoopSpeedDrive() {
+	std::cout << "*** UseClosedLoopSpeedDrive ***\n";
+	for (auto const& wheel : wheels) {
+		wheel->UseClosedLoopSpeedDrive();
+	}
+}
+
 void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	const double startTime = frc::Timer::GetFPGATimestamp();
 	lastSpeedX = x;
@@ -415,10 +422,10 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		rearLeft->UseOpenLoopDrive(speeds.RL);
 		rearRight->UseOpenLoopDrive(speeds.RR);
 	} else {
-		frontLeft->UseClosedLoopDrive(speeds.FL);
-		frontRight->UseClosedLoopDrive(speeds.FR);
-		rearLeft->UseClosedLoopDrive(speeds.RL);
-		rearRight->UseClosedLoopDrive(speeds.RR);
+		frontLeft->UseClosedLoopSpeedDrive(speeds.FL);
+		frontRight->UseClosedLoopSpeedDrive(speeds.FR);
+		rearLeft->UseClosedLoopSpeedDrive(speeds.RL);
+		rearRight->UseClosedLoopSpeedDrive(speeds.RR);
 	}
 }
 

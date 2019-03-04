@@ -64,6 +64,7 @@ private:
   void InitSubsystems();
 	void RunSubsystems();
 	void InstrumentSubsystems();
+  void HandleGlobalInputs();
 
   std::unique_ptr<RobotMap> robotMap;
   std::shared_ptr<StatusReporter> statusReporter;

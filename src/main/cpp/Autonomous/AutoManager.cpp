@@ -5,6 +5,7 @@
 
 #include "Autonomous/Strategies/DebugAutoStrategy.h"
 #include "Autonomous/Strategies/TwoHatchCenterStartStrategy.h"
+#include "Autonomous/Strategies/RocketBackStrategy.h"
 
 
 
@@ -14,10 +15,11 @@ AutoManager::AutoManager() :
 {
 	// strategies->AddDefault("1 - Side Start", AutoStrategy::kSide);
 	strategies->SetDefaultOption("1 - TwoHatchCenterStartStrategy", AutoStrategy::kTwoHatchCenterStartStrategy);
+	strategies->AddOption("2 - Rocket Back Strategy", AutoStrategy::kRocketBackStrategy);
 	strategies->AddOption("99 - Debug Auto Strategy", AutoStrategy::kDebug);
 
 	positions->SetDefaultOption("2 - Right", AutoStartPosition::kRight);
-	positions->AddOption("1 - Center", AutoStartPosition::kCenter);
+	// positions->AddOption("1 - Center", AutoStartPosition::kCenter);
 	positions->AddOption("0 - Left",  AutoStartPosition::kLeft);
 
 	frc::SmartDashboard::PutData("Autonomous Start Pos0", positions.get());
@@ -40,6 +42,10 @@ std::unique_ptr<Strategy> AutoManager::CreateStrategy(const AutoStrategy &key, s
 	case kTwoHatchCenterStartStrategy:
 		std::cout << "AUTOMAN: Selected kTwoHatchCenterStartStrategy \n";
 		strategy = new TwoHatchCenterStartStrategy(world);
+		break;
+	case kRocketBackStrategy:
+		std::cout << "AUTOMAN: Selected kRocketBackStrategy \n";
+		strategy = new RocketBackStrategy(world);
 		break;
 	default:
 		// TODO: Fill in sane default

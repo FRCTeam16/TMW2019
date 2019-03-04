@@ -6,13 +6,13 @@
 
 class TimedDrive: public Step {
 public:
-	TimedDrive(double _angle, double y, double x, double driveTime, double rampUpTime = -1, bool _useTwist = true) :
+	TimedDrive(double _angle, double y, double x, double driveTime, double rampUpTime = -1, bool _useGyro = true) :
 			angle(_angle),
 			ySpeed(y),
 			xSpeed(x),
 			timeToDrive(driveTime),
 			rampUpTime(rampUpTime),
-			useTwist(_useTwist) {}
+			useGyro(_useGyro) {}
 	virtual ~TimedDrive() {}
 	bool Run(std::shared_ptr<World> world) override;
 
@@ -22,7 +22,7 @@ private:
     const double xSpeed;
     const double timeToDrive;
 	const double rampUpTime;
-    const bool useTwist;
+    const bool useGyro;
     double startTime = -1;
 };
 

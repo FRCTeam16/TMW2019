@@ -14,22 +14,27 @@ bool TimedDrive::Run(std::shared_ptr<World> world) {
 		startTime = currentTime;
 		Robot::driveBase->UseOpenLoopDrive();
 		Robot::driveBase->SetTargetAngle(angle);
+		std::cout << "TimedDrive(" 
+			<< angle << ", "
+			<< ySpeed << ", "
+			<< xSpeed << ", "
+			<< timeToDrive << ", "
+			<< useGyro << ")\n";
 	}
 	const double elapsed = currentTime - startTime;
 	if (elapsed > timeToDrive) {
-		// FIXME: Robot::driveBase->UseClosedLoopDrive();
 		return true;
 	} else {
-		const double twist = (useTwist) ? Robot::driveBase->GetTwistControlOutput() : 0.0;
+		// const double twist = (useTwist) ? Robot::driveBase->GetTwistControlOutput() : 0.0;
 		double y = ySpeed;
 		if (rampUpTime > 0) {
 			y = RampUtil::RampUp(ySpeed, elapsed, rampUpTime);
 		}
 		crab->Update(
-				(float) twist,
+				(float) Robot::driveBase->GetTwistControlOutput(),
 				(float) y,
 				(float) xSpeed,
-				true);
+				useGyro);
 		return false;
 	}
 }
