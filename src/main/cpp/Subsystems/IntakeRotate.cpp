@@ -88,7 +88,8 @@ void IntakeRotate::Run() {
     //           << "k = " << k << "\n";
 
     if (IntakeRotate::IntakePosition::kFloor == targetPosition ||
-        IntakeRotate::IntakePosition::kCargoPickup == targetPosition) {
+        IntakeRotate::IntakePosition::kCargoPickup == targetPosition ||
+        IntakeRotate::IntakePosition::kCargoShot == targetPosition) {
         Robot::intake->SetEjectorState(false);  // force retract of ejector if we move to floor
         Robot::intake->SetGripperState(false);  // Make sure gripper is retracted as well
     }
