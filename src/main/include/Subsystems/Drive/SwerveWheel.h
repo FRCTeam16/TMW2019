@@ -12,7 +12,8 @@ public:
 
   virtual bool IsOpenLoopDrive() = 0;
   virtual void UseOpenLoopDrive(double speed = 0.0) = 0;
-  virtual void UseClosedLoopDrive(double value = 0.0) = 0;
+  virtual void UseClosedLoopDrive(double value = 0.0, double maxOutput = 1.0) = 0;
+  virtual void UseClosedLoopSpeedDrive(double speed = 0.0) = 0;
   virtual double GetDriveEncoderPosition() = 0; 
   virtual double GetDriveVelocity() = 0;
   virtual void ZeroDriveEncoder() = 0;

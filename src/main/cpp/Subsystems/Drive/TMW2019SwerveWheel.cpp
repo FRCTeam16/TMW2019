@@ -107,9 +107,9 @@ void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
     isOpenLoop = true;
 }
 
-void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
+void TMW2019SwerveWheel::UseClosedLoopDrive(double value, double maxOutput) {
     // driveMotor->Set(ControlMode::Velocity, 0);
-    // std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ")\n";
+    std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ", maxOutput = " << maxOutput << ")\n";
 
     frc::Preferences *prefs = frc::Preferences::GetInstance();
     const double driveP = prefs->GetFloat("DriveP");
@@ -124,9 +124,30 @@ void TMW2019SwerveWheel::UseClosedLoopDrive(double value) {
     pid.SetD(driveD);
     pid.SetFF(driveF);
     pid.SetIZone(driveIZone);
-    pid.SetOutputRange(-1.0, 1.0);
+    pid.SetOutputRange(-maxOutput, maxOutput);
 
     pid.SetReference(value, rev::ControlType::kPosition);
+    isOpenLoop = false;
+}
+
+void TMW2019SwerveWheel::UseClosedLoopSpeedDrive(double velocity) {
+    frc::Preferences *prefs = frc::Preferences::GetInstance();
+    const double driveP = prefs->GetFloat("DriveP");
+	const double driveI = prefs->GetFloat("DriveI");
+	const double driveD = prefs->GetFloat("DriveD");
+	const double driveF = prefs->GetFloat("DriveF");
+	const double driveIZone = prefs->GetFloat("DriveIZone");
+
+    rev::CANPIDController pid = driveMotor->GetPIDController();
+    pid.SetP(driveP);    
+    pid.SetI(driveI);
+    pid.SetD(driveD);
+    pid.SetFF(driveF);
+    pid.SetIZone(driveIZone);
+
+    pid.SetOutputRange(-1.0, 1.0);
+    // velocity needs to be in RPMs
+    pid.SetReference(velocity, rev::ControlType::kVelocity);
     isOpenLoop = false;
 }
 

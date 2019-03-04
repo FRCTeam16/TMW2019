@@ -30,7 +30,8 @@ public:
 
   bool IsOpenLoopDrive() override; 
   void UseOpenLoopDrive(double speed = 0.0) override;
-  void UseClosedLoopDrive(double value = 0.0) override;
+  void UseClosedLoopDrive(double value = 0.0, double maxOutput = 1.0) override;
+  void UseClosedLoopSpeedDrive(double velocity = 0.0) override;
   double GetDriveEncoderPosition() override;
   double GetDriveVelocity() override;
   void ZeroDriveEncoder() override;

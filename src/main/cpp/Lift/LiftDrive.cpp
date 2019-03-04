@@ -141,11 +141,11 @@ void LiftDrive::SetDriveSpeed(DriveInfo<double> speed) {
 			db->rearRight->UseOpenLoopDrive(speeds.RR);
 		}
 	} else {
-		db->frontLeft->UseClosedLoopDrive(speeds.FL);
-		db->frontRight->UseClosedLoopDrive(speeds.FR);
-		if (DriveMode::kAll == driveMode) {
-			db->rearLeft->UseClosedLoopDrive(speeds.RL);
-			db->rearRight->UseClosedLoopDrive(speeds.RR);
-		}
+		// db->frontLeft->UseClosedLoopDrive(speeds.FL);
+		// db->frontRight->UseClosedLoopDrive(speeds.FR);
+		// if (DriveMode::kAll == driveMode) {
+		// 	db->rearLeft->UseClosedLoopDrive(speeds.RL);
+		// 	db->rearRight->UseClosedLoopDrive(speeds.RR);
+		// }
 	}
 }
