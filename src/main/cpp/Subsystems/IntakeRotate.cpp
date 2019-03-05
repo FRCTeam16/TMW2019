@@ -10,6 +10,7 @@
 #include "RobotMap.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "Util/PrefUtil.h"
+#include <cmath>
 
 #define M_PI		3.14159265358979323846	/* pi */
 #define TWO_PI      6.28318530718
@@ -142,7 +143,7 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     if (openLoop) {
         // std::cout << "Setting open loop from SetPositionSpeed\n";
         positionControl = false;
-        positionSpeed = positionSpeed/3.5;
+        positionSpeed = std::copysign(speed*speed, speed);
     } else if (!positionControl) {
         // std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
         double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
