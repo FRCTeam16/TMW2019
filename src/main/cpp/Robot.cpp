@@ -65,12 +65,16 @@ void Robot::DisabledPeriodic() {
 void Robot::AutonomousInit() {
 	cout << "AutonomousInit => TeleopInit\n";
 	RobotMap::gyro->ZeroYaw();
-	// world.reset(new World());
-	// 		autoManager->Init(world);
-	// autoInitialized = true;
-	autoInitialized = false;			// flag for when autonomous routines are running
-	TeleopInit();
-
+	world.reset(new World());
+	autoManager->Init(world);
+	autoInitialized = true;
+	// autoInitialized = false;			// flag for when autonomous routines are running
+	InitSubsystems();
+	driveBase->InitTeleop();
+	liftController.reset();
+	runningScrews = false;				// flag for when jackscrew control is manual
+	runningLiftSequence = false;		// flag for when jackscrew control is automatic
+	initialized = true;
 }
 void Robot::AutonomousPeriodic() {
 	// cout << "AutonomousPeriodic => TeleopPeriodic\n";
@@ -89,6 +93,7 @@ void Robot::TeleopInit() {
 		runningLiftSequence = false;		// flag for when jackscrew control is automatic
 
 		initialized = true;
+		autoInitialized = false;
 	} else {
 		std::cout << " --- already initialized, ignoring\n";
 	}
@@ -280,16 +285,7 @@ void Robot::TeleopPeriodic() {
 	 * Testing and Diagnostics
 	**********************************************************/
 	if (oi->DL6->Pressed()) {
-		if (!autoInitialized) {
-			std::cout << "!!! Running Auto !!!\n";
-			world.reset(new World());
-			autoManager->Init(world);
-			autoInitialized = true;
-		}
-	} else {
-		if (autoInitialized) {
-			std::cout << "Reset autoinitialized flag to false\n";
-		}
+		std::cout << "STOPPING AUTO\n";
 		autoInitialized = false;
 	}
 
