@@ -65,7 +65,12 @@ void Robot::DisabledPeriodic() {
 void Robot::AutonomousInit() {
 	cout << "AutonomousInit => TeleopInit\n";
 	RobotMap::gyro->ZeroYaw();
+	// world.reset(new World());
+	// 		autoManager->Init(world);
+	// autoInitialized = true;
+	autoInitialized = false;			// flag for when autonomous routines are running
 	TeleopInit();
+
 }
 void Robot::AutonomousPeriodic() {
 	// cout << "AutonomousPeriodic => TeleopPeriodic\n";
@@ -82,7 +87,6 @@ void Robot::TeleopInit() {
 
 		runningScrews = false;				// flag for when jackscrew control is manual
 		runningLiftSequence = false;		// flag for when jackscrew control is automatic
-		autoInitialized = false;			// flag for when autonomous routines are running
 
 		initialized = true;
 	} else {

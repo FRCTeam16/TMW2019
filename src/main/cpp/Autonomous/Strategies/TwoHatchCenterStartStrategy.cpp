@@ -68,22 +68,25 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	// Move to scoring position
 	const double cargoShipAngle = -90.0 * inv;
 
-	// Fast drive to near cargo ship
-	steps.push_back(new TimedDrive(cargoShipAngle, 0.476, -0.148 * inv, 2.25, 0.5));
+	// Fast drive to near cargo ship (31%)
+	const double nearCSY = 0.6;
+	const double nearCSX = -0.186 * inv;
+	const double nearCSDriveTime = 2.25;	
+	steps.push_back(new TimedDrive(cargoShipAngle, nearCSY, nearCSX * inv, nearCSDriveTime, 0.5));
 
 	// Ratio 228 Y / 72 X 
 	const double toCargoVizThresh = 10;
-	const double toCargoY = 0.286;
-	const double toCargoX = -0.09 * inv;		// 31.5789%
+	const double toCargoY = 0.20;
+	const double toCargoX = -0.065 * inv;		
 	const double toCargoTime = 2.75;
-	const double toCargoIgnoreTime = 0.0;
+	const double toCargoIgnoreTime = 0.5;
 
 	// Approach cargo ship and look for first target
 	auto drive = new TimedDrive(cargoShipAngle, toCargoY, toCargoX, toCargoTime);
 	steps.push_back(new ConcurrentStep({
-		new StopAtTarget(drive, 10, 0, toCargoIgnoreTime, toCargoTime),
+		new StopAtTarget(drive, 10, 1, toCargoIgnoreTime, toCargoTime),
 		new SetVisionLight(true)
-	}));
+	}, true));
 	steps.push_back(new DriveToTarget(cargoShipAngle, 0.3, 5.0, 3.5));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
 	steps.push_back(new ConcurrentStep({

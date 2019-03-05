@@ -112,7 +112,12 @@ void Elevator::Run() {
 
 void Elevator::SetOpenLoopPercent(double _openLoopPercent) {
 	runMode = RunMode::kManual;
-	openLoopPercent = _openLoopPercent;
+	if (_openLoopPercent > 0) {
+		// Moving down
+		openLoopPercent = _openLoopPercent * 0.3;
+	} else {
+		openLoopPercent = _openLoopPercent;
+	}
 }
 
 void Elevator::DisabledZeroOutput() {
