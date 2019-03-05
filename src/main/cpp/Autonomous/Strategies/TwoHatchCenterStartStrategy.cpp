@@ -44,7 +44,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	// Move to hatch pickup
 	const double toPickupX = PrefUtil::getSet("Auto.THCS.D2.x", 0.3) * inv;
 	const double toPickupY = PrefUtil::getSet("Auto.THCS.D2.y", -0.168);		// ratio is 0.56
-	const double toIgnoreTime = 2;
+	const double toIgnoreTime = PrefUtil::getSet("Auto.THCS.D2.ignoreTime", 2);
 	const double toPickupTime = PrefUtil::getSet("Auto.THCS.D2.time", 2.5);
 
 	// Pulse a turn
@@ -69,25 +69,29 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double cargoShipAngle = -90.0 * inv;
 
 	// Fast drive to near cargo ship (31%)
-	const double nearCSY = 0.6;
-	const double nearCSX = -0.186 * inv;
-	const double nearCSDriveTime = 2.25;	
-	steps.push_back(new TimedDrive(cargoShipAngle, nearCSY, nearCSX * inv, nearCSDriveTime, 0.5));
+	const double nearCSY = PrefUtil::getSet("Auto.THCS.nearCSY", 0.6);
+	const double nearCSX = PrefUtil::getSet("Auto.THCS.nearCSX", 0.186) * inv;
+	const double nearCSDriveTime = PrefUtil::getSet("Auto.THCS.nearCSDriveTime", 2.25);	
+	steps.push_back(new TimedDrive(cargoShipAngle, nearCSY, nearCSX, nearCSDriveTime, 0.5));
 
 	// Ratio 228 Y / 72 X 
-	const double toCargoVizThresh = 10;
-	const double toCargoY = 0.20;
-	const double toCargoX = -0.065 * inv;		
-	const double toCargoTime = 2.75;
-	const double toCargoIgnoreTime = 0.5;
+	const double toCargoVizThresh = PrefUtil::getSet("Auto.THCS.toCargoVizThresh", 10);
+	const double toCargoY = PrefUtil::getSet("Auto.THCS.toCargoY", 0.20);
+	const double toCargoX = PrefUtil::getSet("Auto.THCS.toCargoX", -0.065) * inv;		
+	const double toCargoTime = PrefUtil::getSet("Auto.THCS.toCargoTime", 2.75);
+	const double toCargoIgnoreTime = PrefUtil::getSet("Auto.THCS.toCargoIgnoreTime", 0.5);
 
 	// Approach cargo ship and look for first target
 	auto drive = new TimedDrive(cargoShipAngle, toCargoY, toCargoX, toCargoTime);
 	steps.push_back(new ConcurrentStep({
-		new StopAtTarget(drive, 10, 1, toCargoIgnoreTime, toCargoTime),
+		new StopAtTarget(drive, toCargoVizThresh, 1, toCargoIgnoreTime, toCargoTime),
 		new SetVisionLight(true)
 	}, true));
-	steps.push_back(new DriveToTarget(cargoShipAngle, 0.3, 5.0, 3.5));
+
+	const double cargoDriveY = PrefUtil::getSet("Auto.THCS.cargoDriveY", 0.3);
+	const double cargoDriveThreshold = PrefUtil::getSet("Auto.THCS.cargoDriveThreshold", 5.0);
+	const double cargoDriveTimeout = PrefUtil::getSet("Auto.THCS.cargoDriveTimeout", 3.5);
+	steps.push_back(new DriveToTarget(cargoShipAngle, cargoDriveY, cargoDriveThreshold, cargoDriveTimeout));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
 	steps.push_back(new ConcurrentStep({
 		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
