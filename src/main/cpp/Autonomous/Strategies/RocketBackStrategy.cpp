@@ -38,7 +38,7 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     const double rocketY = 90;
     // auto ctrlDrive = new ClosedLoopDrive2(rocketAngle, rocketSpeed, rocketX, rocketY, -1, DriveUnit::kInches, 5.0, 0.5, 12);
     // steps.push_back(ctrlDrive);
-    steps.push_back(new OpenDriveToDistance(rocketAngle, 0.3, 0.17, 200, 5, 0.5, 12, 3.0));
+    steps.push_back(new OpenDriveToDistance(rocketAngle, 0.4, 0.226, 195, 5, 0.5, 12, 3.0));
 
     // Align
     steps.push_back(new DriveToTarget(rocketAngle, 0.0, 5.0, 1.0));
@@ -59,8 +59,8 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new TimedDrive(pickupAngle, -0.4, 0.0, 2.0, 0.5),
         new SetElevatorPosition(Elevator::ElevatorPosition::kFloor, 1.0)
     }));
-    steps.push_back(new TimedDrive(pickupAngle, -0.4, 0.05 * inv, 1.0));
-    steps.push_back(new DriveToTarget(pickupAngle, 0.3, 5.0, 2.5));    // robot centric
+    steps.push_back(new TimedDrive(pickupAngle, -0.6, 0.05 * inv, 1.0));
+    steps.push_back(new DriveToTarget(pickupAngle, 0.25, 5.0, 2.5));    // robot centric
 
     // pickup hatch then pop back
     steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
