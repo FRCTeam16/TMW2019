@@ -42,6 +42,7 @@ void Robot::RobotInit() {
     dmsProcessManager.reset(new DmsProcessManager(statusReporter));
 
 	autoManager.reset(new AutoManager());
+	RobotMap::gyro->ZeroYaw();
 
 	std::cout << "Robot::TeleopInit <=\n";
 }
@@ -49,6 +50,7 @@ void Robot::RobotInit() {
 void Robot::DisabledInit() {
 	intakeRotate->DisabledHoldCurrentPosition();
 	elevator->DisabledZeroOutput();
+	visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::DriverCamera);
 	initialized = false;
 }
 
@@ -62,6 +64,7 @@ void Robot::DisabledPeriodic() {
 
 void Robot::AutonomousInit() {
 	cout << "AutonomousInit => TeleopInit\n";
+	RobotMap::gyro->ZeroYaw();
 	TeleopInit();
 }
 void Robot::AutonomousPeriodic() {
@@ -246,6 +249,13 @@ void Robot::TeleopPeriodic() {
 	 * Vision
 	**********************************************************/
 	const bool visionMode = oi->DR3->Pressed();	// controls drive
+	if (!autoInitialized) {
+		if (visionMode) {
+			visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::ImageProcessing);
+		} else {
+			visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::DriverCamera);
+		}
+	}
 	HandleGlobalInputs();
 
 

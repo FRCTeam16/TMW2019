@@ -12,6 +12,7 @@
 #include "Autonomous/Steps/DoIntakeAction.h"
 #include "Autonomous/Steps/SetGyroOffset.h"
 #include "Autonomous/Steps/OpenDriveToDistance.h"
+#include "Autonomous/Steps/SetVisionLight.h"
 
 
 void RocketBackStrategy::Init(std::shared_ptr<World> world) {
@@ -41,7 +42,10 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     steps.push_back(new OpenDriveToDistance(rocketAngle, 0.4, 0.226, 195, 5, 0.5, 12, 3.0));
 
     // Align
-    steps.push_back(new DriveToTarget(rocketAngle, 0.0, 5.0, 1.0));
+    steps.push_back(new ConcurrentStep({
+        new DriveToTarget(rocketAngle, 0.0, 5.0, 1.0),
+        new SetVisionLight(true)
+    }));
 
     // Drive in while lifting elevator, score
     const double pushBackSpeed = 0.15;
@@ -50,7 +54,10 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new SetElevatorPosition(Elevator::ElevatorPosition::kLevel2, 1.0)
     }));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
-	steps.push_back(new TimedDrive(rocketAngle, -pushBackSpeed, 0.0, 1.0, -1, false));
+	steps.push_back(new ConcurrentStep({
+        new TimedDrive(rocketAngle, -pushBackSpeed, 0.0, 1.0, -1, false),
+        new SetVisionLight(false)
+    }));
 
     // Align to back pickup
     const double pickupAngle = 180.0;
@@ -60,9 +67,15 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new SetElevatorPosition(Elevator::ElevatorPosition::kFloor, 1.0)
     }));
     steps.push_back(new TimedDrive(pickupAngle, -0.6, 0.05 * inv, 1.0));
-    steps.push_back(new DriveToTarget(pickupAngle, 0.25, 5.0, 2.5));    // robot centric
+    steps.push_back(new ConcurrentStep({
+        new DriveToTarget(pickupAngle, 0.25, 5.0, 2.5),    // robot centric
+        new SetVisionLight(true)
+    }));
 
     // pickup hatch then pop back
     steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
-	steps.push_back(new TimedDrive(pickupAngle, pushBackSpeed, 0.0, 0.5));
+	steps.push_back(new ConcurrentStep({
+        new TimedDrive(pickupAngle, pushBackSpeed, 0.0, 0.5),
+        new SetVisionLight(false)
+    }));
 }

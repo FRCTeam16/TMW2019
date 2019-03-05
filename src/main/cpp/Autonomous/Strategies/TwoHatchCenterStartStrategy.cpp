@@ -10,6 +10,7 @@
 #include "Autonomous/Steps/RotateIntake.h"
 #include "Autonomous/Steps/StopAtTarget.h"
 #include "Autonomous/Steps/RotateUntilPast.h"
+#include "Autonomous/Steps/SetVisionLight.h"
 
 
 TwoHatchCenterStartStrategy::TwoHatchCenterStartStrategy(std::shared_ptr<World> world) {
@@ -25,15 +26,20 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
     const double initialDriveSpeed = PrefUtil::getSet("Auto.THCS.D1.y", 0.3);
     steps.push_back(new ConcurrentStep({
 		new TimedDrive(0.0, initialDriveSpeed, 0.0, 1.0),
+		new SetVisionLight(false),
 		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne)
 	}));
 
     // Drive and place hatch
 	const double targetArea = PrefUtil::getSet("Auto.THCS.DriveToTarget.TA", 5.0);
 	const double pushBackSpeed = PrefUtil::getSet("Auto.THCS.PushBack.y", -0.15);
+	steps.push_back(new SetVisionLight(true));
 	steps.push_back(new DriveToTarget(0.0, initialDriveSpeed, targetArea, 3.5));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
-	steps.push_back(new TimedDrive(0.0, pushBackSpeed, 0.0, 0.5));
+	steps.push_back(new ConcurrentStep({
+		new TimedDrive(0.0, pushBackSpeed, 0.0, 0.5),
+		new SetVisionLight(false)
+	}));
 
 	// Move to hatch pickup
 	const double toPickupX = PrefUtil::getSet("Auto.THCS.D2.x", 0.3) * inv;
@@ -45,13 +51,19 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	steps.push_back(new RotateUntilPast(isRight, -180.0, 30.0 * inv));
 
 	auto d2drive = new TimedDrive(-180.0, toPickupY, toPickupX, toPickupTime, 0.5);
-	steps.push_back(new StopAtTarget(d2drive, 5, 1, toIgnoreTime, toPickupTime));
+	steps.push_back(new ConcurrentStep({
+		new StopAtTarget(d2drive, 5, 1, toIgnoreTime, toPickupTime),
+		new SetVisionLight(true)
+	}));
 
 	// Do Hatch pickup
 	const double d3PickupSpeed = PrefUtil::getSet("Auto.THCS.D3.y", 0.2);
 	steps.push_back(new DriveToTarget(-180.0, d3PickupSpeed, targetArea, 3.0));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
-	steps.push_back(new TimedDrive(-180.0, -pushBackSpeed, 0.0, 0.5));
+	steps.push_back(new ConcurrentStep({
+		new TimedDrive(-180.0, -pushBackSpeed, 0.0, 0.5),
+		new SetVisionLight(false)
+	}));
 
 	// Move to scoring position
 	const double cargoShipAngle = -90.0 * inv;
@@ -68,9 +80,14 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 
 	// Approach cargo ship and look for first target
 	auto drive = new TimedDrive(cargoShipAngle, toCargoY, toCargoX, toCargoTime);
-	steps.push_back(new StopAtTarget(drive, 10, 0, toCargoIgnoreTime, toCargoTime));
+	steps.push_back(new ConcurrentStep({
+		new StopAtTarget(drive, 10, 0, toCargoIgnoreTime, toCargoTime),
+		new SetVisionLight(true)
+	}));
 	steps.push_back(new DriveToTarget(cargoShipAngle, 0.3, 5.0, 3.5));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
-	steps.push_back(new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5));
-
+	steps.push_back(new ConcurrentStep({
+		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
+		new SetVisionLight(false)
+	}));
 }

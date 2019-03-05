@@ -70,7 +70,7 @@ void AutoManager::Init(std::shared_ptr<World> world) {
 		std::cerr << "NO AUTONOMOUS STRATEGY FOUND\n";
 	}
 
-	RobotMap::gyro->ZeroYaw();
+	// Removed 2019 since we can run auto multiple times: RobotMap::gyro->ZeroYaw();
 	currentStrategy->Init(world);
 
 	startTime = -1;
