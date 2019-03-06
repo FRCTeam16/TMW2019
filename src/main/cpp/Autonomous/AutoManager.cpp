@@ -13,7 +13,7 @@ AutoManager::AutoManager() :
 		positions(new frc::SendableChooser<int>()),
 		strategies(new frc::SendableChooser<int>())
 {
-	// strategies->AddDefault("1 - Side Start", AutoStrategy::kSide);
+	strategies->AddOption("0 - None", AutoStrategy::kNone);
 	strategies->SetDefaultOption("1 - TwoHatchCenterStartStrategy", AutoStrategy::kTwoHatchCenterStartStrategy);
 	strategies->AddOption("2 - Rocket Back Strategy", AutoStrategy::kRocketBackStrategy);
 	strategies->AddOption("99 - Debug Auto Strategy", AutoStrategy::kDebug);
@@ -35,6 +35,10 @@ std::unique_ptr<Strategy> AutoManager::CreateStrategy(const AutoStrategy &key, s
 
 	Strategy *strategy = 0;
 	switch (key) {
+	case kNone:
+		std::cout << "AUTOMAN: Selected NONE \n";
+		strategy = new StepStrategy();
+		break;
 	case kDebug:
 		std::cout << "AUTOMAN: Selected DEBUG \n";
 		strategy = new DebugAutoStrategy(world);

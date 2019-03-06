@@ -20,7 +20,7 @@ public:
       steerMotor(steerMotor_),
       steerLog(name_) { 
 
-      // steerLog.Disable();
+      steerLog.Disable();
   }
 
   void InitTeleop() override;

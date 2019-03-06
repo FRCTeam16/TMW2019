@@ -236,15 +236,15 @@ void TMW2019SwerveWheel::SetSteerEncoderSetpoint(double setpoint, double offset,
     // }
 	steerMotor->Set(ControlMode::Position, finalSetpoint * 4096.0);
 
-    steerLog.Log(
-        frc::Timer::GetFPGATimestamp(),
-        baseCurrentPosition,
-        setpoint,
-        currentPosition,
-        setpointRotations,
-        diff,
-        wholeRotations,
-        finalSetpoint);
+    // steerLog.Log(
+    //     frc::Timer::GetFPGATimestamp(),
+    //     baseCurrentPosition,
+    //     setpoint,
+    //     currentPosition,
+    //     setpointRotations,
+    //     diff,
+    //     wholeRotations,
+    //     finalSetpoint);
 }
 
 int TMW2019SwerveWheel::GetSteerEncoderPosition() {
