@@ -56,7 +56,7 @@ RobotMap::RobotMap() {
   beaterTopMotor.reset(new WPI_TalonSRX{13});
   beaterBottomMotor.reset(new WPI_VictorSPX{14});
 
-  gyro.reset(new BSGyro(elevatorFollowerMotor.get()));
+  gyro.reset(new BSGyro(elevatorFollowerMotor.get()));  
 
   frontAxleSolenoid.reset(new DoubleSolenoid{0, 1});
   rearAxleSolenoid.reset(new DoubleSolenoid{2, 3});

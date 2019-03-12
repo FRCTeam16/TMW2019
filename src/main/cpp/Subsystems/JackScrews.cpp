@@ -275,13 +275,25 @@ void JackScrews::DoControlled() {
     return;
   }
 
-  const double kMinAccumulatedPosition = lowest->GetAccumulatedPosition();
+  const double lowestPosition = lowest->GetAccumulatedPosition();
   const auto speedDir = static_cast<int>(targetPosition);
   if (fabs(lowest->GetControlSpeed()) != maxJackScrewSpeed) {
     lowest->SetControlSpeed(maxJackScrewSpeed * speedDir);
   }
   std::cout << "Set lowest control speed to: " << (maxJackScrewSpeed * speedDir) << "\n";
 
+
+  // Calculate what our maximum displacement threshold should be
+  if (lowestPosition < 5) {
+    kMaximumDisplacementThreshold = 0.5;
+  } else if (lowestPosition < 10) {
+    kMaximumDisplacementThreshold = 1;
+  } else if (lowestPosition < 20) {
+    kMaximumDisplacementThreshold = 1.5;
+  } else {
+    kMaximumDisplacementThreshold = 2.0;
+  }
+  std::cout << "Set kMaximumDisplacementThreshold to " << kMaximumDisplacementThreshold << "\n";
 
   // check wheels outside of threshold, slow them down
   bool exitOpenLoop = false;
@@ -294,7 +306,7 @@ void JackScrews::DoControlled() {
       break;
     }
 
-    const double diff = fabs(currentCalc->GetAccumulatedPosition() - kMinAccumulatedPosition);
+    const double diff = fabs(currentCalc->GetAccumulatedPosition() - lowestPosition);
     if (diff >= kMaximumDisplacementThreshold) {
       if (fabs(currentCalc->GetLastChange()) > fabs(lowest->GetLastChange())) {
         const double baseDelta = (targetPosition == Direction::kDown) ? speedDeltaDown : speedDeltaUp;

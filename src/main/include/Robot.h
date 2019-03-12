@@ -24,9 +24,12 @@
 #include "Lift/LiftController.h"
 #include "Subsystems/Crawler.h"
 #include "Lift/LiftDrive.h"
+#include "Lift/JackScrewTest.h"
 #include "Subsystems/Elevator.h"
 #include "Autonomous/World.h"
 #include "Autonomous/AutoManager.h"
+
+#include "AHRS.h"
 
 
 struct ManualSolenoidState {
@@ -79,13 +82,18 @@ private:
   bool dpadRightToggled = false;
   bool drPadToggled = false;
 
+  bool runInstrumentation = false;  // whether to run subsystem instrumentation
+
   std::unique_ptr<LiftController> liftController;
   std::unique_ptr<Crawler> crawler;
 
   ManualSolenoidState solenoidState;
 
   LiftDrive liftDrive;
+  JackScrewTest jackScrewTest;
 
   bool initialized = false;
+
+  std::unique_ptr<AHRS> ahrs;
 
 };

@@ -44,6 +44,9 @@ void Robot::RobotInit() {
 	autoManager.reset(new AutoManager());
 	RobotMap::gyro->ZeroYaw();
 
+	ahrs.reset(new AHRS(SPI::Port::kMXP));
+	ahrs->ZeroYaw();
+
 	std::cout << "Robot::TeleopInit <=\n";
 }
 
@@ -316,8 +319,9 @@ void Robot::TeleopPeriodic() {
 
 	double start = frc::Timer::GetFPGATimestamp();
 	if (speedModeTest) {
-		driveBase->SetConstantVelocity(twistInput, 0.60);
-		driveBase->Diagnostics();
+		// driveBase->SetConstantVelocity(twistInput, 0.60);
+		// driveBase->Diagnostics();
+		jackScrewTest.Run();
 	} else if (dmsMode) {
 		// DriveBase input handled via DMS->Run()
 	} else if (runningLiftSequence) {
@@ -421,6 +425,15 @@ void Robot::InstrumentSubsystems() {
 	frc::SmartDashboard::PutNumber("RL Vel", wheels.RL->GetDriveVelocity() );
 	frc::SmartDashboard::PutNumber("RR Vel", wheels.RR->GetDriveVelocity() );
 
+	// see DriveBase::Instrment for smartdashboard yaw 
+	frc::SmartDashboard::PutNumber("Penguin Temp", RobotMap::gyro->GetPigeon()->GetTemp());
+	frc::SmartDashboard::PutBoolean("AHRS Connected", ahrs->IsConnected());
+	frc::SmartDashboard::PutNumber("AHRS Yaw", ahrs->GetYaw());
+	frc::SmartDashboard::PutNumber("AHRS Temp", ahrs->GetTempC());
+
+
+	
+	driveBase->Instrument();
 	jackScrews->Instrument();
 	intake->Instrument();
 	intakeRotate->Instrument();
@@ -439,6 +452,14 @@ void Robot::HandleGlobalInputs() {
 	} else if (oi->DR10->RisingEdge()) {
 		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::SideBySide);
 	}
+
+	// FIXME TODO: Only run instrumentation when some button is pressed
+	// oi->GetJoystickX
+	// if (oi->) {
+	// 	runInstrumentation = true;
+	// } else {
+	// 	runInstrumentation = false;
+	// }
 }
 
 
