@@ -7,12 +7,14 @@
 
 #pragma once
 #include "Lift/Action.h"
+#include "Lift/LiftDrive.h"
 
 class Thirdstep : public Action {
  public:
   Thirdstep() = default;
   void Execute() override;
 private:
+  LiftDrive liftDrive;
   double positionStartTime = -1.0;
   bool liftFinished = false;
   bool shiftedToSwerve = false;

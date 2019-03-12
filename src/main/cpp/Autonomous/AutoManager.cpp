@@ -22,8 +22,8 @@ AutoManager::AutoManager() :
 	// positions->AddOption("1 - Center", AutoStartPosition::kCenter);
 	positions->AddOption("0 - Left",  AutoStartPosition::kLeft);
 
-	frc::SmartDashboard::PutData("Autonomous Start Pos0", positions.get());
-	frc::SmartDashboard::PutData("Autonomous Strategy1", strategies.get());
+	frc::SmartDashboard::PutData("Autonomous Start Posmid", positions.get());
+	frc::SmartDashboard::PutData("Autonomous Strategymid", strategies.get());
 	std::cout << "AutoManager::AutoManager() finished\n";
 }
 

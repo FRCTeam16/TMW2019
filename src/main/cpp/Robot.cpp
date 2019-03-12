@@ -136,10 +136,10 @@ void Robot::TeleopPeriodic() {
 		}
 	}
 
-	if (oi->GPStart->RisingEdge()) {
+	if (oi->GPStart->RisingEdge() && gamepadLTPressed) { 
 		runningLiftSequence = true;
 		if (liftController.get() == nullptr) {
-			liftController.reset(new LiftController());
+			liftController.reset(new LiftController()); 
 			std::cout << "Constructed new LiftController\n";
 		}
 		liftController->Next();
@@ -352,6 +352,7 @@ void Robot::TeleopPeriodic() {
 				useGyro = false;
 			} else if (oi->DR4->Pressed()) {
 				// robot centric
+				xMove = std::copysign(xMove*xMove, xMove);
 				useGyro = false;
 			}
 			driveBase->Crab(

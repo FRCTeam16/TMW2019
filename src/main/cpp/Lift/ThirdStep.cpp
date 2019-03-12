@@ -41,48 +41,35 @@ void Thirdstep::Execute() {
             // jackScrewControls->FL->Run();
             // jackScrewControls->FR->Run();
         } else {
-            if (!shiftedToSwerve) {
-                // Safety set output
-                wheels.FL->SetDriveSoftMinMaxOutput(-1.0, 1.0);
-                wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
-                wheels.RL->SetDriveSoftMinMaxOutput(-1.0, 1.0);
-                wheels.RR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
-                jackScrewControls->FL->SetControlSpeed(0.0);
-                jackScrewControls->FR->SetControlSpeed(0.0);
-                jackScrewControls->RL->SetControlSpeed(0.0);
-                jackScrewControls->RR->SetControlSpeed(0.0);
-                Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
-                
-                wheels.FL->SetDriveBrakeMode();
-                wheels.FR->SetDriveBrakeMode();
-                wheels.RL->SetDriveBrakeMode();
-                wheels.RR->SetDriveBrakeMode();
-                shiftedToSwerve = true;
                 Robot::driveBase->SetTargetAngle(-180.0);
+                const double kLowJoyThreshold = 0.15;
+                const double kHighJoyThreshold = 0.30;
+                double leftInput = Robot::oi->getDriverLeft()->GetY();
+                double rightInput = Robot::oi->getDriverRight()->GetY();
 
-                // jackScrewControls->FL->Run();
-                // jackScrewControls->FR->Run();
-            } else {
-                wheels.FL->SetDriveCoastMode();
-                wheels.FR->SetDriveCoastMode();
-                wheels.RL->SetDriveCoastMode();
-                wheels.RR->SetDriveCoastMode();
-                Robot::driveBase->SetTargetAngle(-180.0);
-                double leftInput = Robot::oi->GetJoystickX();
-                double rightInput = Robot::oi->GetJoystickY();
+                int dir = leftInput < 0 ? -1 : 1;
+                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
+                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+
+                dir = rightInput < 0 ? -1 : 1;
+                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
+                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
-                    const double crabSpeed = PrefUtil::getSet("Lift.step3.drivespeed.y", -0.2);
-                    Robot::driveBase->Crab(
-                        Robot::driveBase->GetCrabTwistOutput(),
-                        -crabSpeed, 0, false);
+                    const double crabSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", -0.2);
+                    liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), crabSpeed, 0, true);
                 } else {
-                    double twist = Robot::oi->GetJoystickTwist(0.10);
-                    Robot::driveBase->Crab(twist, -rightInput, leftInput, true);
+                    // swap inputs
+                    liftDrive.DriveTank(-rightInput, -leftInput);   // invert direction
                 }
-            }  
-        }
+                
+                // JackScrewControl does not handle swerve inputs so we must send motor inputs
+                auto jsCtrls = Robot::jackScrews->GetJackScrewControls();
+                // jsCtrls->RL->Run();
+                // jsCtrls->RR->Run();
+                // finished = true (driver must transition to next step)
+            }
     }
 }
 
