@@ -53,9 +53,6 @@ void VisionSystem::Run() {
     // std::cout 
     //     << "hasTarget? " << scene.hasTarget
     //     << " | vision xtranslate: " << xTranslate << std::endl;
-
-    frc::SmartDashboard::PutBoolean("Vision Target?", driveInfo->hasTarget);
-    frc::SmartDashboard::PutNumber("Vision Threshold?", driveInfo->inThreshold);
     currentVisionInfo.reset(driveInfo);
 }
 
@@ -66,4 +63,11 @@ std::shared_ptr<VisionInfo> VisionSystem::GetLastVisionInfo() {
 void VisionSystem::ToggleCameraMode() {
     auto mode = limelight->ToggleCameraMode();
     std::cout << "Toggled to mode: " << static_cast<int>(mode) << std::endl;
+}
+
+void VisionSystem::Instrument() {
+    if (currentVisionInfo) {
+        frc::SmartDashboard::PutBoolean("Vision Target?", currentVisionInfo->hasTarget);
+        frc::SmartDashboard::PutNumber("Vision Threshold?", currentVisionInfo->inThreshold);
+    }
 }

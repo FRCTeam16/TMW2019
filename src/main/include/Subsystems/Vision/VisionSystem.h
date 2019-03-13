@@ -31,6 +31,7 @@ class VisionSystem : public SubsystemManager {
  public:
   VisionSystem();
   void Run() override;
+  void Instrument() override;
   void ToggleCameraMode();
   std::shared_ptr<VisionInfo> GetLastVisionInfo();
   std::shared_ptr<Limelight> GetLimelight() { return limelight; }

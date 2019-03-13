@@ -275,7 +275,7 @@ void Robot::TeleopPeriodic() {
 	/**********************************************************
 	 * Testing and Diagnostics
 	**********************************************************/
-	const bool speedModeTest = oi->DL7->Pressed();
+	const bool speedModeTest = false; // oi->DL7->Pressed();
 //	const bool distanceMode = oi->DL8->Pressed();
 	const bool dmsMode = oi->DL11->Pressed();
 	dmsProcessManager->SetRunning(dmsMode);
@@ -357,6 +357,7 @@ void Robot::TeleopPeriodic() {
 			} else if (oi->DR4->Pressed()) {
 				// robot centric
 				xMove = std::copysign(xMove*xMove, xMove);
+				twistInput *= 0.5;
 				useGyro = false;
 			}
 			driveBase->Crab(
@@ -372,7 +373,7 @@ void Robot::TeleopPeriodic() {
 
 	double now = frc::Timer::GetFPGATimestamp();
 	double driveBaseTime = (now-start) * 1000;
-	SmartDashboard::PutNumber("DriveBaseRun", (now-start) * 1000);
+	SmartDashboard::PutNumber("DriveBaseRun", driveBaseTime);
 	RunSubsystems();
 	InstrumentSubsystems();
 
@@ -409,36 +410,37 @@ void Robot::RunSubsystems() {
 }
 
 void Robot::InstrumentSubsystems() {
-	auto wheels = driveBase->GetWheels();
-	frc::SmartDashboard::PutNumber("FL Encoder", wheels.FL->GetDriveEncoderPosition() );
-	frc::SmartDashboard::PutNumber("FR Encoder", wheels.FR->GetDriveEncoderPosition() );
-	frc::SmartDashboard::PutNumber("RL Encoder", wheels.RL->GetDriveEncoderPosition() );
-	frc::SmartDashboard::PutNumber("RR Encoder", wheels.RR->GetDriveEncoderPosition() );
+	if (runInstrumentation) {
+		auto wheels = driveBase->GetWheels();
+		frc::SmartDashboard::PutNumber("FL Encoder", wheels.FL->GetDriveEncoderPosition() );
+		frc::SmartDashboard::PutNumber("FR Encoder", wheels.FR->GetDriveEncoderPosition() );
+		frc::SmartDashboard::PutNumber("RL Encoder", wheels.RL->GetDriveEncoderPosition() );
+		frc::SmartDashboard::PutNumber("RR Encoder", wheels.RR->GetDriveEncoderPosition() );
 
-	frc::SmartDashboard::PutNumber("FL Out Amps", wheels.FL->GetDriveOutputCurrent() );
-	frc::SmartDashboard::PutNumber("FR Out Amps", wheels.FR->GetDriveOutputCurrent() );
-	frc::SmartDashboard::PutNumber("RL Out Amps", wheels.RL->GetDriveOutputCurrent() );
-	frc::SmartDashboard::PutNumber("RR Out Amps", wheels.RR->GetDriveOutputCurrent() );
+		frc::SmartDashboard::PutNumber("FL Out Amps", wheels.FL->GetDriveOutputCurrent() );
+		frc::SmartDashboard::PutNumber("FR Out Amps", wheels.FR->GetDriveOutputCurrent() );
+		frc::SmartDashboard::PutNumber("RL Out Amps", wheels.RL->GetDriveOutputCurrent() );
+		frc::SmartDashboard::PutNumber("RR Out Amps", wheels.RR->GetDriveOutputCurrent() );
 
-	frc::SmartDashboard::PutNumber("FL Vel", wheels.FL->GetDriveVelocity() );
-	frc::SmartDashboard::PutNumber("FR Vel", wheels.FR->GetDriveVelocity() );
-	frc::SmartDashboard::PutNumber("RL Vel", wheels.RL->GetDriveVelocity() );
-	frc::SmartDashboard::PutNumber("RR Vel", wheels.RR->GetDriveVelocity() );
+		frc::SmartDashboard::PutNumber("FL Vel", wheels.FL->GetDriveVelocity() );
+		frc::SmartDashboard::PutNumber("FR Vel", wheels.FR->GetDriveVelocity() );
+		frc::SmartDashboard::PutNumber("RL Vel", wheels.RL->GetDriveVelocity() );
+		frc::SmartDashboard::PutNumber("RR Vel", wheels.RR->GetDriveVelocity() );
 
-	// see DriveBase::Instrment for smartdashboard yaw 
-	frc::SmartDashboard::PutNumber("Penguin Temp", RobotMap::gyro->GetPigeon()->GetTemp());
-	frc::SmartDashboard::PutBoolean("AHRS Connected", ahrs->IsConnected());
-	frc::SmartDashboard::PutNumber("AHRS Yaw", ahrs->GetYaw());
-	frc::SmartDashboard::PutNumber("AHRS Temp", ahrs->GetTempC());
+		// see DriveBase::Instrment for smartdashboard yaw 
+		frc::SmartDashboard::PutNumber("Penguin Temp", RobotMap::gyro->GetPigeon()->GetTemp());
+		frc::SmartDashboard::PutBoolean("AHRS Connected", ahrs->IsConnected());
+		frc::SmartDashboard::PutNumber("AHRS Yaw", ahrs->GetYaw());
+		frc::SmartDashboard::PutNumber("AHRS Temp", ahrs->GetTempC());
 
-
-	
-	driveBase->Instrument();
-	jackScrews->Instrument();
-	intake->Instrument();
-	intakeRotate->Instrument();
-	crawler->Instrument();
-	elevator->Instrument();
+		driveBase->Instrument();
+		jackScrews->Instrument();
+		intake->Instrument();
+		intakeRotate->Instrument();
+		crawler->Instrument();
+		elevator->Instrument();
+		visionSystem->Instrument();
+	}
 }
 
 void Robot::HandleGlobalInputs() {
@@ -453,13 +455,9 @@ void Robot::HandleGlobalInputs() {
 		visionSystem->GetLimelight()->SetStreamMode(Limelight::StreamMode::SideBySide);
 	}
 
-	// FIXME TODO: Only run instrumentation when some button is pressed
-	// oi->GetJoystickX
-	// if (oi->) {
-	// 	runInstrumentation = true;
-	// } else {
-	// 	runInstrumentation = false;
-	// }
+	// Only run instrumentation when button is pressed to avoid
+	// network latency overhead
+	runInstrumentation = oi->DL7->Pressed();
 }
 
 

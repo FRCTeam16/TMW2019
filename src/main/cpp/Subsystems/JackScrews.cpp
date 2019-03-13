@@ -218,11 +218,6 @@ void JackScrews::DoControlled() {
     activeCalcs.push_back(jackScrews->RR);
   }
   // std::cout << "Active calcs size: " << activeCalcs.size() << "\n";
-  // Debug
-  frc::SmartDashboard::PutNumber("FL Target", jackScrews->FL->GetTargetDistance());
-  frc::SmartDashboard::PutNumber("FR Target", jackScrews->FR->GetTargetDistance());
-  frc::SmartDashboard::PutNumber("RL Target", jackScrews->RL->GetTargetDistance());
-  frc::SmartDashboard::PutNumber("RR Target", jackScrews->RR->GetTargetDistance());
 
 
   // Capture accumulated positions
