@@ -14,7 +14,7 @@
 #include "Autonomous/Steps/OpenDriveToDistance.h"
 #include "Autonomous/Steps/SetVisionLight.h"
 #include "Autonomous/Steps/AlignToTarget.h"
-
+#include "Autonomous/Steps/Rotate.h"
 
 
 void RocketBackStrategy::Init(std::shared_ptr<World> world) {
@@ -96,10 +96,16 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new SetVisionLight(true)
     }));
 
-    // pickup hatch then pop back once we have double solenoid to hold on during period transition
-    // steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
-	// steps.push_back(new ConcurrentStep({
-    //     new TimedDrive(pickupAngle, pushBackSpeed, 0.0, 0.5),
-    //     new SetVisionLight(false)
-    // }));
+    // pickup hatch
+    steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
+	steps.push_back(new ConcurrentStep({
+        new TimedDrive(pickupAngle, pushBackSpeed, 0.0, 0.5),
+        new SetVisionLight(false)
+    })); 
+    //
+    const double secondRocketAngle = 30.0 * inv;
+    auto secondRocketRotate =new Rotate(secondRocketAngle);
+    secondRocketRotate->SetContinueOnTimeout(true);
+    steps.push_back (secondRocketRotate);
+    
 }
