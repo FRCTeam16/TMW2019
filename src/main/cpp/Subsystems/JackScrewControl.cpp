@@ -44,11 +44,13 @@ void JackScrewControl::Run() {
     double elapsed = now - controlTimeStart;
     double speed = controlSpeed;
     
-    // if (doRamp) {
-    //     const double kMinSpeed = 0.10;
-    //     if (elapsed < 0.25) {
-    //         std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
-    //         speed = kMinSpeed;
+    if (doRamp) {
+        if (elapsed < 0.25) {
+            const double kMinSpeed = 0.10;
+            std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
+            speed = kMinSpeed;
+        }
+    }
     //     } else if (elapsed <= (jackScrewRampTime + 0.25)) {
     //         speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, kMinSpeed);
     //         std::cout << "JSC " << name << " ramped to " << speed << "\n";
