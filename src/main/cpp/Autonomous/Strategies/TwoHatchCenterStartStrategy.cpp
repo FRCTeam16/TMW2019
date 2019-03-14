@@ -11,6 +11,8 @@
 #include "Autonomous/Steps/StopAtTarget.h"
 #include "Autonomous/Steps/RotateUntilPast.h"
 #include "Autonomous/Steps/SetVisionLight.h"
+#include "Autonomous/Steps/SelectVisionPipeline.h"
+#include "Autonomous/Steps/Delay.h"
 
 
 TwoHatchCenterStartStrategy::TwoHatchCenterStartStrategy(std::shared_ptr<World> world) {
@@ -27,7 +29,8 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
     steps.push_back(new ConcurrentStep({
 		new TimedDrive(0.0, initialDriveSpeed, 0.0, 1.0),
 		new SetVisionLight(false),
-		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne)
+		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne),
+		new SelectVisionPipeline(isRight? 2 : 1)
 	}));
 
     // Drive and place hatch
@@ -36,6 +39,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	steps.push_back(new SetVisionLight(true));
 	steps.push_back(new DriveToTarget(0.0, initialDriveSpeed, targetArea, 3.5));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
+	steps.push_back(new Delay(0.5));
 	steps.push_back(new ConcurrentStep({
 		new TimedDrive(0.0, pushBackSpeed, 0.0, 0.5),
 		new SetVisionLight(false)
@@ -49,6 +53,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 
 	// Pulse a turn
 	steps.push_back(new RotateUntilPast(isRight, -180.0, 30.0 * inv));
+	steps.push_back(new SelectVisionPipeline(0));
 
 	auto d2drive = new TimedDrive(-180.0, toPickupY, toPickupX, toPickupTime, 0.5);
 	steps.push_back(new ConcurrentStep({
@@ -72,6 +77,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double nearCSY = PrefUtil::getSet("Auto.THCS.nearCSY", 0.6);
 	const double nearCSX = PrefUtil::getSet("Auto.THCS.nearCSX", 0.186) * inv;
 	const double nearCSDriveTime = PrefUtil::getSet("Auto.THCS.nearCSDriveTime", 2.25);	
+	steps.push_back(new SelectVisionPipeline(isRight ? 1 : 2));
 	steps.push_back(new TimedDrive(cargoShipAngle, nearCSY, nearCSX, nearCSDriveTime, 0.5));
 
 	// Ratio 228 Y / 72 X 
@@ -97,4 +103,5 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
 		new SetVisionLight(false)
 	}));
+	steps.push_back(new SelectVisionPipeline(0));
 }

@@ -54,7 +54,7 @@ void Robot::DisabledInit() {
 	intakeRotate->DisabledHoldCurrentPosition();
 	elevator->DisabledZeroOutput();
 	visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::DriverCamera);
-	initialized = false;
+	// initialized = false;
 }
 
 void Robot::DisabledPeriodic() {
@@ -66,7 +66,7 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-	cout << "AutonomousInit => TeleopInit\n";
+	cout << "AutonomousInit\n";
 	RobotMap::gyro->ZeroYaw();
 	world.reset(new World());
 	autoManager->Init(world);
@@ -86,7 +86,7 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
-    std::cout << "Robot::TeleopInit =>\n";
+    std::cout << "Robot::TeleopInit => initialized? " << initialized << "\n";
 	if (!initialized) {
 		InitSubsystems();
 		driveBase->InitTeleop();
@@ -290,6 +290,7 @@ void Robot::TeleopPeriodic() {
 	if (oi->DL6->Pressed()) {
 		std::cout << "STOPPING AUTO\n";
 		autoInitialized = false;
+		Robot::visionSystem->GetLimelight()->SelectPipeline(0);
 	}
 
 

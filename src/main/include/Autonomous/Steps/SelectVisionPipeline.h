@@ -14,6 +14,7 @@ class SelectVisionPipeline : public Step {
       Robot::visionSystem->GetLimelight()->SelectPipeline(pipeline);
       std::cout << "SelectVisionPipeline( " << pipeline << " )\n"; 
     }
+    return true;
   }
  private:
   bool firstRun = false;
