@@ -31,7 +31,7 @@
   
   std::shared_ptr<Solenoid> RobotMap::ejectorSolenoid;
   std::shared_ptr<Solenoid> RobotMap::hatchCatchSolenoid;
-  std::shared_ptr<Solenoid> RobotMap::gripperSolenoid;
+  std::shared_ptr<DoubleSolenoid> RobotMap::gripperSolenoid;
   
   std::shared_ptr<Compressor> RobotMap::compressor;
 
@@ -61,7 +61,7 @@ RobotMap::RobotMap() {
   frontAxleSolenoid.reset(new DoubleSolenoid{0, 1});
   rearAxleSolenoid.reset(new DoubleSolenoid{2, 3});
   ejectorSolenoid.reset(new Solenoid{4});
-  gripperSolenoid.reset(new Solenoid{5});
+  gripperSolenoid.reset(new DoubleSolenoid{5, 7});
   hatchCatchSolenoid.reset(new Solenoid{6});
 
 

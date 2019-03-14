@@ -132,7 +132,7 @@ void Intake::Run() {
 
     ejectorSolenoid->Set(ejectorSolenoidState);
     hatchCatchSolenoid->Set(hatchSolenoidState);
-    gripperSolenoid->Set(gripperSolenoidState);
+    gripperSolenoid->Set(gripperSolenoidState ? frc::DoubleSolenoid::Value::kForward : frc::DoubleSolenoid::Value::kReverse);
 }
 
 void Intake::IntakeCargo() {

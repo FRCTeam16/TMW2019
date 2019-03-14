@@ -43,7 +43,7 @@ class RobotMap {
 
   static std::shared_ptr<Solenoid> ejectorSolenoid;
   static std::shared_ptr<Solenoid> hatchCatchSolenoid;
-  static std::shared_ptr<Solenoid> gripperSolenoid;
+  static std::shared_ptr<DoubleSolenoid> gripperSolenoid;
 
   static std::shared_ptr<Compressor> compressor;
 

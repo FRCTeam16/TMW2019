@@ -65,7 +65,7 @@ private:
 
   std::shared_ptr<frc::Solenoid> ejectorSolenoid;
   std::shared_ptr<frc::Solenoid> hatchCatchSolenoid;
-  std::shared_ptr<frc::Solenoid> gripperSolenoid;
+  std::shared_ptr<frc::DoubleSolenoid> gripperSolenoid;
 
   double bottomBeaterSpeed = 0.0;
   double topBeaterSpeed = 0.0;
