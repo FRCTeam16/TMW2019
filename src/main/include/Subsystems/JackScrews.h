@@ -64,6 +64,7 @@ public:
     double maxJackScrewSpeed = 1.0;
     
     void DoControlled();
+    void FullSpeedC();
     DriveInfo<bool> DetermineJackScrewsToInit();
     bool CheckCANCommunications();
 

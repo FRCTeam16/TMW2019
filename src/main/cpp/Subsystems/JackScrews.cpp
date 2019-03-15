@@ -333,3 +333,40 @@ void JackScrews::DoControlled() {
     }
   }
 }
+
+
+void JackScrews::FullSpeedC() {
+  std::vector<std::shared_ptr<JackScrewControl>> activeCalcs;
+  std::vector<std::shared_ptr<JackScrewControl>> inactiveCalcs;
+  if (LiftMode::kFront == currentLiftMode) {
+    activeCalcs.push_back(jackScrews->FL);
+    activeCalcs.push_back(jackScrews->FR);
+  } else if (LiftMode::kBack == currentLiftMode) {
+    activeCalcs.push_back(jackScrews->RL);
+    activeCalcs.push_back(jackScrews->RR);
+  } else {
+    activeCalcs.push_back(jackScrews->FL);
+    activeCalcs.push_back(jackScrews->FR);
+    activeCalcs.push_back(jackScrews->RL);
+    activeCalcs.push_back(jackScrews->RR);
+  }
+
+  // If any active screws have entered closed loop,
+  // we'll exit and let the jack screw control handle
+  // final positioning
+  const auto speedDir = static_cast<int>(targetPosition);
+  for (int i=0; i < activeCalcs.size(); i++) {
+    auto currentCalc = activeCalcs[i].get();
+    if (currentCalc->IsClosedLoop()) {
+      std::cout << "Jack Screws in final position, exiting main control and having JSC handle\n";
+      return;
+    }
+    // Set maximum speed
+    const double screwSpeed = maxJackScrewSpeed * speedDir;
+    currentCalc->SetControlSpeed(screwSpeed);
+     std::cout << "calc[" << i << "] speed = " << currentCalc->GetControlSpeed()
+              << " | change = " << currentCalc->GetLastChange()
+              << " | accum = " << currentCalc->GetAccumulatedPosition()
+              << "\n";
+  } 
+}
