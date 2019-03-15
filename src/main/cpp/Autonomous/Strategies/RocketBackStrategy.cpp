@@ -104,9 +104,9 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new SetVisionLight(false)
     })); 
     //
-    const double secondRocketAngle = 30.0 * inv;
-    auto secondRocketRotate =new Rotate(secondRocketAngle);
-    secondRocketRotate->SetContinueOnTimeout(true);
-    steps.push_back (secondRocketRotate);
+    // const double secondRocketAngle = 30.0 * inv;
+    // auto secondRocketRotate =new Rotate(secondRocketAngle);
+    // secondRocketRotate->SetContinueOnTimeout(true);
+    // steps.push_back (secondRocketRotate);
     
 }
