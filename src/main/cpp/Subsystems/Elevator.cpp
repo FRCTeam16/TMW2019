@@ -96,6 +96,9 @@ void Elevator::Run() {
 			double F = PrefUtil::getSet("Elevator.F", 0.18);
 			int V = PrefUtil::getSetInt("Elevator.V", 5592);
 			int A = PrefUtil::getSetInt("Elevator.A", 5592);
+			int iZone = PrefUtil::getSet("Elevator.izone", 0);
+			double I = PrefUtil::getSet("Elevator.I", 0);
+
 
 			elevatorMotor->ConfigMotionCruiseVelocity(V, 0);
 			elevatorMotor->ConfigMotionAcceleration(A, 0);
@@ -103,6 +106,8 @@ void Elevator::Run() {
 			elevatorMotor->Config_kI(0, 0, 0);
 			elevatorMotor->Config_kD(0, 0, 0);
 			elevatorMotor->Config_kF(0, F, 0);
+			elevatorMotor->Config_IntegralZone(0, iZone);
+			elevatorMotor->Config_kI(0, I);
 
 			elevatorMotor->Set(ControlMode::MotionMagic, setpoint);
 			break;

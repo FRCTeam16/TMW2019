@@ -26,8 +26,9 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	
     // Drive down ramp
     const double initialDriveSpeed = PrefUtil::getSet("Auto.THCS.D1.y", 0.3);
+	const double d1TimeDrive = PrefUtil::getSet("Auto.THCS.D1.time", 1.5);
     steps.push_back(new ConcurrentStep({
-		new TimedDrive(0.0, initialDriveSpeed, 0.0, 1.0),
+		new TimedDrive(0.0, initialDriveSpeed, 0.0, d1TimeDrive),
 		new SetVisionLight(false),
 		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne),
 		new SelectVisionPipeline(isRight? 2 : 1)
