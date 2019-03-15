@@ -50,8 +50,9 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     // Align to target
     const double rocketAlignmentThreshold = PrefUtil::getSet("Auto.RBS.rocketAlignmentThreshold", 5.0);
     const double rocketAlignmentTime = PrefUtil::getSet("Auto.RBS.rocketAlignmentTime", 1.0);
+    const int rocketAlignmentHoldScans = PrefUtil::getSetInt("Auto.RBS.rocketAlignmentScans", 4);
     steps.push_back(new ConcurrentStep({
-        new AlignToTarget(rocketAngle, rocketAlignmentThreshold, rocketAlignmentTime),
+        new AlignToTarget(rocketAngle, rocketAlignmentThreshold, rocketAlignmentTime, rocketAlignmentHoldScans),
         // new DriveToTarget(rocketAngle, 0.0, rocketAlignmentThreshold, rocketAlignmentTime),
         new SetVisionLight(true)
     }, true));  // hard halt on end

@@ -2,8 +2,8 @@
 #include <iostream>
 #include "Robot.h"
 
-AlignToTarget::AlignToTarget(double _angle, double _target, double _timeout)
-  : angle(_angle), target(_target), timeout(_timeout) {}
+AlignToTarget::AlignToTarget(double _angle, double _target, double _timeout, int _scansToHold)
+  : angle(_angle), target(_target), timeout(_timeout), scansToHold(_scansToHold) {}
 
 bool AlignToTarget::Run(std::shared_ptr<World> world) {
     if (startTime < 0) {
@@ -23,17 +23,25 @@ bool AlignToTarget::Run(std::shared_ptr<World> world) {
               << "\n";
 
     if (thresholdMet) {
-        std::cout << "*** AlignToTarget met target threshold ***\n";
-        return true;
-    } else if (elapsed > timeout) {
+        scanCount++;
+        std::cout << "*** AlignToTarget met target threshold | scans = " << scanCount << " / " << scansToHold << " ***\n";
+        if (scanCount >= scansToHold) {
+            return true;
+        }
+    } else {
+        scanCount = 0;
+    }
+    
+    if (elapsed > timeout) {
         std::cout << "!!! AlignToTarget TIMED OUT !!!\n";
         return true;
-    } else {
-        crab->Update(
-            Robot::driveBase->GetTwistControlOutput(), 
-            0.0,
-            xspeed, 
-            false);
-        return false;
-    }
+    } 
+
+    crab->Update(
+        Robot::driveBase->GetTwistControlOutput(), 
+        0.0,
+        xspeed, 
+        false);
+    return false;
+    
 }
