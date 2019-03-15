@@ -3,8 +3,9 @@
 #include "Robot.h"
 #include "Util/RampUtil.h"
 
-DriveToTarget::DriveToTarget(double _angle, double _yspeed, double _targetArea, double _timeout) 
-  : angle(_angle), yspeed(_yspeed), targetArea(_targetArea), timeout(_timeout) {
+DriveToTarget::DriveToTarget(double _angle, double _yspeed, double _targetArea, double _timeout, double _maxTargetArea) 
+  : angle(_angle), yspeed(_yspeed), targetArea(_targetArea), timeout(_timeout), maxTargetArea(_maxTargetArea)
+{
 }
 
 bool DriveToTarget::Run(std::shared_ptr<World> world) {
@@ -14,7 +15,8 @@ bool DriveToTarget::Run(std::shared_ptr<World> world) {
     }
     const double elapsed = frc::Timer::GetFPGATimestamp() - startTime;
     const auto vision = Robot::visionSystem->GetLastVisionInfo();
-    const bool visionThresholdMet = vision->targetArea >= targetArea;
+    const bool visionThresholdMet = (vision->targetArea >= targetArea) && 
+                                    (vision->targetArea <= maxTargetArea);
 
     double xspeed = 0.0;
 
