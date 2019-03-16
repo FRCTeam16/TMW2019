@@ -14,6 +14,7 @@ FirstStep::FirstStep() = default;
 
 void FirstStep::Execute() {
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
+    const double elapsed = frc::Timer::GetFPGATimestamp() - startTime;
 
     if (IsFirstRun()) {
         std::cout << "JackScrew First Step Shifting\n";
@@ -23,6 +24,7 @@ void FirstStep::Execute() {
         wheels.RL->SetDriveSoftMinMaxOutput(0.0, 1.0);
         wheels.RR->SetDriveSoftMinMaxOutput(0.0, 1.0);
 
+        Robot::crawler->SetCrawlEnabled(false);
         Robot::jackScrews->ShiftAll(JackScrews::ShiftMode::kJackscrews);
         Robot::jackScrews->ConfigureOpenLoop(0.0);
     } else {
@@ -36,10 +38,6 @@ void FirstStep::Execute() {
                 firstAfterShifting = false;
                 Robot::jackScrews->ConfigureControlled(JackScrews::LiftMode::kAll, JackScrews::Direction::kDown, JackScrewControl::EndStateAction::kSwitchToControl, true);    //
                 std::cout << "Configured wheels for control\n";
-                // jackScrewControls->FL->SetControlSpeed(1.0);
-                // jackScrewControls->FR->SetControlSpeed(1.0);
-                // jackScrewControls->RL->SetControlSpeed(1.0);
-                // jackScrewControls->RR->SetControlSpeed(1.0);
             }
         } else {
             std::cout << "now: " << now << " | startTime: " << startTime << " | delta: " << delta << "\n";
@@ -56,6 +54,10 @@ void FirstStep::Execute() {
                 (jackScrewControls->RR->GetCurrentState() == JackScrewControl::JackScrewState::kClosedLoop);
     if (finished) {
         std::cout << "First Step detected step finished\n";
+    }
+    /// Re-enable crawler on finish or timeout
+    if (finished || (elapsed > 1.0) ) {
+        Robot::crawler->SetCrawlEnabled(true);
     }
 }
 

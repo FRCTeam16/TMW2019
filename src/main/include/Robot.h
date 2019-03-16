@@ -62,6 +62,8 @@ class Robot : public frc::TimedRobot {
   static std::shared_ptr<IntakeRotate> intakeRotate;
   static std::shared_ptr<Elevator> elevator;
   static std::unique_ptr<VisionSystem> visionSystem;
+  static std::unique_ptr<Crawler> crawler;
+
 
 private:
   void InitSubsystems();
@@ -85,7 +87,6 @@ private:
   bool runInstrumentation = false;  // whether to run subsystem instrumentation
 
   std::unique_ptr<LiftController> liftController;
-  std::unique_ptr<Crawler> crawler;
 
   ManualSolenoidState solenoidState;
 

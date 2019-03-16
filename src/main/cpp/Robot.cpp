@@ -17,6 +17,8 @@ std::unique_ptr<Intake> Robot::intake;
 std::shared_ptr<IntakeRotate> Robot::intakeRotate;
 std::shared_ptr<Elevator> Robot::elevator;
 std::unique_ptr<VisionSystem> Robot::visionSystem;
+std::unique_ptr<Crawler> Robot::crawler;
+
 
 
 void Robot::RobotInit() {
