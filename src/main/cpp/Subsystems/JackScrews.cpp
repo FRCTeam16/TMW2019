@@ -366,8 +366,8 @@ void JackScrews::ControlRamp() {
   double backSpeed = PrefUtil::getSet("JackScrew.cr.backSpeed", 0.85);
   double rampTime = PrefUtil::getSet("JackScrew.cr.rampTime", 0.5);
 
-  const double spinUpTime = 0.25;
-  const double spinUpSpeed = 0.10;
+  const double spinUpTime = 0.75;
+  const double spinUpSpeed = 0.25;
   const double now = frc::Timer::GetFPGATimestamp();
   double elapsed = now - controlTimeStart;
   if (elapsed < spinUpTime) {
@@ -375,8 +375,8 @@ void JackScrews::ControlRamp() {
     backSpeed = spinUpSpeed;
   } else {
     elapsed -= spinUpTime;
-    frontSpeed = RampUtil::RampUp(frontSpeed, elapsed, rampTime, spinUpSpeed);
-    backSpeed = RampUtil::RampUp(backSpeed, elapsed, rampTime, spinUpSpeed);
+    // frontSpeed = RampUtil::RampUp(frontSpeed, elapsed, rampTime, spinUpSpeed);
+    // backSpeed = RampUtil::RampUp(backSpeed, elapsed, rampTime, spinUpSpeed);
   }
 
   // Set direction we are running the motors based on target position direction (up/down)
@@ -395,7 +395,8 @@ void JackScrews::ControlRamp() {
     logJSC(0, jackScrews->FL.get());
     logJSC(1, jackScrews->FR.get());
 
-  } else if (LiftMode::kBack == currentLiftMode || LiftMode::kAll == currentLiftMode) {
+  } 
+  if (LiftMode::kBack == currentLiftMode || LiftMode::kAll == currentLiftMode) {
     // We use front speed if we are in back only mode since it is fastest
     double adjustedBackSpeed = LiftMode::kBack == currentLiftMode ? frontSpeed : backSpeed;
 
