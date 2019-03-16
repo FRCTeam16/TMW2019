@@ -67,7 +67,8 @@ void JackScrews::Run()
 
 
   if (targetPosition != Direction::kNone) {
-    DoControlled();
+    // DoControlled();
+    ControlRamp();
   }
 
   std::cout << "\nFL | ";
@@ -332,6 +333,79 @@ void JackScrews::DoControlled() {
       control->Hold();
     }
   }
+}
+
+
+inline void logJSC(int id, JackScrewControl *calc) {
+  std::cout << "calc[" << id << "] speed = " << calc->GetControlSpeed()
+          << " | change = " << calc->GetLastChange()
+          << " | accum = " << calc->GetAccumulatedPosition()
+          << " | closed = " << calc->IsClosedLoop()
+          << "\n";
+}
+
+
+inline double SafetyCheckSpeed(double speed, JackScrews::Direction targetPosition) {
+  if (targetPosition == JackScrews::Direction::kDown) {
+    if (speed < 0) {
+      std::cout << "!!! SPEED NEGATIVE DURING DOWN DRIVE !!!\n";
+      return 0.0;
+    }
+  } else if (targetPosition == JackScrews::Direction::kUp) {
+    if (speed > 0) {
+      std::cout << "!!! SPEED POSITIVE DURING UP DRIVE !!!\n";
+      return 0.0;
+    }
+  }
+  return speed;
+}
+
+void JackScrews::ControlRamp() {
+
+  double frontSpeed = PrefUtil::getSet("JackScrew.cr.frontSpeed", 1.0);
+  double backSpeed = PrefUtil::getSet("JackScrew.cr.backSpeed", 0.85);
+  double rampTime = PrefUtil::getSet("JackScrew.cr.rampTime", 0.5);
+
+  const double spinUpTime = 0.25;
+  const double spinUpSpeed = 0.10;
+  const double now = frc::Timer::GetFPGATimestamp();
+  double elapsed = now - controlTimeStart;
+  if (elapsed < spinUpTime) {
+    frontSpeed = spinUpSpeed;
+    backSpeed = spinUpSpeed;
+  } else {
+    elapsed -= spinUpTime;
+    frontSpeed = RampUtil::RampUp(frontSpeed, elapsed, rampTime, spinUpSpeed);
+    backSpeed = RampUtil::RampUp(backSpeed, elapsed, rampTime, spinUpSpeed);
+  }
+
+  // Set direction we are running the motors based on target position direction (up/down)
+  const auto speedDir = static_cast<int>(targetPosition);
+  frontSpeed *= speedDir;
+  backSpeed *= speedDir;
+
+  // Safety Prevention on speed direction
+  frontSpeed = SafetyCheckSpeed(frontSpeed, targetPosition);
+  backSpeed = SafetyCheckSpeed(backSpeed, targetPosition);
+
+  if (LiftMode::kFront == currentLiftMode || LiftMode::kAll == currentLiftMode) {
+    jackScrews->FL->SetControlSpeed(frontSpeed);
+    jackScrews->FR->SetControlSpeed(frontSpeed);
+
+    logJSC(0, jackScrews->FL.get());
+    logJSC(1, jackScrews->FR.get());
+
+  } else if (LiftMode::kBack == currentLiftMode || LiftMode::kAll == currentLiftMode) {
+    // We use front speed if we are in back only mode since it is fastest
+    double adjustedBackSpeed = LiftMode::kBack == currentLiftMode ? frontSpeed : backSpeed;
+
+    jackScrews->RL->SetControlSpeed(adjustedBackSpeed);
+    jackScrews->RR->SetControlSpeed(adjustedBackSpeed);
+
+    logJSC(2, jackScrews->RL.get());
+    logJSC(3, jackScrews->RR.get());
+  } 
+
 }
 
 

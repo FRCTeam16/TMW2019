@@ -65,6 +65,7 @@ public:
     
     void DoControlled();
     void FullSpeedC();
+    void ControlRamp();
     DriveInfo<bool> DetermineJackScrewsToInit();
     bool CheckCANCommunications();
 

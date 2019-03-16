@@ -44,13 +44,13 @@ void JackScrewControl::Run() {
     double elapsed = now - controlTimeStart;
     double speed = controlSpeed;
     
-    if (doRamp) {
-        if (elapsed < 0.25) {
-            const double kMinSpeed = 0.10;
-            std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
-            speed = kMinSpeed;
-        }
-    }
+    // if (doRamp) {
+    //     if (elapsed < 0.25) {
+    //         const double kMinSpeed = 0.10;
+    //         std::cout << "JSC " << name << "Running constant speed " << kMinSpeed << "\n";
+    //         speed = kMinSpeed;
+    //     }
+    // }
     //     } else if (elapsed <= (jackScrewRampTime + 0.25)) {
     //         speed = RampUtil::RampUp(controlSpeed, elapsed - 0.25, jackScrewRampTime, kMinSpeed);
     //         std::cout << "JSC " << name << " ramped to " << speed << "\n";
@@ -65,7 +65,7 @@ void JackScrewControl::Run() {
     const double fRemain = fabs(remaining);
     const bool inApproachThreshold = fRemain < pullUpApproachThreshold;
     const bool inCloseLoopThreshold = fRemain < rotationCloseLoopThreshold;
-    std::cout << "JSC: fRemain = " << fRemain << " | inApproachT? " << inApproachThreshold << " | inCloseLoopT? " << inCloseLoopThreshold << "\n";
+    std::cout << "JSC[" << name << "] fRemain = " << fRemain << " | inApproachT? " << inApproachThreshold << " | inCloseLoopT? " << inCloseLoopThreshold << "\n";
 
     switch (endStateAction) {
         case EndStateAction::kNone:
@@ -79,6 +79,8 @@ void JackScrewControl::Run() {
                 speed = pullUpApproachSpeed;
 
                 if (firstThresholdRun) {
+                    // Configure Open Loop drops JackScrew direction to kNone
+                    // so JSC takes over the final driving bit with switch to amp detect
                     Robot::jackScrews->ConfigureOpenLoop(pullUpApproachSpeed, EndStateAction::kSwitchToAmpDetect); // calls back and modifies our state
                     firstThresholdRun = false;
                     currentAmpDelayScan = 0;
@@ -114,7 +116,7 @@ void JackScrewControl::Run() {
             wheel->UseOpenLoopDrive(speed);
             break;
         case JackScrewState::kClosedLoop:
-            wheel->UseClosedLoopDrive(GetTargetDistance());     // FIXME? only works positive direction
+            wheel->UseClosedLoopDrive(GetTargetDistance());     // FIXME? does it only work positive direction
             break;
         default:
             std::cout << "!!! Warning : JackScrew " << name << " in swerve state but run() reaching control !!!\n";
