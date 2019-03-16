@@ -100,6 +100,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double cargoDriveTimeout = PrefUtil::getSet("Auto.THCS.cargoDriveTimeout", 3.5);
 	steps.push_back(new DriveToTarget(cargoShipAngle, cargoDriveY, cargoDriveThreshold, cargoDriveTimeout));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
+	steps.push_back(new Delay(0.5));
 	steps.push_back(new ConcurrentStep({
 		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
 		new SetVisionLight(false)
