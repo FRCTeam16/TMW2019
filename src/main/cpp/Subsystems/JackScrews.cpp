@@ -67,8 +67,11 @@ void JackScrews::Run()
 
 
   if (targetPosition != Direction::kNone) {
-    // DoControlled();
-    ControlRamp();
+      if (targetPosition == Direction::kDown) {
+        ControlRamp();
+      } else {
+        DoControlled();
+      }
   }
 
   std::cout << "\nFL | ";
