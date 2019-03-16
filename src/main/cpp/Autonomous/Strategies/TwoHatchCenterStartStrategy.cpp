@@ -36,9 +36,10 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 
     // Drive and place hatch
 	const double targetArea = PrefUtil::getSet("Auto.THCS.DriveToTarget.TA", 5.0);
+	const double maxTargetArea = PrefUtil::getSet("Auto.THCS.DriveToTarget.MTA", 8.0);
 	const double pushBackSpeed = PrefUtil::getSet("Auto.THCS.PushBack.y", -0.15);
 	steps.push_back(new SetVisionLight(true));
-	steps.push_back(new DriveToTarget(0.0, initialDriveSpeed, targetArea, 3.5));
+	steps.push_back(new DriveToTarget(0.0, initialDriveSpeed, targetArea, 3.5, maxTargetArea));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
 	steps.push_back(new Delay(0.5));
 	steps.push_back(new ConcurrentStep({
@@ -100,7 +101,7 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double cargoDriveTimeout = PrefUtil::getSet("Auto.THCS.cargoDriveTimeout", 3.5);
 	steps.push_back(new DriveToTarget(cargoShipAngle, cargoDriveY, cargoDriveThreshold, cargoDriveTimeout));
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
-	steps.push_back(new Delay(0.5));
+	steps.push_back(new Delay(1.0));
 	steps.push_back(new ConcurrentStep({
 		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
 		new SetVisionLight(false)
