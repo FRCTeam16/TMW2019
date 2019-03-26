@@ -131,6 +131,8 @@ void Robot::TeleopPeriodic() {
 	} 
 
 	const bool gamepadLTPressed = oi->GetGamepadLT() > 0.75;
+	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
+
 	if (gamepadLTPressed) {
 		if (oi->GPY->RisingEdge()) {
 			jackScrews->SetLiftMode(JackScrews::LiftMode::kBack);
@@ -141,10 +143,15 @@ void Robot::TeleopPeriodic() {
 		}
 	}
 
-	if (oi->GPStart->RisingEdge() && gamepadLTPressed) { 
+	if (oi->GPStart->RisingEdge() && (gamepadLTPressed || gamepadRTPressed)) { 
 		runningLiftSequence = true;
+
 		if (liftController.get() == nullptr) {
 			liftController.reset(new LiftController()); 
+			// If RT is pressed override default L3 climb value
+			if (gamepadRTPressed) {
+				jackScrews->SetDoL2Climb();
+			}
 			std::cout << "Constructed new LiftController\n";
 		}
 		liftController->Next();
@@ -173,7 +180,7 @@ void Robot::TeleopPeriodic() {
 		intake->IntakeHatch();	// from wall
 	} 
 
-	const bool gamepadRTPressed = oi->GetGamepadRT() > 0.75;
+	
 	if (!gamepadLTPressed) {
 		if (gamepadRTPressed) {
 			if (oi->GPY->RisingEdge()) {
@@ -300,11 +307,14 @@ void Robot::TeleopPeriodic() {
 	 * Drive Control
 	**********************************************************/
 	double twistInput = oi->GetJoystickTwist(threshold);
-
+	bool invertVisionDrive = false;
 	if (visionMode) {
 		double currentYaw = RobotMap::gyro->GetYaw();
 		double newYaw = calculateLockAngle(currentYaw);
 		// std::cout <<" currentYaw = "<< currentYaw << " | newYaw = " << newYaw << "\n";
+		if (fabs(newYaw) == 180.0) {
+			invertVisionDrive = true;
+		}
 		driveBase->SetTargetAngle(newYaw);
 		twistInput = driveBase->GetTwistControlOutput();
 	}
@@ -346,7 +356,7 @@ void Robot::TeleopPeriodic() {
 		autoManager->Periodic(world);
 	} else {
 		if (!lockWheels) {
-			const double yMove = -oi->GetJoystickY(threshold);
+			double yMove = -oi->GetJoystickY(threshold);
 			double xMove = oi->GetJoystickX();
 			bool useGyro = true;
 			if (visionMode) { 
@@ -355,6 +365,11 @@ void Robot::TeleopPeriodic() {
 				const bool movingForward = yMove > 0.0;
 				if (notAtLevel2 || movingForward) {
 					xMove = visionSystem->GetLastVisionInfo()->xSpeed;
+				}
+				if (invertVisionDrive) {
+					// Invert vision-based driving when locked at 180.0 degrees
+					// to allow smooth transition to/from field-centric
+					yMove = -yMove;
 				}
 				useGyro = false;
 			} else if (oi->DR4->Pressed()) {

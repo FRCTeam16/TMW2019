@@ -23,6 +23,15 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
   di->RL.reset(new JackScrewControl("RL", wheels.RL));
   di->RR.reset(new JackScrewControl("RR", wheels.RR));
   jackScrews.reset(di);
+
+  // Lookup default distance to travel
+  distanceToMove = Preferences::GetInstance()->GetDouble("JackScrew.dist");
+}
+
+void JackScrews::SetDoL2Climb() {
+  const double L2Dist = PrefUtil::getSet("JackScrew.dist.L2", 30);
+  distanceToMove = L2Dist;
+  std::cout << "Configuring for L2 Climb with distance = " << distanceToMove << "\n";
 }
 
 void JackScrews::Init() {
@@ -172,7 +181,7 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition
   
   int dirMul = Direction::kUp == targetPosition ? -1 : 1;
   const double controlSpeed = maxJackScrewSpeed * dirMul;
-  const double distance = prefs->GetDouble("JackScrew.dist") * dirMul;
+  const double distance = distanceToMove * dirMul;
   if (toInit.FL) { jackScrews->FL->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
   if (toInit.FR) { jackScrews->FR->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
   if (toInit.RL) { jackScrews->RL->ConfigureControlled(distance, controlSpeed, controlTimeStart, endStateAction, doRamp); }
