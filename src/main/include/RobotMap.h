@@ -47,4 +47,6 @@ class RobotMap {
 
   static std::shared_ptr<Compressor> compressor;
 
+  static std::shared_ptr<DoubleSolenoid> extendSuctionCup;
+  static std::shared_ptr<DoubleSolenoid> openSuction;
 };

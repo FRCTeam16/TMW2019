@@ -35,6 +35,9 @@
   
   std::shared_ptr<Compressor> RobotMap::compressor;
 
+  std::shared_ptr<DoubleSolenoid> RobotMap::extendSuctionCup;
+  std::shared_ptr<DoubleSolenoid> RobotMap::openSuction;
+
 
 
 RobotMap::RobotMap() {
@@ -67,4 +70,8 @@ RobotMap::RobotMap() {
 
   compressor.reset(new Compressor{0});
   compressor->SetClosedLoopControl(true);
+
+  extendSuctionCup.reset(new DoubleSolenoid(1,0,1))
+
+
 }
