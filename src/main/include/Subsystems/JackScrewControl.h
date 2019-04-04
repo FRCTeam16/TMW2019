@@ -24,6 +24,7 @@ public:
     void InitOpenLoop(double speed, EndStateAction action);
     void Run();
     void Hold();
+    void HoldOpenAndFinish();
 
     double GetLastChange() { return lastChange; }
     double GetAccumulatedPosition() { return accumulatedPosition; }

@@ -127,3 +127,12 @@ void JackScrewControl::Run() {
 void JackScrewControl::Hold() {
     currentState = JackScrewState::kClosedLoop;
 }
+
+/**
+ * Used to allow a single screw to finish and have the other enter a finished state
+ */
+void JackScrewControl::HoldOpenAndFinish() {
+    SetControlSpeed(0.0);
+    controlSpeed = 0.0;
+    finished = true;
+}

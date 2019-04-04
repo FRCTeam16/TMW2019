@@ -33,7 +33,7 @@ void SecondStep::Execute() {
             bool leftFinished = jackScrewControls->FL->IsFinished();
             bool rightFinished = jackScrewControls->FR->IsFinished();
             bool timedOut = (frc::Timer::GetFPGATimestamp() - startTime) >= 5.0;
-            liftFinished = (leftFinished && rightFinished) || timedOut;
+            liftFinished = (leftFinished || rightFinished) || timedOut;
         } else {
             if (!shiftedFrontToSwerve) {
                 Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);

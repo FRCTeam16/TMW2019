@@ -18,4 +18,5 @@ private:
   double positionStartTime = -1.0;
   bool liftFinished = false;
   bool shiftedToSwerve = false;
+  double startTime = -1;
 };

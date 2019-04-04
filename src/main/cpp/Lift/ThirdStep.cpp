@@ -25,21 +25,23 @@ void Thirdstep::Execute() {
             JackScrews::Direction::kUp,
             JackScrewControl::EndStateAction::kSwitchToAmpDetect);
 
-            wheels.FL->SetDriveBrakeMode();
-            wheels.FR->SetDriveBrakeMode();
-            jackScrewControls->FL->SetControlSpeed(0.0);
-            jackScrewControls->FR->SetControlSpeed(0.0);
-
-            // jackScrewControls->FL->Run();
-            // jackScrewControls->FR->Run();
+        wheels.FL->SetDriveBrakeMode();
+        wheels.FR->SetDriveBrakeMode();
+        jackScrewControls->FL->SetControlSpeed(0.0);
+        jackScrewControls->FR->SetControlSpeed(0.0);
+        startTime = frc::Timer::GetFPGATimestamp();
     } else {
         if (!liftFinished) {
             bool leftFinished = jackScrewControls->RL->IsFinished();
             bool rightFinished = jackScrewControls->RR->IsFinished();
-            liftFinished = leftFinished && rightFinished;
-            
-            // jackScrewControls->FL->Run();
-            // jackScrewControls->FR->Run();
+            bool timedOut = (frc::Timer::GetFPGATimestamp() - startTime) >= 5.0;
+            liftFinished = (leftFinished || rightFinished) || timedOut;
+
+            // Turn off outputs
+            if (liftFinished) {
+                jackScrewControls->RL->HoldOpenAndFinish();
+                jackScrewControls->RR->HoldOpenAndFinish();
+            }
         } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
                 const double kLowJoyThreshold = 0.15;

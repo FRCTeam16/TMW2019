@@ -76,11 +76,12 @@ void JackScrews::Run()
 
 
   if (targetPosition != Direction::kNone) {
-      if (targetPosition == Direction::kDown) {
-        ControlRamp();
-      } else {
-        DoControlled();
-      }
+      // if (targetPosition == Direction::kDown) {
+      //   ControlRamp();
+      // } else {
+      //   DoControlled();
+      // }
+      ControlRamp();
   }
 
   std::cout << "\nFL | ";
@@ -387,6 +388,7 @@ void JackScrews::ControlRamp() {
     backSpeed = spinUpSpeed;
   } else {
     elapsed -= spinUpTime;
+    // Perform ramping if desired
     // frontSpeed = RampUtil::RampUp(frontSpeed, elapsed, rampTime, spinUpSpeed);
     // backSpeed = RampUtil::RampUp(backSpeed, elapsed, rampTime, spinUpSpeed);
   }
