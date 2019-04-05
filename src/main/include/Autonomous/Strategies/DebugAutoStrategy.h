@@ -22,6 +22,8 @@ private:
 	void DebugStraight();
 	void DebugAutoHalt();
 	void DebugControlled();
+	void DebugRocketSecondMove();
+	void DebugTargetCount(std::shared_ptr<World> world);
 };
 
 #endif /* SRC_AUTONOMOUS_DEBUGAUTOSTRATEGY_H_ */

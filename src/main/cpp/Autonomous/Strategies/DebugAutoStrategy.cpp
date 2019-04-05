@@ -19,6 +19,9 @@
 #include "Autonomous/Steps/StopAtTarget.h"
 #include "Autonomous/Steps/OpenDriveToDistance.h"
 #include "Autonomous/Steps/SetVisionLight.h"
+#include "Autonomous/Steps/StopAtTargetCount.h"
+#include "Autonomous/Steps/SelectVisionPipeline.h"
+#include "Autonomous/Steps/AlignToTarget.h"
 
 
 DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
@@ -30,22 +33,9 @@ DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
 	const bool isRight = AutoStartPosition::kRight == world->GetStartPosition();
 	const int inv = isRight ? 1 : -1;
 
-	// start backwards
-    const double startAngle = 180.0;
-    steps.push_back(new SetGyroOffset(startAngle));
-
-
-	const double angle = 30.0 * inv;
-	const double timeout = 8.0;
-	auto drive = new TimedDrive(angle, 0.4, -0.07 * inv, timeout, 1.0);
-	steps.push_back(new ConcurrentStep({
-		new StopAtTarget(drive, 5, 1, 1.0, timeout),
-		new SetVisionLight(true)
-	}));
-
-	auto driveTarget = new DriveToTarget(angle, 0.2, 5.0, 5.0, 8.0);
-	steps.push_back(driveTarget);
+	DebugTargetCount(world);
 }
+	
 
 void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
 	std::cout << "DebugAutoStrategy::Init()\n";
@@ -57,6 +47,46 @@ void DebugAutoStrategy::Init(std::shared_ptr<World> world) {
 	// SetGyroOffset *step = new SetGyroOffset(angle);
 	// step->Run(world);
 }
+
+void DebugAutoStrategy::DebugTargetCount(std::shared_ptr<World> world) {
+	const bool isRight = AutoStartPosition::kRight == world->GetStartPosition();
+	const int inv = isRight ? 1 : -1;
+
+	const double startAngle = -90.0;
+    steps.push_back(new SetGyroOffset(startAngle));
+	steps.push_back(new SetVisionLight(true));
+	steps.push_back(new SelectVisionPipeline(isRight? 2 : 1));
+
+	const double angle = -90.0 * inv;
+	const double timeout = 8.0;
+
+	auto drive = new TimedDrive(angle, 0.3, 0.0, timeout);
+	steps.push_back(new StopAtTargetCount(drive, 3, true, 0.2, timeout));
+	steps.push_back(new DriveToTarget(angle, 0.1, 5, 5, 8));
+	// steps.push_back(new AlignToTarget(angle, ))
+}
+
+void DebugAutoStrategy::DebugRocketSecondMove() {
+	// const bool isRight = AutoStartPosition::kRight == world->GetStartPosition();
+	// const int inv = isRight ? 1 : -1;
+
+	// // start backwards
+    // const double startAngle = 180.0;
+    // steps.push_back(new SetGyroOffset(startAngle));
+
+
+	// const double angle = 30.0 * inv;
+	// const double timeout = 8.0;
+	// auto drive = new TimedDrive(angle, 0.4, -0.07 * inv, timeout, 1.0);
+	// steps.push_back(new ConcurrentStep({
+	// 	new StopAtTarget(drive, 5, 1, 1.0, timeout),
+	// 	new SetVisionLight(true)
+	// }));
+
+	// auto driveTarget = new DriveToTarget(angle, 0.2, 5.0, 5.0, 8.0);
+	// steps.push_back(driveTarget);
+}
+
 
 void DebugAutoStrategy::DebugAutoHalt() {
 	const double angle = 90.0;
