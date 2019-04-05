@@ -281,11 +281,11 @@ void Robot::TeleopPeriodic() {
 	**********************************************************/
 	const bool visionMode = oi->DR3->Pressed();	// controls drive
 	if (!autoInitialized) {
-		if (visionMode) {
-			visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::ImageProcessing);
-		} else {
-			visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::DriverCamera);
-		}
+		// if (visionMode) {
+		// 	visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::ImageProcessing);
+		// } else {
+		// 	visionSystem->GetLimelight()->SetCameraMode(Limelight::CameraMode::DriverCamera);
+		// }
 	}
 	HandleGlobalInputs();
 

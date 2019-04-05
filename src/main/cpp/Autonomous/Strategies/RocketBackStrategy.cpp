@@ -103,10 +103,37 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
         new TimedDrive(pickupAngle, pushBackSpeed, 0.0, 0.5),
         new SetVisionLight(false)
     })); 
-    //
-    // const double secondRocketAngle = 30.0 * inv;
-    // auto secondRocketRotate =new Rotate(secondRocketAngle);
-    // secondRocketRotate->SetContinueOnTimeout(true);
-    // steps.push_back (secondRocketRotate);
-    
+
+
+    // -------------------------
+    // Second placement
+    // -------------------------
+
+    const double secondRocketAngle = PrefUtil::getSet("Auto.RBS.secRocketAngle", 30.0) * inv;
+    const double secondRocketY = PrefUtil::getSet("Auto.RBS.secRocketY", 0.4);
+    const double secondRocketX = PrefUtil::getSet("Auto.RBS.secRocketX", -0.07) * inv;
+    const double secondRocketTimeout = PrefUtil::getSet("Auto.RBS.secRocketTimeout", 8.0);
+    const double secondRocketRamp = PrefUtil::getSet("Auto.RBS.secRocketRamp", 1.0);
+
+    const double secondRocketStopThresh = PrefUtil::getSet("Auto.RBS.secRocketVizThresh", 5.0);
+    const double secondRocketVizMin = PrefUtil::getSet("Auto.RBS.secRocketVizMin", 5.0);
+    const double secondRocketVizMax = PrefUtil::getSet("Auto.RBS.secRocketVizMax", 8.0);
+    const double secondRocketVizBlindTime = PrefUtil::getSet("Auto.RBS.secRocketVizBlindTime", 1.0);
+
+
+	auto drive = new TimedDrive(secondRocketAngle, secondRocketY, secondRocketX, secondRocketTimeout, secondRocketRamp);
+	steps.push_back(new ConcurrentStep({
+		new StopAtTarget(drive, secondRocketStopThresh, 1, secondRocketVizBlindTime, secondRocketTimeout),
+		new SetVisionLight(true)
+	}));
+
+    const double secondRocketDriveToTargetVizMin = PrefUtil::getSet("Auto.RBS.secRocketDriveVizMin", 4.0);
+    const double secondRocketDriveToTargetY = PrefUtil::getSet("Auto.RBS.secRocketDriveTargetY", 0.2);
+    const double secondRocketDriveToTargetTimeout = PrefUtil::getSet("Auto.RBS.secRocketDriveTimeout", 5.0);
+	auto driveTarget = new DriveToTarget(secondRocketAngle, secondRocketDriveToTargetY, 
+                    secondRocketDriveToTargetVizMin, secondRocketDriveToTargetTimeout, secondRocketVizMax);
+	steps.push_back(driveTarget);
+
+    steps.push_back(new SetElevatorPosition(Elevator::ElevatorPosition::kLevel2, 0.5));
+    steps.push_back(new SetVisionLight(false));
 }

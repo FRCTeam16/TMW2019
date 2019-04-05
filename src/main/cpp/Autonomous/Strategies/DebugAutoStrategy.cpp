@@ -18,14 +18,33 @@
 #include "Autonomous/Steps/DoIntakeAction.h"
 #include "Autonomous/Steps/StopAtTarget.h"
 #include "Autonomous/Steps/OpenDriveToDistance.h"
+#include "Autonomous/Steps/SetVisionLight.h"
 
 
 DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
 	// DebugStraight();
 	// DebugAutoHalt();
 	// DebugControlled();
-	auto drive = new TimedDrive(150.00, -0.15, 0.0, 1.5, -1, false);
-	steps.push_back(drive);
+	// auto drive = new TimedDrive(150.00, -0.15, 0.0, 1.5, -1, false);
+
+	const bool isRight = AutoStartPosition::kRight == world->GetStartPosition();
+	const int inv = isRight ? 1 : -1;
+
+	// start backwards
+    const double startAngle = 180.0;
+    steps.push_back(new SetGyroOffset(startAngle));
+
+
+	const double angle = 30.0 * inv;
+	const double timeout = 8.0;
+	auto drive = new TimedDrive(angle, 0.4, -0.07 * inv, timeout, 1.0);
+	steps.push_back(new ConcurrentStep({
+		new StopAtTarget(drive, 5, 1, 1.0, timeout),
+		new SetVisionLight(true)
+	}));
+
+	auto driveTarget = new DriveToTarget(angle, 0.2, 5.0, 5.0, 8.0);
+	steps.push_back(driveTarget);
 }
 
 void DebugAutoStrategy::Init(std::shared_ptr<World> world) {

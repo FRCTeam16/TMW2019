@@ -39,7 +39,7 @@ bool DriveToTarget::Run(std::shared_ptr<World> world) {
         Robot::driveBase->GetTwistControlOutput(), 
         adjustedSpeed,
         xspeed, 
-        false);
+        fieldCentric);
 
     const bool timedOut = (elapsed > timeout);
     if (timedOut) {
@@ -47,4 +47,8 @@ bool DriveToTarget::Run(std::shared_ptr<World> world) {
     }
 
     return visionThresholdMet || timedOut;  
+}
+
+void DriveToTarget::SetFieldCentric(bool fieldCentric_) {
+    fieldCentric = fieldCentric_;
 }
