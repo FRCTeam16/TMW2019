@@ -378,17 +378,17 @@ void JackScrews::ControlRamp() {
   double frontSpeed = PrefUtil::getSet("JackScrew.cr.frontSpeed", 1.0);
   double backSpeed = PrefUtil::getSet("JackScrew.cr.backSpeed", 0.85);
   double rampTime = PrefUtil::getSet("JackScrew.cr.rampTime", 0.5);
+  const double spinUpTime = PrefUtil::getSet("JackScrew.cr.spinUpTime", 0.25);
+  const double spinUpSpeed = PrefUtil::getSet("JackScrew.cr.spinUpSpeed", 0.25);
 
-  const double spinUpTime = 0.75;
-  const double spinUpSpeed = 0.25;
   const double now = frc::Timer::GetFPGATimestamp();
   double elapsed = now - controlTimeStart;
   if (elapsed < spinUpTime) {
     frontSpeed = spinUpSpeed;
     backSpeed = spinUpSpeed;
   } else {
-    elapsed -= spinUpTime;
     // Perform ramping if desired
+    // elapsed -= spinUpTime;
     // frontSpeed = RampUtil::RampUp(frontSpeed, elapsed, rampTime, spinUpSpeed);
     // backSpeed = RampUtil::RampUp(backSpeed, elapsed, rampTime, spinUpSpeed);
   }

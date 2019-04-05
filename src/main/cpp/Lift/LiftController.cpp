@@ -54,5 +54,5 @@ void LiftController::Run() {
 }
 
 bool LiftController::IsRunning() {
-    return currentAction.get() == nullptr;
+    return currentAction.get() != nullptr;
 }

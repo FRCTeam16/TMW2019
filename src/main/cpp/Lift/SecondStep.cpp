@@ -17,6 +17,7 @@ void SecondStep::Execute() {
     auto wheels = Robot::driveBase->GetWheels();
 
     if (IsFirstRun()) {
+        Robot::crawler->Stop();
         wheels.FL->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         // rl & rr in control mode
@@ -33,6 +34,9 @@ void SecondStep::Execute() {
             bool leftFinished = jackScrewControls->FL->IsFinished();
             bool rightFinished = jackScrewControls->FR->IsFinished();
             bool timedOut = (frc::Timer::GetFPGATimestamp() - startTime) >= 5.0;
+            std::cout << "LiftFinished Check: left? " << leftFinished
+                                        << " | right? " << rightFinished
+                                        << " | timedOut? " << timedOut << "\n";
             liftFinished = (leftFinished || rightFinished) || timedOut;
         } else {
             if (!shiftedFrontToSwerve) {
@@ -43,21 +47,40 @@ void SecondStep::Execute() {
                 wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 1.0);
 
                 Robot::driveBase->SetTargetAngle(-180.0);
+                shiftStartTime = frc::Timer::GetFPGATimestamp();
                 shiftedFrontToSwerve = true;
             } else {
+
+                // Have some time to make sure we are shifted
+                if ((frc::Timer::GetFPGATimestamp() - shiftStartTime) < 0.25) {
+                    std::cout << "SecondStep - waiting for shift before driving\n";
+                    liftDrive.DriveTank(0.0, 0.0);
+                    return;
+                }
+
                 Robot::driveBase->SetTargetAngle(-180.0);
-                const double kLowJoyThreshold = 0.15;
-                const double kHighJoyThreshold = 0.30;
-                double leftInput = Robot::oi->getDriverLeft()->GetY();
-                double rightInput = Robot::oi->getDriverRight()->GetY();
 
-                int dir = leftInput < 0 ? -1 : 1;
-                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
-                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+                // As if joystick being pulled toward user
+                const double autoDriveSpeed = 0.2;
+                double leftInput = autoDriveSpeed;
+                double rightInput = autoDriveSpeed;
 
-                dir = rightInput < 0 ? -1 : 1;
-                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
-                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
+                bool useHumanInput = false;
+                if (useHumanInput) {
+                    const double kLowJoyThreshold = 0.15;
+                    const double kHighJoyThreshold = 0.30;
+                    leftInput = Robot::oi->getDriverLeft()->GetY();
+                    rightInput = Robot::oi->getDriverRight()->GetY();
+
+                    int dir = leftInput < 0 ? -1 : 1;
+                    if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
+                    if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+
+                    dir = rightInput < 0 ? -1 : 1;
+                    if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
+                    if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
+                }
+                
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
@@ -67,12 +90,6 @@ void SecondStep::Execute() {
                     // swap inputs
                     liftDrive.DriveTank(-rightInput, -leftInput);   // invert direction
                 }
-                
-                // JackScrewControl does not handle swerve inputs so we must send motor inputs
-                auto jsCtrls = Robot::jackScrews->GetJackScrewControls();
-                // jsCtrls->RL->Run();
-                // jsCtrls->RR->Run();
-                // finished = true (driver must transition to next step)
             }
         }
     }

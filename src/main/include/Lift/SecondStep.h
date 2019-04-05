@@ -19,4 +19,5 @@ class SecondStep : public Action {
   bool liftFinished = false;
   bool shiftedFrontToSwerve = false;
   double startTime = -1;
+  double shiftStartTime = -1;
 };

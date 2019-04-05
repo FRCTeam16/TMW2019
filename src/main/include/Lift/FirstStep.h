@@ -18,4 +18,5 @@ class FirstStep : public Action {
  private:
   bool finished = false;
   bool firstAfterShifting = true;
+  bool crawlerStarted = false;
 };

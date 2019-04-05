@@ -156,7 +156,17 @@ void Robot::TeleopPeriodic() {
 		}
 		liftController->Next();
 	}
-	// TOOD: move runningLiftSequence check as liftController->IsRunning()
+	
+	// Check to see if we just exited
+	if (runningLiftSequence) {
+		if (!liftController->IsRunning()) {
+			std::cout << "Exiting out of Lift Control handler\n";
+			jackScrews->ShiftAll(JackScrews::ShiftMode::kDrive);
+			liftController.reset();
+			runningLiftSequence = false;
+		}
+	}
+	
 
 	/**********************************************************
 	 * Intake 
@@ -321,13 +331,16 @@ void Robot::TeleopPeriodic() {
 
 		
 	// Crawler control
-	if (oi->GetGamepadDPad() == OI::DPad::kDown) {
-		crawler->Back();
-	} else if (oi->GetGamepadDPad() == OI::DPad::kUp) {
-		crawler->Forward();
-	} else {
-		crawler->Stop();
+	if (!runningLiftSequence) {
+		if (oi->GetGamepadDPad() == OI::DPad::kDown) {
+			crawler->Back();
+		} else if (oi->GetGamepadDPad() == OI::DPad::kUp) {
+			crawler->Forward();
+		} else {
+			crawler->Stop();
+		}
 	}
+	
 
 
 	double start = frc::Timer::GetFPGATimestamp();

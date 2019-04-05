@@ -74,7 +74,7 @@ void JackScrewControl::Run() {
         // Only when running amp
         case EndStateAction::kSwitchToAmpDetect:
             
-            if (inApproachThreshold) {
+            if (!finished && inApproachThreshold) {
                 SetControlSpeed(pullUpApproachSpeed);
                 speed = pullUpApproachSpeed;
 

@@ -56,8 +56,13 @@ void FirstStep::Execute() {
         std::cout << "First Step detected step finished\n";
     }
     /// Re-enable crawler on finish or timeout
-    if (finished || (elapsed > 1.0) ) {
+    if (finished || (elapsed > 3.0) ) {
+        if (!crawlerStarted) {
+            
+        }
         Robot::crawler->SetCrawlEnabled(true);
+        Robot::crawler->Back();
+
     }
 }
 

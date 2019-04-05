@@ -25,6 +25,8 @@ void Thirdstep::Execute() {
             JackScrews::Direction::kUp,
             JackScrewControl::EndStateAction::kSwitchToAmpDetect);
 
+        wheels.FL->UseOpenLoopDrive(0.0);
+        wheels.FR->UseOpenLoopDrive(0.0);
         wheels.FL->SetDriveBrakeMode();
         wheels.FR->SetDriveBrakeMode();
         jackScrewControls->FL->SetControlSpeed(0.0);
@@ -39,23 +41,33 @@ void Thirdstep::Execute() {
 
             // Turn off outputs
             if (liftFinished) {
+                std::cout << "Setting rear wheels to hold open and finish\n";
                 jackScrewControls->RL->HoldOpenAndFinish();
                 jackScrewControls->RR->HoldOpenAndFinish();
             }
         } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
-                const double kLowJoyThreshold = 0.15;
-                const double kHighJoyThreshold = 0.30;
-                double leftInput = Robot::oi->getDriverLeft()->GetY();
-                double rightInput = Robot::oi->getDriverRight()->GetY();
 
-                int dir = leftInput < 0 ? -1 : 1;
-                if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
-                if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+                const double autoDriveSpeed = 0.2;
+                double leftInput = autoDriveSpeed;
+                double rightInput = autoDriveSpeed;
 
-                dir = rightInput < 0 ? -1 : 1;
-                if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
-                if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
+                bool useHumanInput = false;
+                if (useHumanInput) {
+                    const double kLowJoyThreshold = 0.15;
+                    const double kHighJoyThreshold = 0.30;
+                    leftInput = Robot::oi->getDriverLeft()->GetY();
+                    rightInput = Robot::oi->getDriverRight()->GetY();
+
+                    int dir = leftInput < 0 ? -1 : 1;
+                    if (fabs(leftInput) < kLowJoyThreshold) { leftInput = 0.0; }
+                    if (fabs(leftInput) > kHighJoyThreshold) { leftInput = kHighJoyThreshold * dir; }
+
+                    dir = rightInput < 0 ? -1 : 1;
+                    if (fabs(rightInput) < kLowJoyThreshold) { rightInput = 0.0; }
+                    if (fabs(rightInput) > kHighJoyThreshold) { rightInput = kHighJoyThreshold * dir; }
+                }
+
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
@@ -66,11 +78,6 @@ void Thirdstep::Execute() {
                     liftDrive.DriveTank(-rightInput, -leftInput);   // invert direction
                 }
                 
-                // JackScrewControl does not handle swerve inputs so we must send motor inputs
-                auto jsCtrls = Robot::jackScrews->GetJackScrewControls();
-                // jsCtrls->RL->Run();
-                // jsCtrls->RR->Run();
-                // finished = true (driver must transition to next step)
             }
     }
 }
