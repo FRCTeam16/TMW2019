@@ -84,7 +84,7 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     const double pickupFastSpeedX = PrefUtil::getSet("Auto.RBS.pickupFastSpeedX", 0.05) * inv;
     steps.push_back(new ConcurrentStep({
         new TimedDrive(pickupAngle, pickupFastSpeed, 0.0, pickupFastTime1, 0.5),
-        new SetElevatorPosition(Elevator::ElevatorPosition::kFloor, 1.0)
+        new SetElevatorPosition(Elevator::ElevatorPosition::kFloor, pickupFastTime1)
     }));
     steps.push_back(new TimedDrive(pickupAngle, pickupFastSpeed, pickupFastSpeedX, pickupFastTime2));
 
