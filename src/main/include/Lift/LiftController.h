@@ -16,8 +16,13 @@ class LiftController {
   void Run();
   bool IsRunning();
 
+  void SetNormalClimb(bool _normal) { normalClimb = _normal; }
+
  private:
   enum class LiftState { kNone, kFirst, kSecond, kThird, kFinished };
+  enum class PopLiftState { kNone, kFirst, kSecond, kFinished };
   LiftState currentState = LiftState::kNone;
+  PopLiftState popCurrentState = PopLiftState::kNone;
   std::unique_ptr<Action> currentAction;
+  bool normalClimb = true;
 };

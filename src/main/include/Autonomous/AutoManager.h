@@ -23,7 +23,7 @@ public:
 
 private:
 	enum AutoStrategy {
-		kNone = 0, kTwoHatchCenterStartStrategy = 1, kRocketBackStrategy = 2, kDebug = 99
+		kNone = 0, kTwoHatchCenterStartStrategy = 1, kRocketBackStrategy = 2, kMultiCargoShipStrategy = 3, kDebug = 99
 	};
 
 	std::shared_ptr<frc::SendableChooser<int>> positions;

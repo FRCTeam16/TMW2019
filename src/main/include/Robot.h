@@ -83,6 +83,7 @@ private:
   bool runningLiftSequence = false; // true when running lift sequence
   bool dpadRightToggled = false;
   bool drPadToggled = false;
+  bool dpadUpToggled = false;
 
   bool runInstrumentation = false;  // whether to run subsystem instrumentation
 

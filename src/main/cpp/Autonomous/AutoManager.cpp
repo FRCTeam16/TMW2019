@@ -6,6 +6,7 @@
 #include "Autonomous/Strategies/DebugAutoStrategy.h"
 #include "Autonomous/Strategies/TwoHatchCenterStartStrategy.h"
 #include "Autonomous/Strategies/RocketBackStrategy.h"
+#include "Autonomous/Strategies/MultiCenterStrategy.h"
 
 
 
@@ -16,6 +17,7 @@ AutoManager::AutoManager() :
 	strategies->AddOption("0 - None", AutoStrategy::kNone);
 	strategies->SetDefaultOption("1 - TwoHatchCenterStartStrategy", AutoStrategy::kTwoHatchCenterStartStrategy);
 	strategies->AddOption("2 - Rocket Back Strategy", AutoStrategy::kRocketBackStrategy);
+	strategies->AddOption("3 - Multi-Cargo Ship Strategy", AutoStrategy::kMultiCargoShipStrategy);
 	strategies->AddOption("99 - Debug Auto Strategy", AutoStrategy::kDebug);
 
 	positions->SetDefaultOption("2 - Right", AutoStartPosition::kRight);
@@ -50,6 +52,10 @@ std::unique_ptr<Strategy> AutoManager::CreateStrategy(const AutoStrategy &key, s
 	case kRocketBackStrategy:
 		std::cout << "AUTOMAN: Selected kRocketBackStrategy \n";
 		strategy = new RocketBackStrategy(world);
+		break;
+	case kMultiCargoShipStrategy:
+		std::cout << "AUTOMAN: Selected kMultiCargoShipStrategy \n";
+		strategy = new MultiCenterStrategy(world);
 		break;
 	default:
 		// TODO: Fill in sane default

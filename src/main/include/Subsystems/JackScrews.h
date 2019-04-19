@@ -47,7 +47,9 @@ public:
   void SetLiftMode(LiftMode liftMode);
   void ConfigureOpenLoop(double speed, JackScrewControl::EndStateAction endStateAction = JackScrewControl::EndStateAction::kNone);
   void ConfigureControlled(LiftMode liftMode, Direction targetPosition, JackScrewControl::EndStateAction endStateAction, bool doRamp = false);
+  void SetDoNormalClimb();
   void SetDoL2Climb();
+  void SetDoPopClimb();
 
   DriveInfo<std::shared_ptr<JackScrewControl>>* GetJackScrewControls() { return jackScrews.get(); }
   void SetMaxJackScrewSpeed(double speed_) { maxJackScrewSpeed = speed_; }

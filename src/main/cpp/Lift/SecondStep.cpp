@@ -61,7 +61,7 @@ void SecondStep::Execute() {
                 Robot::driveBase->SetTargetAngle(-180.0);
 
                 // As if joystick being pulled toward user
-                const double autoDriveSpeed = 0.2;
+                const double autoDriveSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", 0.1);
                 double leftInput = autoDriveSpeed;
                 double rightInput = autoDriveSpeed;
 
@@ -84,8 +84,8 @@ void SecondStep::Execute() {
                 std::cout << "Left: " << leftInput << " | Right: " << rightInput << "\n";
  
                 if (Robot::oi->DL9->Pressed()) {
-                    const double crabSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", -0.2);
-                    liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), crabSpeed, 0, true);
+                    // const double crabSpeed = PrefUtil::getSet("Lift.step2.drivespeed.y", -0.2);
+                    // liftDrive.DriveFront(Robot::driveBase->GetCrabTwistOutput(), crabSpeed, 0, true);
                 } else {
                     // swap inputs
                     liftDrive.DriveTank(-rightInput, -leftInput);   // invert direction

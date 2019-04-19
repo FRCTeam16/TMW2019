@@ -12,7 +12,7 @@ private:
     double startTime = -1.0;        // time drive move starts (for ramping)
     double crawlSpeed = -1.0;       // default speed
     double targetSpeed = 0.0;       // speed target (fwd/rev) 
-    const double kRampTime = 0.5;   // time to ramp up
+    const double kRampTime = 0.2;   // time to ramp up
 
     void Crawl(double _speed) {
         if (startTime == -1.0) {

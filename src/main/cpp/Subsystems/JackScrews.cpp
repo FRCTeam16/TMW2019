@@ -28,10 +28,21 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
   distanceToMove = Preferences::GetInstance()->GetDouble("JackScrew.dist");
 }
 
+void JackScrews::SetDoNormalClimb() {
+  distanceToMove = Preferences::GetInstance()->GetDouble("JackScrew.dist");
+  std::cout << "Configuring for Normal Climb with distance = " << distanceToMove << "\n";
+}
+
 void JackScrews::SetDoL2Climb() {
   const double L2Dist = PrefUtil::getSet("JackScrew.dist.L2", 30);
   distanceToMove = L2Dist;
   std::cout << "Configuring for L2 Climb with distance = " << distanceToMove << "\n";
+}
+
+void JackScrews::SetDoPopClimb() {
+  const double hopDist = PrefUtil::getSet("JackScrew.dist.Pop", 39);
+  distanceToMove = hopDist;
+  std::cout << "Configuring for Hop Climb with distance = " << distanceToMove << "\n";
 }
 
 void JackScrews::Init() {

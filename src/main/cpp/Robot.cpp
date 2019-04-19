@@ -143,6 +143,30 @@ void Robot::TeleopPeriodic() {
 		}
 	}
 
+	bool dpadUpRisingEdge = false;
+	if (oi->GetGamepadDPad() == OI::DPad::kUp) {
+		if (!dpadUpToggled) {
+			dpadUpRisingEdge = true;
+			dpadUpToggled = true;
+		}
+	} else {
+		dpadUpRisingEdge = false;
+		dpadUpToggled = false;
+	}
+
+
+	// If we press Dpad Up with Left Trigger modifier, toggle 8 inch lift
+	if (dpadUpRisingEdge && gamepadLTPressed) {
+		runningLiftSequence = true;
+
+		if (liftController.get() == nullptr) {
+			liftController.reset(new LiftController()); 
+			liftController->SetNormalClimb(false);
+			std::cout << "Constructed new LiftController in Hop Mode\n";
+		}
+		liftController->Next();
+	}
+	// If we press start with a modifier then we are running one of our full climb sequences
 	if (oi->GPStart->RisingEdge() && (gamepadLTPressed || gamepadRTPressed)) { 
 		runningLiftSequence = true;
 
@@ -151,6 +175,8 @@ void Robot::TeleopPeriodic() {
 			// If RT is pressed override default L3 climb value
 			if (gamepadRTPressed) {
 				jackScrews->SetDoL2Climb();
+			} else {
+				jackScrews->SetDoNormalClimb();
 			}
 			std::cout << "Constructed new LiftController\n";
 		}
