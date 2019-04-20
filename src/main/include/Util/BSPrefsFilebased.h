@@ -8,5 +8,5 @@ class BSPrefsFilebased : public BSPrefs {
  public:
   BSPrefsFilebased();
  private:
-  const string filename = "/home/lvuser/deploy/bsprefs.ini";
+  const string filename = "/home/lvuser/deploy/bsprefs.csv";
 };

@@ -1,11 +1,12 @@
 #include "Util/BSPrefs.h"
 #include <iostream>
+#include "Util/BSPrefsFilebased.h"
 
 BSPrefs * BSPrefs::instance;
 
 BSPrefs* BSPrefs::GetInstance() {
     if (instance == nullptr) {
-        instance = new BSPrefsHardcoded(); 
+        instance = new BSPrefsFilebased(); 
         instance->LoadConstants();       
     }
     return instance;

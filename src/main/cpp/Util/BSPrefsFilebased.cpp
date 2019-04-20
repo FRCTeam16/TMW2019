@@ -30,6 +30,7 @@ BSPrefsFilebased::BSPrefsFilebased() {
         string valueString;
         double value = 0.0;
 
+        int propertiesRead = 0;
         while (!prefFile.eof()) {
             getline(prefFile, key, ',');
             getline(prefFile, valueString);
@@ -44,6 +45,7 @@ BSPrefsFilebased::BSPrefsFilebased() {
 
             if (from_string<double>(value, valueString, std::dec)) {
                 lookupDouble[key] = value;
+                propertiesRead++;
             } else {
                 cerr << "*************************************************\n"
                      << " BSPF: Unable to convert: " << key << " | " << valueString << "\n"
@@ -51,6 +53,7 @@ BSPrefsFilebased::BSPrefsFilebased() {
             }
 
         }
+        cout << "BSPrefsFileBased: # of properties read: " << propertiesRead << "\n";
     } else {
         cerr << "*************************************************\n"
              << " BSPF: Unable to open preferences file: " << filename << "\n"
