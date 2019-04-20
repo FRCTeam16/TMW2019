@@ -51,8 +51,8 @@ BSPrefsFilebased::BSPrefsFilebased() {
                      << " BSPF: Unable to convert: " << key << " | " << valueString << "\n"
                      << "*************************************************\n";
             }
-
         }
+        prefFile.close();
         cout << "BSPrefsFileBased: # of properties read: " << propertiesRead << "\n";
     } else {
         cerr << "*************************************************\n"

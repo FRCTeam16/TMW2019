@@ -110,8 +110,10 @@ void RAWCConstants::saveDataToFile(string fileName)
 		cout << strerror(errno) << '\n';
 	}
 	
-	if(outfile.is_open())
-		cout << "Unable to save file" << endl;
+	if(!outfile.is_open()) {
+		cout << "!!!! ERROR Unable to save file" << endl;
+		return;
+	}
 
 	//if it fails, return
 	// print content:

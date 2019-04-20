@@ -23,6 +23,12 @@ std::unique_ptr<Crawler> Robot::crawler;
 
 void Robot::RobotInit() {
 	std::cout << "Robot::RobotInit => \n";
+
+	std::cout << "Reading properties\n";
+	auto pref = BSPrefs::GetInstance();
+	std::cout << "Sanity FLOFF: " << pref->GetDouble("FLOff", 0.0);
+	std::cout << "Finished Reading properties\n";
+
 	robotMap.reset(new RobotMap());
 	oi.reset(new OI());
     driveBase.reset(new DriveBase());
@@ -32,6 +38,7 @@ void Robot::RobotInit() {
 
 	intake.reset(new Intake());
 	intakeRotate.reset(new IntakeRotate());
+
 	intakeRotate->CalibrateHome();
 
 	crawler.reset(new Crawler());
