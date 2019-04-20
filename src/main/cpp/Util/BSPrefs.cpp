@@ -210,12 +210,7 @@ double BSPrefs::GetDouble(std::string key, double value) const {
 }
 
 int BSPrefs::GetInt(std::string key, int value) const {
-    if (lookupInt.count(key) > 0) {
-        return lookupInt.at(key);
-    } else {
-        std::cout << "!!! BSPrefs::lookupInt Missing Key: " << key << " | " << value << "\n";
-        return value;
-    }
+    return static_cast<int>(GetDouble(key, value));
 }
 
 bool BSPrefs::GetBool(std::string key, bool value) const {

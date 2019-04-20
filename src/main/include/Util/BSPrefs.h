@@ -19,7 +19,6 @@ private:
     static BSPrefs* instance;
     BSPrefs();
     std::map<std::string, double> lookupDouble;
-    std::map<std::string, int> lookupInt;
     std::map<std::string, bool> lookupBool;
 
     RAWCConstants *constants;
