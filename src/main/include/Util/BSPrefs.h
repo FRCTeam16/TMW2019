@@ -15,11 +15,19 @@ public:
     void StoreDouble(std::string key, double value);
     void SaveConstants();
 
+
 private:
     static BSPrefs* instance;
-    BSPrefs();
+
+protected:
+    BSPrefs() = default;
+    void LoadConstants();
     std::map<std::string, double> lookupDouble;
     std::map<std::string, bool> lookupBool;
-
     RAWCConstants *constants;
+};
+
+class BSPrefsHardcoded : public BSPrefs {
+public:
+    BSPrefsHardcoded();
 };
