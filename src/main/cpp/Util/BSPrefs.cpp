@@ -221,6 +221,7 @@ BSPrefsHardcoded::BSPrefsHardcoded() {
     lookupDouble.emplace("JackScrewControl.PullUpApproachThreshold", 12);
     lookupDouble.emplace("JackScrewTest.speed", 0.1);
 
+    lookupDouble.emplace("Lift.step2.drivespeed.y", 0.3);
     lookupDouble.emplace("ProtoScrewSpeed", 10);
     lookupDouble.emplace("PulsesPerInch", 0.4657);
     lookupDouble.emplace("Steer.ContinuousCurrentLimit", 20);
