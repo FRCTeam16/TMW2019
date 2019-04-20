@@ -1,15 +1,15 @@
 #include "Lift/JackScrewTest.h"
 #include "Robot.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include <iostream>
 
 JackScrewTest::JackScrewTest() {
-    PrefUtil::getSet("JackScrewTest.speed", 0.1);
+    BSPrefs::GetInstance()->GetDouble("JackScrewTest.speed", 0.1);
 }
 
 
 void JackScrewTest::Run() {
-    const double speed = PrefUtil::getSet("JackScrewTest.speed", 0.1);
+    const double speed = BSPrefs::GetInstance()->GetDouble("JackScrewTest.speed", 0.1);
     std::cout << "JackScrewTest::Run(" << speed << ")\n";
     auto wheels = Robot::driveBase->GetWheels();
     wheels.FL->UseOpenLoopDrive(speed);

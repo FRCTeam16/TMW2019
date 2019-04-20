@@ -9,7 +9,7 @@
 #include "Robot.h"
 #include "RobotMap.h"
 #include <frc/smartdashboard/SmartDashboard.h>
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include <cmath>
 
 #define M_PI		3.14159265358979323846	/* pi */
@@ -31,22 +31,22 @@ IntakeRotate::IntakeRotate() {
 }
 
 void IntakeRotate::Init() {
-    rotateLeft->Config_kP(0, PrefUtil::getSet("Intake.rotate.P", 0.001));
-    rotateLeft->Config_kI(0, PrefUtil::getSet("Intake.rotate.I", 0.0));
-    rotateLeft->Config_kD(0, PrefUtil::getSet("Intake.rotate.D", 0.0));
+    rotateLeft->Config_kP(0, BSPrefs::GetInstance()->GetDouble("Intake.rotate.P", 0.001));
+    rotateLeft->Config_kI(0, BSPrefs::GetInstance()->GetDouble("Intake.rotate.I", 0.0));
+    rotateLeft->Config_kD(0, BSPrefs::GetInstance()->GetDouble("Intake.rotate.D", 0.0));
     rotateLeft->Config_kF(0, 0);
-    rotateLeft->ConfigMotionCruiseVelocity(PrefUtil::getSet("Intake.rotate.V", 500));
-    rotateLeft->ConfigMotionAcceleration(PrefUtil::getSet("Intake.rotate.A", 500));
+    rotateLeft->ConfigMotionCruiseVelocity(BSPrefs::GetInstance()->GetDouble("Intake.rotate.V", 500));
+    rotateLeft->ConfigMotionAcceleration(BSPrefs::GetInstance()->GetDouble("Intake.rotate.A", 500));
 
 
-    positionLookup[IntakePosition::kStarting]  = PrefUtil::getSetInt("Intake.Positition.starting", 100);
-    positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
-    positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
-    positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
-    positionLookup[IntakePosition::kCargoPickup] = PrefUtil::getSetInt("Intake.Position.cargopickup", 350);
-    positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
+    positionLookup[IntakePosition::kStarting]  = BSPrefs::GetInstance()->GetInt("Intake.Positition.starting", 100);
+    positionLookup[IntakePosition::kCargoShot] = BSPrefs::GetInstance()->GetInt("Intake.Positition.cargoshot", 200);
+    positionLookup[IntakePosition::kRocketShot] = BSPrefs::GetInstance()->GetInt("Intake.Positition.rocketshot", 200);
+    positionLookup[IntakePosition::kLevelOne]  = BSPrefs::GetInstance()->GetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kCargoPickup] = BSPrefs::GetInstance()->GetInt("Intake.Position.cargopickup", 350);
+    positionLookup[IntakePosition::kFloor]     = BSPrefs::GetInstance()->GetInt("Intake.Positition.floor", 400);
 
-    const int base = PrefUtil::getSetInt("Intake.position.base", 0);
+    const int base = BSPrefs::GetInstance()->GetInt("Intake.position.base", 0);
     const int currentPositionValue = rotateLeft->GetSelectedSensorPosition(0);
     targetPositionValue = currentPositionValue - base;
     rotateLeft->ClearMotionProfileTrajectories();
@@ -64,9 +64,9 @@ void IntakeRotate::Init() {
 void IntakeRotate::Run() {
 
     // std::cout << "IntakeRotate::Run(" << positionControl << ")\n";
-    const double base = PrefUtil::getSetInt("Intake.position.base", 0);
-    const int feedForwardZeroPos = PrefUtil::getSetInt("Intake.position.ffzeropos", 600);   // zero position for k
-    const double feedForwardZero = PrefUtil::getSet("Intake.position.ffzero", 0.11);        // ff for holding zero
+    const double base = BSPrefs::GetInstance()->GetInt("Intake.position.base", 0);
+    const int feedForwardZeroPos = BSPrefs::GetInstance()->GetInt("Intake.position.ffzeropos", 600);   // zero position for k
+    const double feedForwardZero = BSPrefs::GetInstance()->GetDouble("Intake.position.ffzero", 0.11);        // ff for holding zero
 
     const int currentPosition = rotateLeft->GetSelectedSensorPosition(0);
     const double theta = (currentPosition - (base + feedForwardZeroPos)) * (M_PI / kRotation);    // use M_PI instead of TWO_PI to account for 1:2 gearing
@@ -119,12 +119,12 @@ void IntakeRotate::Run() {
 
 void IntakeRotate::SetIntakePosition(IntakePosition position) {
     std::cout << "IntakeRotate::SetIntakePosition\n";
-    positionLookup[IntakePosition::kStarting]  = PrefUtil::getSetInt("Intake.Positition.starting", 100);
-    positionLookup[IntakePosition::kCargoShot] = PrefUtil::getSetInt("Intake.Positition.cargoshot", 200);
-    positionLookup[IntakePosition::kRocketShot] = PrefUtil::getSetInt("Intake.Positition.rocketshot", 200);
-    positionLookup[IntakePosition::kLevelOne]  = PrefUtil::getSetInt("Intake.Positition.levelone", 300);
-    positionLookup[IntakePosition::kCargoPickup] = PrefUtil::getSetInt("Intake.Position.cargopickup", 350);
-    positionLookup[IntakePosition::kFloor]     = PrefUtil::getSetInt("Intake.Positition.floor", 400);
+    positionLookup[IntakePosition::kStarting]  = BSPrefs::GetInstance()->GetInt("Intake.Positition.starting", 100);
+    positionLookup[IntakePosition::kCargoShot] = BSPrefs::GetInstance()->GetInt("Intake.Positition.cargoshot", 200);
+    positionLookup[IntakePosition::kRocketShot] = BSPrefs::GetInstance()->GetInt("Intake.Positition.rocketshot", 200);
+    positionLookup[IntakePosition::kLevelOne]  = BSPrefs::GetInstance()->GetInt("Intake.Positition.levelone", 300);
+    positionLookup[IntakePosition::kCargoPickup] = BSPrefs::GetInstance()->GetInt("Intake.Position.cargopickup", 350);
+    positionLookup[IntakePosition::kFloor]     = BSPrefs::GetInstance()->GetInt("Intake.Positition.floor", 400);
 
     targetPosition = position;
     targetPositionValue = positionLookup[targetPosition];
@@ -147,7 +147,7 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
     } else if (!positionControl) {
         // std::cout << "Setting CLOSED loop from SetPositionSpeed\n";
         double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
-        const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+        const double base = BSPrefs::GetInstance()->GetInt("Intake.position.base", 0);
         targetPositionValue = currentPosition - base;
         positionControl = true;
         // std::cout << "SetPositionSpeed() -> Current Pos: " << currentPosition << " | "
@@ -158,7 +158,7 @@ void IntakeRotate::SetPositionSpeed(double speed, bool openLoop) {
 
 void IntakeRotate::DisabledHoldCurrentPosition() {
     // double currentPosition = rotateLeft->GetSelectedSensorPosition(0);
-    // const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+    // const double base = BSPrefs::GetInstance()->GetInt("Intake.position.base", 0);
     // targetPositionValue = currentPosition - base;
     // positionControl = true;
     // rotateLeft->Set(ControlMode::MotionMagic, currentPosition);      // make sure to signal
@@ -167,13 +167,14 @@ void IntakeRotate::DisabledHoldCurrentPosition() {
 
 void IntakeRotate::CalibrateHome() {
     const int currentPosition = rotateLeft->GetSelectedSensorPosition();
-    frc::Preferences::GetInstance()->PutInt("Intake.position.base", currentPosition);
+    BSPrefs::GetInstance()->StoreDouble("Intake.position.base", currentPosition);
+    BSPrefs::GetInstance()->SaveConstants();
     std::cout << "*** CalibrateIntakeRotate: Base is now " << currentPosition << "\n";
 }
 
 void IntakeRotate::Instrument() {
     const int currentPosition = rotateLeft->GetSelectedSensorPosition();
-    const double base = PrefUtil::getSetInt("Intake.position.base", 0);
+    const double base = BSPrefs::GetInstance()->GetInt("Intake.position.base", 0);
 
     frc::SmartDashboard::PutNumber("Intake Pos", currentPosition);
     frc::SmartDashboard::PutNumber("Intake Target", computedTargetValue);

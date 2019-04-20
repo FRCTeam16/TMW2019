@@ -25,22 +25,22 @@ JackScrews::JackScrews() : frontAxleSolenoid(RobotMap::frontAxleSolenoid), rearA
   jackScrews.reset(di);
 
   // Lookup default distance to travel
-  distanceToMove = Preferences::GetInstance()->GetDouble("JackScrew.dist");
+  distanceToMove = BSPrefs::GetInstance()->GetDouble("JackScrew.dist", 98);
 }
 
 void JackScrews::SetDoNormalClimb() {
-  distanceToMove = Preferences::GetInstance()->GetDouble("JackScrew.dist");
+  distanceToMove = BSPrefs::GetInstance()->GetDouble("JackScrew.dist", 98);
   std::cout << "Configuring for Normal Climb with distance = " << distanceToMove << "\n";
 }
 
 void JackScrews::SetDoL2Climb() {
-  const double L2Dist = PrefUtil::getSet("JackScrew.dist.L2", 30);
+  const double L2Dist = BSPrefs::GetInstance()->GetDouble("JackScrew.dist.L2", 30);
   distanceToMove = L2Dist;
   std::cout << "Configuring for L2 Climb with distance = " << distanceToMove << "\n";
 }
 
 void JackScrews::SetDoPopClimb() {
-  const double hopDist = PrefUtil::getSet("JackScrew.dist.Pop", 39);
+  const double hopDist = BSPrefs::GetInstance()->GetDouble("JackScrew.dist.Pop", 39);
   distanceToMove = hopDist;
   std::cout << "Configuring for Hop Climb with distance = " << distanceToMove << "\n";
 }
@@ -48,11 +48,11 @@ void JackScrews::SetDoPopClimb() {
 void JackScrews::Init() {
   this->ShiftAll(JackScrews::ShiftMode::kDrive);
 
-  kMaximumDisplacementThreshold = PrefUtil::getSet("JackScrew.speedDisplacementThreshold", 2.0);
-  kHaltClimbDisplacementThreshold = PrefUtil::getSet("JackScrew.haltDisplacementThreshold", 2.0);
-  speedDeltaDown = PrefUtil::getSet("JackScrew.deltaDown", 0.05);
-  speedDeltaUp = PrefUtil::getSet("JackScrew.deltaUp", 0.05);
-  enableEmergencyHalt = PrefUtil::getSetBool("JackScrew.EnableEStop", true);
+  kMaximumDisplacementThreshold = BSPrefs::GetInstance()->GetDouble("JackScrew.speedDisplacementThreshold", 2.0);
+  kHaltClimbDisplacementThreshold = BSPrefs::GetInstance()->GetDouble("JackScrew.haltDisplacementThreshold", 2.0);
+  speedDeltaDown = BSPrefs::GetInstance()->GetDouble("JackScrew.deltaDown", 0.05);
+  speedDeltaUp = BSPrefs::GetInstance()->GetDouble("JackScrew.deltaUp", 0.05);
+  enableEmergencyHalt = BSPrefs::GetInstance()->GetBool("JackScrew.EnableEStop", true);
 
   jackScrews->FL->Init();
   jackScrews->FR->Init();
@@ -186,7 +186,7 @@ void JackScrews::ConfigureControlled(LiftMode liftMode, Direction targetPosition
   controlTimeStart = frc::Timer::GetFPGATimestamp();
   SetMaxJackScrewSpeed(1.0);  // reset
 
-  frc::Preferences *prefs = frc::Preferences::GetInstance();
+  BSPrefs *prefs = BSPrefs::GetInstance();
 
   // Initialize jackscrews we will be controlling
   DriveInfo<bool> toInit = DetermineJackScrewsToInit();
@@ -386,11 +386,11 @@ inline double SafetyCheckSpeed(double speed, JackScrews::Direction targetPositio
 
 void JackScrews::ControlRamp() {
 
-  double frontSpeed = PrefUtil::getSet("JackScrew.cr.frontSpeed", 1.0);
-  double backSpeed = PrefUtil::getSet("JackScrew.cr.backSpeed", 0.85);
-  double rampTime = PrefUtil::getSet("JackScrew.cr.rampTime", 0.5);
-  const double spinUpTime = PrefUtil::getSet("JackScrew.cr.spinUpTime", 0.25);
-  const double spinUpSpeed = PrefUtil::getSet("JackScrew.cr.spinUpSpeed", 0.25);
+  double frontSpeed = BSPrefs::GetInstance()->GetDouble("JackScrew.cr.frontSpeed", 1.0);
+  double backSpeed = BSPrefs::GetInstance()->GetDouble("JackScrew.cr.backSpeed", 0.85);
+  double rampTime = BSPrefs::GetInstance()->GetDouble("JackScrew.cr.rampTime", 0.5);
+  const double spinUpTime = BSPrefs::GetInstance()->GetDouble("JackScrew.cr.spinUpTime", 0.25);
+  const double spinUpSpeed = BSPrefs::GetInstance()->GetDouble("JackScrew.cr.spinUpSpeed", 0.25);
 
   const double now = frc::Timer::GetFPGATimestamp();
   double elapsed = now - controlTimeStart;

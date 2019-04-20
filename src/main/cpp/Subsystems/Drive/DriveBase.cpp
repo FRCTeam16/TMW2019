@@ -17,7 +17,7 @@
 #include "Subsystems/Drive/DriveBase.h"
 #include "Subsystems/Drive/CrabSpeed.h"
 #include "Subsystems/Drive/DriveEncoderPIDSource.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include "Subsystems/Drive/TMW2019SwerveWheel.h"
 
 # define M_PI		3.14159265358979323846	/* pi */
@@ -68,21 +68,21 @@ DriveBase::DriveBase() : Subsystem("DriveBase") {
 
 void DriveBase::InitializePIDs() {
 	 // Initialize Drive Talons + PID feedback
-	Preferences *prefs = Preferences::GetInstance();
-	const double izone = PrefUtil::getSet("DriveControlTwistIZone", 0.0);
+	BSPrefs *prefs = BSPrefs::GetInstance();
+	const double izone = BSPrefs::GetInstance()->GetDouble("DriveControlTwistIZone", 0.0);
 
 	if (driveControlTwist == nullptr) {
 		driveControlTwist.reset(
 					new PIDController(
-						PrefUtil::getSet("TwistP", 0.02),
-						PrefUtil::getSet("TwistI", 0.0),
-						PrefUtil::getSet("TwistD", 0.12),
+						BSPrefs::GetInstance()->GetDouble("TwistP", 0.02),
+						BSPrefs::GetInstance()->GetDouble("TwistI", 0.0),
+						BSPrefs::GetInstance()->GetDouble("TwistD", 0.12),
 						0.0, RobotMap::gyro.get(), crabSpeedTwist.get(), 0.02 ));
 	} else {
 		driveControlTwist->SetPID(
-				PrefUtil::getSet("TwistP", 0.02),
-				PrefUtil::getSet("TwistI", 0.0),
-				PrefUtil::getSet("TwistD", 0.12));
+				BSPrefs::GetInstance()->GetDouble("TwistP", 0.02),
+				BSPrefs::GetInstance()->GetDouble("TwistI", 0.0),
+				BSPrefs::GetInstance()->GetDouble("TwistD", 0.12));
 		// was setting izone in custom PID
 	}
 	driveControlTwist->SetContinuous(true);
@@ -97,11 +97,11 @@ void DriveBase::InitializePIDs() {
 	}
 
 	// Drive PID Control
-	const double driveControlP = prefs->GetFloat("DriveControlP");
-	const double driveControlI = prefs->GetFloat("DriveControlI");
-	const double driveControlD = prefs->GetFloat("DriveControlD");
-	const double driveControlF = prefs->GetFloat("DriveControlF");
-	const double driveControlIZone = prefs->GetFloat("DriveControlIZone");
+	const double driveControlP = prefs->GetDouble("DriveControlP", 0.0);
+	const double driveControlI = prefs->GetDouble("DriveControlI", 0.0);
+	const double driveControlD = prefs->GetDouble("DriveControlD", 0.0);
+	const double driveControlF = prefs->GetDouble("DriveControlF", 0.0);
+	const double driveControlIZone = prefs->GetDouble("DriveControlIZone", 0.0);
 	if (driveControlEncoderSource == nullptr) {
 		DriveInfo<std::shared_ptr<SwerveWheel>> motors;
 		motors.FL = frontLeft;
@@ -137,10 +137,10 @@ void DriveBase::InitDefaultCommand() {
 // here. Call these from Commands.
 
 void DriveBase::InitializeOffsets() {
-	positionOffsets.FL = PrefUtil::getSet("FLOff", 0.0);
-	positionOffsets.FR = PrefUtil::getSet("FROff", 0.0);
-	positionOffsets.RL = PrefUtil::getSet("RLOff", 0.0);
-	positionOffsets.RR = PrefUtil::getSet("RROff", 0.0);
+	positionOffsets.FL = BSPrefs::GetInstance()->GetDouble("FLOff", 0.0);
+	positionOffsets.FR = BSPrefs::GetInstance()->GetDouble("FROff", 0.0);
+	positionOffsets.RL = BSPrefs::GetInstance()->GetDouble("RLOff", 0.0);
+	positionOffsets.RR = BSPrefs::GetInstance()->GetDouble("RROff", 0.0);
 }
 
 void DriveBase::Lock() {

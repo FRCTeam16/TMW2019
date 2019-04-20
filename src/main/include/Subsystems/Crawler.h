@@ -3,7 +3,7 @@
 #include "SubsystemManager.h"
 #include <frc/Timer.h>
 #include "Util/RampUtil.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include <iostream>
 
 class Crawler : public SubsystemManager {
@@ -25,7 +25,7 @@ public:
     Crawler() = default;
 
     void Init() override {
-        crawlSpeed = PrefUtil::getSet("crawl.speed", 1.0);
+        crawlSpeed = BSPrefs::GetInstance()->GetDouble("crawl.speed", 1.0);
     }
 
     void Run() override {

@@ -6,10 +6,10 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Subsystems/Drive/TMW2019SwerveWheel.h"
-#include "frc/Preferences.h"
+#include "Util/BSPrefs.h"
 #include <iostream>
 #include "rev/CANError.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include <string>
 #include <frc/smartdashboard/SmartDashboard.h>
 
@@ -23,38 +23,21 @@ void TMW2019SwerveWheel::InitializeSteering() {
     steerMotor->ConfigPeakOutputForward(0.50, 0);
     steerMotor->ConfigPeakOutputReverse(-0.50, 0);
     steerMotor->ConfigPeakCurrentLimit(0);
-    steerMotor->ConfigContinuousCurrentLimit(PrefUtil::getSet("Steer.ContinuousCurrentLimit", 20.0));
+    steerMotor->ConfigContinuousCurrentLimit(BSPrefs::GetInstance()->GetDouble("Steer.ContinuousCurrentLimit", 20.0));
 }
 
 void TMW2019SwerveWheel::InitializeDrivePID() {
     assert(driveMotor.get() != nullptr);
-    frc::Preferences *prefs = frc::Preferences::GetInstance();
-
-    if (!prefs->ContainsKey("DriveP")) {
-        prefs->PutFloat("DriveP", 0.00);
-    }
-    if (!prefs->ContainsKey("DriveI")) {
-        prefs->PutFloat("DriveI", 0.00);
-    }
-    if (!prefs->ContainsKey("DriveD")) {
-        prefs->PutFloat("DriveD", 0.00);
-    }
-    if (!prefs->ContainsKey("DriveF")) {
-        prefs->PutFloat("DriveF", 0.00);
-    }
-    if (!prefs->ContainsKey("DriveIZone")) {
-        prefs->PutFloat("DriveIZone", 0.00);
-    }
-    const double driveP = prefs->GetFloat("DriveP");
-	const double driveI = prefs->GetFloat("DriveI");
-	const double driveD = prefs->GetFloat("DriveD");
-	const double driveF = prefs->GetFloat("DriveF");
-	const double driveIZone = prefs->GetFloat("DriveIZone");
+    BSPrefs *prefs = BSPrefs::GetInstance();
+    const double driveP = prefs->GetDouble("DriveP", 0.0);
+	const double driveI = prefs->GetDouble("DriveI", 0.0);
+	const double driveD = prefs->GetDouble("DriveD", 0.0);
+	const double driveF = prefs->GetDouble("DriveF", 0.0);
+	const double driveIZone = prefs->GetDouble("DriveIZone", 0.0);
 
     driveMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
     driveMotor->Set(0.0);
     isOpenLoop = true;
-
 
     rev::CANPIDController pid = driveMotor->GetPIDController();
     pid.SetP(driveP);    
@@ -111,12 +94,12 @@ void TMW2019SwerveWheel::UseClosedLoopDrive(double value, double maxOutput) {
     // driveMotor->Set(ControlMode::Velocity, 0);
     std::cout << "TMW2019SwerveWheel::UseClosedLoopDrive(" << value << ", maxOutput = " << maxOutput << ")\n";
 
-    frc::Preferences *prefs = frc::Preferences::GetInstance();
-    const double driveP = prefs->GetFloat("DriveP");
-	const double driveI = prefs->GetFloat("DriveI");
-	const double driveD = prefs->GetFloat("DriveD");
-	const double driveF = prefs->GetFloat("DriveF");
-	const double driveIZone = prefs->GetFloat("DriveIZone");
+    BSPrefs *prefs = BSPrefs::GetInstance();
+    const double driveP = prefs->GetDouble("DriveP", 0.4);
+	const double driveI = prefs->GetDouble("DriveI", 0.0);
+	const double driveD = prefs->GetDouble("DriveD", 0.0);
+	const double driveF = prefs->GetDouble("DriveF", 0.0);
+	const double driveIZone = prefs->GetDouble("DriveIZone", 0.0);
 
     rev::CANPIDController pid = driveMotor->GetPIDController();
     pid.SetP(driveP);    
@@ -131,12 +114,12 @@ void TMW2019SwerveWheel::UseClosedLoopDrive(double value, double maxOutput) {
 }
 
 void TMW2019SwerveWheel::UseClosedLoopSpeedDrive(double velocity) {
-    frc::Preferences *prefs = frc::Preferences::GetInstance();
-    const double driveP = prefs->GetFloat("DriveP");
-	const double driveI = prefs->GetFloat("DriveI");
-	const double driveD = prefs->GetFloat("DriveD");
-	const double driveF = prefs->GetFloat("DriveF");
-	const double driveIZone = prefs->GetFloat("DriveIZone");
+    BSPrefs *prefs = BSPrefs::GetInstance();
+    const double driveP = prefs->GetDouble("DriveP", 0.4);
+	const double driveI = prefs->GetDouble("DriveI", 0.0);
+	const double driveD = prefs->GetDouble("DriveD", 0.0);
+	const double driveF = prefs->GetDouble("DriveF", 0.0);
+	const double driveIZone = prefs->GetDouble("DriveIZone", 0.0);
 
     rev::CANPIDController pid = driveMotor->GetPIDController();
     pid.SetP(driveP);    

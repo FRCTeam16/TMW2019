@@ -29,10 +29,12 @@ void SetWheelOffsets::Initialize() {
 	if (DriverStation::GetInstance().IsDisabled()) {
 		std::cout << "Start Offsets\n";
 		DriveInfo<double> offsets = Robot::driveBase->CalculatePositionOffsets();
-		Preferences::GetInstance()->PutDouble("FLOff", offsets.FL);
-		Preferences::GetInstance()->PutDouble("FROff", offsets.FR);
-		Preferences::GetInstance()->PutDouble("RLOff", offsets.RL);
-		Preferences::GetInstance()->PutDouble("RROff", offsets.RR);
+		auto prefs = BSPrefs::GetInstance();
+		prefs->StoreDouble("FLOff", offsets.FL);
+		prefs->StoreDouble("FROff", offsets.FR);
+		prefs->StoreDouble("RLOff", offsets.RL);
+		prefs->StoreDouble("RROff", offsets.RR);
+		prefs->SaveConstants();
 		Robot::driveBase->ZeroTurnInfo();
 		SetTimeout(1);
 		std::cout << "Completed SetWheelOffsets::Initialize\n";

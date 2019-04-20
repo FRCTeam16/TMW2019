@@ -8,7 +8,7 @@
 #include "Subsystems/Vision/VisionSystem.h"
 
 #include "Robot.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include <iostream>
 
 
@@ -16,11 +16,11 @@ VisionSystem::VisionSystem() {
     limelight.reset(new Limelight());
     xoffsetController.reset(new XOffsetController(limelight));
 
-    double P = PrefUtil::getSet("Vision.x.P", 0.5);
-    double I = PrefUtil::getSet("Vision.x.I", 0.0);
-    double D = PrefUtil::getSet("Vision.x.D", 0.0);
-    double xThreshold = PrefUtil::getSet("Vision.x.threshold", 50.0);
-    double range = PrefUtil::getSet("Vision.x.range", 0.3);
+    double P = BSPrefs::GetInstance()->GetDouble("Vision.x.P", 0.5);
+    double I = BSPrefs::GetInstance()->GetDouble("Vision.x.I", 0.0);
+    double D = BSPrefs::GetInstance()->GetDouble("Vision.x.D", 0.0);
+    double xThreshold = BSPrefs::GetInstance()->GetDouble("Vision.x.threshold", 50.0);
+    double range = BSPrefs::GetInstance()->GetDouble("Vision.x.range", 0.3);
 
     xoffPID.reset(
         new PIDController(P, I, D, xoffsetController.get(), xoffsetController.get() )
@@ -34,7 +34,7 @@ void VisionSystem::Run() {
     double y = 0.0;
     double x = 0.0;
 
-    auto prefs = frc::Preferences::GetInstance();
+    auto prefs = BSPrefs::GetInstance();
     double P = prefs->GetDouble("Vision.x.P", 0.5);
     double I = prefs->GetDouble("Vision.x.I", 0.0);
     double D = prefs->GetDouble("Vision.x.D", 0.0);

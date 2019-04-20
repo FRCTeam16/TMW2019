@@ -19,7 +19,7 @@
 //
 // This notice shall supercede any other notices contained within the software.
 //=============================================================================
-#include "WPILib.h"
+#include "frc/WPILib.h"
 //#include <string>
 #include <map>
 using namespace std;
@@ -61,6 +61,8 @@ public:
 	//		Maybe pass in a pointer to a RAWCConstant and write to that?
 	RAWCConstant getValueForKey(string key);
 	bool doesKeyExist(string key);
+
+	const map<string, RAWCConstant>& getConstants();
 	
 };
 

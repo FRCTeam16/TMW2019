@@ -59,6 +59,11 @@ RAWCConstants::RAWCConstants()
 	restoreData();
 }
 
+const map<string, RAWCConstants::RAWCConstant>& RAWCConstants::getConstants() {
+	return data;
+}
+
+
 /// Returns a bool indicating if the key/value pair exists 
 bool RAWCConstants::doesKeyExist(string key)
 {
