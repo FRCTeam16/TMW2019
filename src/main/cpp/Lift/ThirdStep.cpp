@@ -48,7 +48,7 @@ void Thirdstep::Execute() {
         } else {
                 Robot::driveBase->SetTargetAngle(-180.0);
 
-                const double autoDriveSpeed = BSPrefs::GetInstance()->GetDouble("Lift.step2.drivespeed.y", 0.1);;
+                const double autoDriveSpeed = BSPrefs::GetInstance()->GetDouble("Lift.step2.drivespeed.y", 0.3);;
                 double leftInput = autoDriveSpeed;
                 double rightInput = autoDriveSpeed;
 

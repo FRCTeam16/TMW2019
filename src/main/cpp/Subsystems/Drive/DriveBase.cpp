@@ -416,6 +416,8 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		speeds.RL = speed.FR * inv.RL * SCALE_FACTOR;
 		speeds.RR = speed.FL * inv.RR * SCALE_FACTOR;
 	}
+
+	double start = frc::Timer::GetFPGATimestamp();
 	if (isOpenLoop) {
 		frontLeft->UseOpenLoopDrive(speeds.FL);
 		frontRight->UseOpenLoopDrive(speeds.FR);
@@ -427,6 +429,8 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		rearLeft->UseClosedLoopSpeedDrive(speeds.RL);
 		rearRight->UseClosedLoopSpeedDrive(speeds.RR);
 	}
+	double total = frc::Timer::GetFPGATimestamp() - start;
+	frc::SmartDashboard::PutNumber("DriveBaseSendSpeed", total);
 }
 
 void DriveBase::SetConstantVelocity(double twistInput, double velocity) {

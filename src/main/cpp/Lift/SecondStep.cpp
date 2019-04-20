@@ -61,7 +61,7 @@ void SecondStep::Execute() {
                 Robot::driveBase->SetTargetAngle(-180.0);
 
                 // As if joystick being pulled toward user
-                const double autoDriveSpeed = BSPrefs::GetInstance()->GetDouble("Lift.step2.drivespeed.y", 0.1);
+                const double autoDriveSpeed = BSPrefs::GetInstance()->GetDouble("Lift.step2.drivespeed.y", 0.3);
                 double leftInput = autoDriveSpeed;
                 double rightInput = autoDriveSpeed;
 
