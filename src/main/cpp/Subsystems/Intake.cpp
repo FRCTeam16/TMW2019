@@ -7,8 +7,8 @@
 
 #include "Subsystems/Intake.h"
 #include "RobotMap.h"
-#include "frc/Preferences.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
+#include "Util/BSPrefs.h"
 #include "Robot.h"
 
 
@@ -31,14 +31,14 @@ void Intake::Init() {
     hatchSolenoidState = false;
     gripperSolenoidState = false;
     
-    PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
-    PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
-    PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
-    PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
-    PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
-    PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
-    PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", 1.0);
-    PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.IntakeCargo.bottomSpeed", 1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.IntakeCargo.topSpeed", 1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.EjectCargo.bottomSpeed", -1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.EjectCargo.topSpeed", -1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.IntakeHatch.bottomSpeed", -1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.IntakeHatch.topSpeed", 0.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.EjectHatch.bottomSpeed", 1.0);
+    BSPrefs::GetInstance()->GetDouble("Intake.EjectHatch.topSpeed", 0.0);
 }
 
 void Intake::Run() {
@@ -136,13 +136,13 @@ void Intake::Run() {
 }
 
 void Intake::IntakeCargo() {
-    bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.bottomSpeed", 1.0);
-    topBeaterSpeed = PrefUtil::getSet("Intake.IntakeCargo.topSpeed", 1.0);
+    bottomBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.IntakeCargo.bottomSpeed", 1.0);
+    topBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.IntakeCargo.topSpeed", 1.0);
 }
 
 void Intake::EjectCargo() {
-    bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.bottomSpeed", -1.0);
-    topBeaterSpeed = PrefUtil::getSet("Intake.EjectCargo.topSpeed", -1.0);
+    bottomBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.EjectCargo.bottomSpeed", -1.0);
+    topBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.EjectCargo.topSpeed", -1.0);
 }
 
 void Intake::IntakeHatch() {
@@ -155,13 +155,13 @@ void Intake::EjectHatch() {
 }
 
 void Intake::HatchIntakeFromGround() {
-    bottomBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.bottomSpeed", -1.0);
-    topBeaterSpeed = PrefUtil::getSet("Intake.IntakeHatch.topSpeed", 0.0);
+    bottomBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.IntakeHatch.bottomSpeed", -1.0);
+    topBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.IntakeHatch.topSpeed", 0.0);
 }
 
 void Intake::HatchBeaterEject() {
-    bottomBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.bottomSpeed", -1.0);
-    topBeaterSpeed = PrefUtil::getSet("Intake.EjectHatch.topSpeed", 0.0);
+    bottomBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.EjectHatch.bottomSpeed", -1.0);
+    topBeaterSpeed = BSPrefs::GetInstance()->GetDouble("Intake.EjectHatch.topSpeed", 0.0);
 }
 
 void Intake::Stop() {

@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Subsystems/Elevator.h"
-#include "Util/PrefUtil.h"
+#include "Util/BSPrefs.h"
 #include "Subsystems/IntakeRotate.h"
 #include "Robot.h"
 
@@ -21,7 +21,7 @@ Elevator::Elevator() {
 	elevatorMotor->SetSensorPhase(false);
 	// elevatorMotor->SetInverted(true);
 
-	elevatorMotor->ConfigReverseSoftLimitThreshold(PrefUtil::getSetInt("Elevator.Pos.MaxHeight", -110000));
+	elevatorMotor->ConfigReverseSoftLimitThreshold(BSPrefs::GetInstance()->GetInt("Elevator.Pos.MaxHeight", -110000));
 	elevatorMotor->ConfigReverseSoftLimitEnable(true);
 
 	followerMotor->SetNeutralMode(NeutralMode::Brake);
@@ -39,8 +39,8 @@ Elevator::Elevator() {
 }
 
 void Elevator::Init() {
-	elevatorPositionThreshold = PrefUtil::getSetInt("Elevator.Pos.Threshold", 10);
-	PrefUtil::getSet("Elevator.BumpUp", -50);
+	elevatorPositionThreshold = BSPrefs::GetInstance()->GetInt("Elevator.Pos.Threshold", 10);
+	BSPrefs::GetInstance()->GetDouble("Elevator.BumpUp", -50);
 	SetInitialPosition();
 
 	runMode = kManual;
@@ -92,12 +92,12 @@ void Elevator::Run() {
 			elevatorMotor->Set(ControlMode::PercentOutput, openLoopPercent);
 			break;
 		case kMagic:
-			double P = PrefUtil::getSet("Elevator.P", 1);
-			double F = PrefUtil::getSet("Elevator.F", 0.18);
-			int V = PrefUtil::getSetInt("Elevator.V", 5592);
-			int A = PrefUtil::getSetInt("Elevator.A", 5592);
-			int iZone = PrefUtil::getSet("Elevator.izone", 0);
-			double I = PrefUtil::getSet("Elevator.I", 0);
+			double P = BSPrefs::GetInstance()->GetDouble("Elevator.P", 1);
+			double F = BSPrefs::GetInstance()->GetDouble("Elevator.F", 0.18);
+			int V = BSPrefs::GetInstance()->GetInt("Elevator.V", 5592);
+			int A = BSPrefs::GetInstance()->GetInt("Elevator.A", 5592);
+			int iZone = BSPrefs::GetInstance()->GetDouble("Elevator.izone", 0);
+			double I = BSPrefs::GetInstance()->GetDouble("Elevator.I", 0);
 
 
 			elevatorMotor->ConfigMotionCruiseVelocity(V, 0);
@@ -138,7 +138,7 @@ void Elevator::SetElevatorPosition(ElevatorPosition _elevatorPosition) {
 	elevatorPosition = _elevatorPosition;
 	switch(elevatorPosition) {
 		case ElevatorPosition::kFloor:
-			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
+			setpoint = BSPrefs::GetInstance()->GetDouble("Elevator.pos.Floor", 4000);
 			break;
 		default:
 			setpoint = elevatorSetpointStrategy.LookupElevatorSetpoint();
@@ -156,8 +156,8 @@ void Elevator::SetElevatorSetpoint(int _setpoint) {
 void Elevator::BumpUp() {
 	if (RunMode::kMagic == runMode) {
 		std::cout << "Elevator::BumpUp\n";
-		const double bumpUpAmt = PrefUtil::getSet("Elevator.BumpUp", -50);
-			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
+		const double bumpUpAmt = BSPrefs::GetInstance()->GetDouble("Elevator.BumpUp", -50);
+			setpoint = BSPrefs::GetInstance()->GetDouble("Elevator.pos.Floor", 4000);
 		setpointStartMoveTime = frc::Timer::GetFPGATimestamp();
 		SetElevatorSetpoint(setpoint + bumpUpAmt);
 	} else {
@@ -168,8 +168,8 @@ void Elevator::BumpUp() {
 void Elevator::BumpDown() {
 	if (RunMode::kMagic == runMode) {
 		std::cout << "Elevator::BumpDown\n";
-		const double bumpUpAmt = PrefUtil::getSet("Elevator.BumpUp", -50);
-			setpoint = PrefUtil::getSet("Elevator.pos.Floor", 4000);
+		const double bumpUpAmt = BSPrefs::GetInstance()->GetDouble("Elevator.BumpUp", -50);
+			setpoint = BSPrefs::GetInstance()->GetDouble("Elevator.pos.Floor", 4000);
 		setpointStartMoveTime = frc::Timer::GetFPGATimestamp();
 		SetElevatorSetpoint(setpoint - bumpUpAmt);
 	} else {

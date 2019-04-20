@@ -3,12 +3,12 @@
 
 
 void JackScrewControl::Init() {
-    rotationCloseLoopThreshold = PrefUtil::getSet("JackScrewControl.CloseLoopThreshold", 7);
-    pullUpApproachThreshold = PrefUtil::getSet("JackScrewControl.PullUpApproachThreshold", 15);
-    pullUpApproachSpeed = PrefUtil::getSet("JackScrewControl.PullUpApproachSpeed", -0.10);
+    rotationCloseLoopThreshold = BSPrefs::GetInstance()->GetDouble("JackScrewControl.CloseLoopThreshold", 7);
+    pullUpApproachThreshold = BSPrefs::GetInstance()->GetDouble("JackScrewControl.PullUpApproachThreshold", 15);
+    pullUpApproachSpeed = BSPrefs::GetInstance()->GetDouble("JackScrewControl.PullUpApproachSpeed", -0.10);
 
-    const double ampThreshold = PrefUtil::getSet("JackScrewControl.PullUpAmps", 30);
-    const unsigned int ampCounts = PrefUtil::getSetInt("JackScrewControl.PullUpAmpsCounts", 3);
+    const double ampThreshold = BSPrefs::GetInstance()->GetDouble("JackScrewControl.PullUpAmps", 30);
+    const unsigned int ampCounts = BSPrefs::GetInstance()->GetInt("JackScrewControl.PullUpAmpsCounts", 3);
 
     ampDetector = MovingAverageThreshold{ampThreshold, ampCounts};
 }
