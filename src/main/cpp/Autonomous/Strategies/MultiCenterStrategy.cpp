@@ -26,7 +26,7 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double initialDriveSpeedY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.initDriveSpeed.y", 0.3);
     const double initialDriveSpeedX = BSPrefs::GetInstance()->GetDouble("Auto.MCS.initDriveSpeed.x", 0.0) * inv;
     steps.push_back(new ConcurrentStep({
-		new TimedDrive(0.0, initialDriveSpeedY, initialDriveSpeedX, 1.25, 0.5),
+		new TimedDrive(0.0, initialDriveSpeedY, initialDriveSpeedX, 1.25, 0.25),
 		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne),
         new SelectVisionPipeline(isRight? 2 : 1)
 	}));
@@ -36,7 +36,7 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double cargoDrive1Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.y", 0.4);
     const double cargoDrive1X = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.x", 0.1) * inv;
     const double cargoDrive1Time = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.time", 1.5);
-    steps.push_back(new TimedDrive(cargoShipAngle, cargoDrive1Y, cargoDrive1X, cargoDrive1Time, 0.5));
+    steps.push_back(new TimedDrive(cargoShipAngle, cargoDrive1Y, cargoDrive1X, cargoDrive1Time, -1));
     steps.push_back(new SetVisionLight(true));
 
     // Drive and Stop at Target
@@ -65,10 +65,15 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
 
 
     // Pickup hatch
-    const double pickupVizSpeed = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizSpeed", 0.25);
-    const double pickupVizTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizTime", 5.0);
+    const double pickupVizSpeed1 = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizSpeed1", 0.4);
+    const double pickupVizArea1 = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizArea1", 2.0);
+    const double pickupVizSpeed2 = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizSpeed2", 0.25);
+    const double pickupVizArea2 = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizArea2", 5.0);
     const double pickupVizTimeout = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupVizTimeout", 2.5);
-    steps.push_back(new DriveToTarget(pickupAngle, pickupVizSpeed, pickupVizTime, pickupVizTimeout));
+
+    steps.push_back(new DriveToTarget(pickupAngle, pickupVizSpeed1, pickupVizArea1, pickupVizTimeout));
+    steps.push_back(new DriveToTarget(pickupAngle, pickupVizSpeed2, pickupVizArea2, pickupVizTimeout));
+
     steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
 	steps.push_back(new ConcurrentStep({
         new TimedDrive(pickupAngle, -pushBackSpeed, 0.0, 0.5),
@@ -80,7 +85,7 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     // -------------------------
 
     // Drive to cargoship
-    const double cargoDrive3Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.y", 0.4);
+    const double cargoDrive3Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.y", 0.6);
     const double cargoDrive3X = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.x", -0.3) * inv;
     const double cargoDrive3Time = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.time", 1.5);
     steps.push_back(new TimedDrive(cargoShipAngle, cargoDrive3Y, cargoDrive3X, cargoDrive3Time, 0.5));
@@ -94,23 +99,28 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const int cargoDrive4Target = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive4.tgt", 2);
     auto cargoDrive4 = new TimedDrive(cargoShipAngle, cargoDrive4Y, 0.0, cargoDrive4Time);
 	steps.push_back(new StopAtTargetCount(cargoDrive4, cargoDrive4Target, isRight, cargoDrive4IgnoreTime, cargoDrive4Time));
+    steps.push_back(new SelectVisionPipeline(0));
 
     // Drive and Place Hatch
-    DriveAndPlaceHatch(cargoShipAngle, inv);
+    DriveAndPlaceHatch(cargoShipAngle, inv, false);
 
 }
 
-void MultiCenterStrategy::DriveAndPlaceHatch(double cargoShipAngle, int inv) {
+void MultiCenterStrategy::DriveAndPlaceHatch(double cargoShipAngle, int inv, bool doPlacement) {
     const double placeHatchY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeHatchY", 0.3);
 	const double placeHatchThreshold = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeHatchThreshold", 5.0);
 	const double placeHatchTimeout = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDriveTimeout", 3.5);
     const double pushBackSpeed = BSPrefs::GetInstance()->GetDouble("Auto.MCS.PushBack.y", -0.15);
 
 	steps.push_back(new DriveToTarget(cargoShipAngle, placeHatchY, placeHatchThreshold, placeHatchTimeout));
-	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
-	steps.push_back(new Delay(0.25));
-	steps.push_back(new ConcurrentStep({
-		new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
-		new SetVisionLight(false)
-	}));
+
+    if (doPlacement) {
+        steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
+        steps.push_back(new Delay(0.25));
+        steps.push_back(new ConcurrentStep({
+            new TimedDrive(cargoShipAngle, 0.0, -pushBackSpeed * inv, 0.5),
+            new SetVisionLight(false)
+	    }));
+    }
+	
 }

@@ -24,11 +24,13 @@ bool StopAtTargetCount::Run(std::shared_ptr<World> world) {
         
         if (hasTarget) {
             currentTx = vision->xOffset;
+
             const double deltaX = currentTx - lastTx;
-            if (deltaX > (kXTargetJump * dir)) {
+
+            if ((deltaX * dir) > kXTargetJump) {
                 targetsFound++;
             }
-            if (deltaX > (kXDirectionCheck * dir)) {
+            if ((deltaX * dir) > kXDirectionCheck) {
                 lastTx = currentTx;
             }
 

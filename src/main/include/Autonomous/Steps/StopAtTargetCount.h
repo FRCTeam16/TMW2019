@@ -9,6 +9,7 @@ public:
   bool Run(std::shared_ptr<World> world) override;
   virtual const CrabInfo* GetCrabInfo() override { return step->GetCrabInfo(); }
 	bool IsManualDriveControl() const override { return step->IsManualDriveControl(); }
+  void SetMinTx(double _minTx) { kMinTx = _minTx; }
 private:
   const std::unique_ptr<Step> step;
   const int numberOfTargets;
@@ -20,6 +21,7 @@ private:
   int targetsFound = 0;
   bool timedOut;
 
+  double kMinTx = 20.0;           // we have to be within this range to meet threshold
   const double kXTargetJump = 5.0;      // jump amount to look for to see next target 
   const double kXDirectionCheck = -10.0; // amount to make sure we are past to avoid vision jumping to previous target
 
