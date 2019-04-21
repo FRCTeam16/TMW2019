@@ -89,13 +89,16 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     steps.push_back(new TimedDrive(pickupAngle, pickupFastSpeed, pickupFastSpeedX, pickupFastTime2));
 
     // Do hatch pickup
-    const double pickupVizSpeed = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizSpeed", 0.25);
-    const double pickupVizTime = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizTime", 5.0);
+    const double pickupVizSpeed1 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizSpeed1", 0.4);
+    const double pickupVizSpeed2 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizSpeed2", 0.25);
+    const double pickupVizArea1 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizArea1", 2.0);
+    const double pickupVizArea2 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizArea2", 5.0);
     const double pickupVizTimeout = BSPrefs::GetInstance()->GetDouble("Auto.RBS.pickupVizTimeout", 2.5);
     steps.push_back(new ConcurrentStep({
-        new DriveToTarget(pickupAngle, pickupVizSpeed, pickupVizTime, pickupVizTimeout),    // robot centric
+        new DriveToTarget(pickupAngle, pickupVizSpeed1, pickupVizArea1, pickupVizTimeout),    // robot centric
         new SetVisionLight(true)
     }));
+    steps.push_back(new DriveToTarget(pickupAngle, pickupVizSpeed2, pickupVizArea2, pickupVizTimeout));
 
     // pickup hatch
     steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kIntakeHatch, 0.5));
