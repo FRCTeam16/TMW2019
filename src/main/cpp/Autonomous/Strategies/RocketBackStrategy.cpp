@@ -12,6 +12,7 @@
 #include "Autonomous/Steps/DoIntakeAction.h"
 #include "Autonomous/Steps/SetGyroOffset.h"
 #include "Autonomous/Steps/OpenDriveToDistance.h"
+#include "Autonomous/Steps/SelectVisionPipeline.h"
 #include "Autonomous/Steps/SetVisionLight.h"
 #include "Autonomous/Steps/AlignToTarget.h"
 #include "Autonomous/Steps/Rotate.h"
@@ -118,24 +119,32 @@ void RocketBackStrategy::Init(std::shared_ptr<World> world) {
     const double secondRocketTimeout = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketTimeout", 8.0);
     const double secondRocketRamp = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketRamp", 1.0);
 
-    const double secondRocketStopThresh = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizThresh", 5.0);
-    const double secondRocketVizMin = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizMin", 5.0);
-    const double secondRocketVizMax = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizMax", 8.0);
-    const double secondRocketVizBlindTime = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizBlindTime", 1.0);
 
-
-	auto drive = new TimedDrive(secondRocketAngle, secondRocketY, secondRocketX, secondRocketTimeout, secondRocketRamp);
+    // Spin and align to rocket
 	steps.push_back(new ConcurrentStep({
-		new StopAtTarget(drive, secondRocketStopThresh, 1, secondRocketVizBlindTime, secondRocketTimeout),
-		new SetVisionLight(true)
-	}));
+        new TimedDrive(secondRocketAngle, secondRocketY, secondRocketX, secondRocketTimeout, secondRocketRamp),
+        new SetVisionLight(true),
+        new SelectVisionPipeline(isRight? 2 : 1)
+    }));
 
-    const double secondRocketDriveToTargetVizMin = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveVizMin", 4.0);
-    const double secondRocketDriveToTargetY = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveTargetY", 0.2);
+    // Use Vision to Drive to Target
+    const double secondRocketDriveToTargetVizMin1 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizMin1", 2.0);
+    const double secondRocketDriveToTargetVizMin2 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketVizMin2", 4.5);
+    const double secondRocketDriveToTargetVizMax = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveVizMax", 8);
+    const double secondRocketDriveToTargetY1 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveTargetY1", 0.4);
+    const double secondRocketDriveToTargetY2 = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveTargetY2", 0.25);
+
     const double secondRocketDriveToTargetTimeout = BSPrefs::GetInstance()->GetDouble("Auto.RBS.secRocketDriveTimeout", 5.0);
-	auto driveTarget = new DriveToTarget(secondRocketAngle, secondRocketDriveToTargetY, 
-                    secondRocketDriveToTargetVizMin, secondRocketDriveToTargetTimeout, secondRocketVizMax);
-	steps.push_back(driveTarget);
+	auto driveTarget = new DriveToTarget(secondRocketAngle, secondRocketDriveToTargetY1, 
+                    secondRocketDriveToTargetVizMin1, secondRocketDriveToTargetTimeout, 
+                    secondRocketDriveToTargetVizMax);
+
+    auto driveTarget2 = new DriveToTarget(secondRocketAngle, secondRocketDriveToTargetY2, 
+                    secondRocketDriveToTargetVizMin2, secondRocketDriveToTargetTimeout, 
+                    secondRocketDriveToTargetVizMax);
+
+    steps.push_back(driveTarget);
+    steps.push_back(driveTarget2);
 
     steps.push_back(new SetElevatorPosition(Elevator::ElevatorPosition::kLevel2, 0.5));
     steps.push_back(new SetVisionLight(false));

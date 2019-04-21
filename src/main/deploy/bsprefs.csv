@@ -31,7 +31,7 @@ Auto.MCS.placeHatchY, 0.3
 Auto.RBS.initDriveSpeed, 0.3
 Auto.RBS.pickupFastSpeed, -0.8
 Auto.RBS.pickupFastSpeedX, 0.2
-Auto.RBS.pickupFastTime1, 1.5
+Auto.RBS.pickupFastTime1, 1.25
 Auto.RBS.pickupFastTime2, 0.5
 Auto.RBS.pickupVizSpeed1, 0.4
 Auto.RBS.pickupVizSpeed2, 0.25
@@ -44,7 +44,7 @@ Auto.RBS.rocketAlignmentThreshold, 1
 Auto.RBS.rocketAlignmentTime, 3
 Auto.RBS.rocketAngle, 150
 Auto.RBS.rocketDistThresh, 5
-Auto.RBS.rocketDistance, 190
+Auto.RBS.rocketDistance, 160
 Auto.RBS.rocketKickoutSpeed, -0.2
 Auto.RBS.rocketKickoutTime, 0.75
 Auto.RBS.rocketPushInTime, 1.5
@@ -55,13 +55,15 @@ Auto.RBS.rocketSpeedX, 0.21
 Auto.RBS.rocketSpeedY, 0.45
 Auto.RBS.rocketTimeOut, 3
 Auto.RBS.secRocketAngle, 30
-Auto.RBS.secRocketDriveTargetY, 0.2
-Auto.RBS.secRocketDriveTimeout, 0.2
+Auto.RBS.secRocketDriveTargetY1, 0.5
+Auto.RBS.secRocketDriveTargetY2, 0.15
+Auto.RBS.secRocketDriveTimeout, 5.0
 Auto.RBS.secRocketRamp, 1
-Auto.RBS.secRocketTimeout, 8
+Auto.RBS.secRocketTimeout, 2
 Auto.RBS.secRocketVizBlindTime, 1
 Auto.RBS.secRocketVizMax, 8
-Auto.RBS.secRocketVizMin, 5
+Auto.RBS.secRocketVizMin1, 2.0
+Auto.RBS.secRocketVizMin2, 4.5
 Auto.RBS.secRocketVizThresh, 5
 Auto.RBS.secRocketX, -0.05
 Auto.RBS.secRocketY, 0.5
