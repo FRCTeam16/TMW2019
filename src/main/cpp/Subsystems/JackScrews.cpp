@@ -74,16 +74,16 @@ void JackScrews::Run()
   }
 
   // Check CAN communications
-  emergencyHalt |= CheckCANCommunications();
-  if (emergencyHalt) {
-    std::cout << "!!! JackScrews climbing disabled due to emergency halt !!!\n";
-    auto wheels = Robot::driveBase->GetWheels();
-    wheels.FL->UseOpenLoopDrive();
-    wheels.FR->UseOpenLoopDrive();
-    wheels.RL->UseOpenLoopDrive();
-    wheels.RR->UseOpenLoopDrive();
-    return;
-  }
+  // emergencyHalt |= CheckCANCommunications();
+  // if (emergencyHalt) {
+  //   std::cout << "!!! JackScrews climbing disabled due to emergency halt !!!\n";
+  //   auto wheels = Robot::driveBase->GetWheels();
+  //   wheels.FL->UseOpenLoopDrive();
+  //   wheels.FR->UseOpenLoopDrive();
+  //   wheels.RL->UseOpenLoopDrive();
+  //   wheels.RR->UseOpenLoopDrive();
+  //   return;
+  // }
 
 
   if (targetPosition != Direction::kNone) {
