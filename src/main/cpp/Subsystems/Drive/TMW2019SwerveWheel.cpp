@@ -35,7 +35,7 @@ void TMW2019SwerveWheel::InitializeDrivePID() {
 	const double driveF = prefs->GetDouble("DriveF", 0.0);
 	const double driveIZone = prefs->GetDouble("DriveIZone", 0.0);
 
-    driveMotor->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+    // driveMotor->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
     driveMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
     driveMotor->Set(0.0);
     isOpenLoop = true;

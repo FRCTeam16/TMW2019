@@ -23,17 +23,17 @@ void SecondStep::Execute() {
         wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         // rl & rr in control mode
 
-        // Disable follower mode
-        DriveInfo<rev::CANSparkMax*> sparks;
-        sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
-        sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
-        sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
-        sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+        // // Disable follower mode
+        // DriveInfo<rev::CANSparkMax*> sparks;
+        // sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+        // sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+        // sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+        // sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
 
-        sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-        sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-        sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-        sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        // sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        // sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        // sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        // sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
 
 
         std::cout << "Lift Second Step\n";

@@ -113,17 +113,17 @@ void Robot::TeleopInit() {
 
 	// Make sure follower is disabled
 	// Disable follower mode
-	auto wheels = Robot::driveBase->GetWheels();
-	DriveInfo<rev::CANSparkMax*> sparks;
-	sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
-	sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
-	sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
-	sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+	// auto wheels = Robot::driveBase->GetWheels();
+	// DriveInfo<rev::CANSparkMax*> sparks;
+	// sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+	// sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+	// sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+	// sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
 
-	sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-	sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-	sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
-	sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	// sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	// sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	// sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	// sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
 
     std::cout << "Robot::TeleopInit <=\n";
 }
@@ -413,18 +413,18 @@ void Robot::TeleopPeriodic() {
 		// 	0,
 		// 	true);
 
-		std::cout << " TESTING FOLLOW INVERSION \n";
-		auto wheels = Robot::driveBase->GetWheels();
-		DriveInfo<rev::CANSparkMax*> sparks;
-		sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
-		sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
-		sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
-		sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+		// std::cout << " TESTING FOLLOW INVERSION \n";
+		// auto wheels = Robot::driveBase->GetWheels();
+		// DriveInfo<rev::CANSparkMax*> sparks;
+		// sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+		// sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+		// sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+		// sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
 
-		sparks.RL->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.RR->GetDeviceId(), false);
-		sparks.RR->Set(-oi->GetJoystickY(threshold));
-		sparks.FL->Set(0.0);
-		sparks.FR->Set(0.0);
+		// sparks.RL->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.RR->GetDeviceId(), false);
+		// sparks.RR->Set(-oi->GetJoystickY(threshold));
+		// sparks.FL->Set(0.0);
+		// sparks.FR->Set(0.0);
 
 
 	} else if (autoInitialized) {
