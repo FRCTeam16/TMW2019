@@ -21,10 +21,10 @@ OI::OI() {
 
 
     // SmartDashboard Buttons
-    SmartDashboard::PutData("SetWheelOffsets", new SetWheelOffsets());
-    SmartDashboard::PutData("ZeroGyro", new ZeroGyro());
-    SmartDashboard::PutData("Zero BSGyro Offset", new ZeroGyroOffset());
-    SmartDashboard::PutData("Calibrate Intake Rotate", new CalibrateIntakeRotate());
+    SmartDashboard::PutData("SetWheelOffsets - DET", new SetWheelOffsets());
+    SmartDashboard::PutData("ZeroGyro - DET", new ZeroGyro());
+    SmartDashboard::PutData("Zero BSGyro Offset - DET", new ZeroGyroOffset());
+    SmartDashboard::PutData("Calibrate Intake Rotate - DET", new CalibrateIntakeRotate());
 
     GPX.reset(new BSButton(gamepad, 3));
     GPY.reset(new BSButton(gamepad, 4));

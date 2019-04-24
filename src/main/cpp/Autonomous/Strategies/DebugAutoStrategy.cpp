@@ -33,7 +33,8 @@ DebugAutoStrategy::DebugAutoStrategy(std::shared_ptr<World> world) {
 	const bool isRight = AutoStartPosition::kRight == world->GetStartPosition();
 	const int inv = isRight ? 1 : -1;
 
-	DebugTargetCount(world);
+	// DebugTargetCount(world);
+	std::cout << "--- DEBUG Autonomous Doing Nothing ---\n";
 }
 	
 

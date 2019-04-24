@@ -24,8 +24,8 @@ AutoManager::AutoManager() :
 	// positions->AddOption("1 - Center", AutoStartPosition::kCenter);
 	positions->AddOption("0 - Left",  AutoStartPosition::kLeft);
 
-	frc::SmartDashboard::PutData("Autonomous Start Pos", positions.get());
-	frc::SmartDashboard::PutData("Autonomous Strategy", strategies.get());
+	frc::SmartDashboard::PutData("Autonomous Start Pos - DET", positions.get());
+	frc::SmartDashboard::PutData("Autonomous Strategy - DET", strategies.get());
 	std::cout << "AutoManager::AutoManager() finished\n";
 }
 
@@ -112,8 +112,8 @@ void AutoManager::Periodic(std::shared_ptr<World> world) {
 
 void AutoManager::Instrument() {
 	const AutoStrategy selectedKey = static_cast<AutoStrategy>(strategies->GetSelected());
-	frc::SmartDashboard::PutNumber("Selected Auto: ", selectedKey);
+	frc::SmartDashboard::PutNumber("Selected Auto Strat: ", selectedKey);
 
 	const AutoStartPosition selectedPosition = static_cast<AutoStartPosition>(positions->GetSelected());
-	frc::SmartDashboard::PutNumber("Auto Selected Position: ", selectedPosition);
+	frc::SmartDashboard::PutNumber("Selected Auto Position: ", selectedPosition);
 }

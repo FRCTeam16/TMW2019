@@ -259,8 +259,8 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	}
 
 	SetSteering(setpoint);
-	const double steerEnd = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
-	SmartDashboard::PutNumber("Crab Steer (ms)", steerEnd);
+	// const double steerEnd = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	// SmartDashboard::PutNumber("Crab Steer (ms)", steerEnd);
 
 
 	const double driveStartTime = frc::Timer::GetFPGATimestamp();
@@ -289,10 +289,10 @@ void DriveBase::Crab(double twist, double y, double x, bool useGyro) {
 	ratio.RR = -ratio.RR;
 	SetDriveSpeed(ratio);
 
-	const double driveEnd = (driveStartTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
-	frc::SmartDashboard::PutNumber("Crab Drive (ms)", driveEnd);
-	const double end = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
-	frc::SmartDashboard::PutNumber("Crab Time (ms)", end);
+	// const double driveEnd = (driveStartTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	// frc::SmartDashboard::PutNumber("Crab Drive (ms)", driveEnd);
+	// const double end = (startTime - frc::Timer::GetFPGATimestamp()) * -1000.0;
+	// frc::SmartDashboard::PutNumber("Crab Time (ms)", end);
 }
 
 void DriveBase::SetSteering(DriveInfo<double> setpoint) {
@@ -417,7 +417,7 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		speeds.RR = speed.FL * inv.RR * SCALE_FACTOR;
 	}
 
-	double start = frc::Timer::GetFPGATimestamp();
+	// double start = frc::Timer::GetFPGATimestamp();
 	if (isOpenLoop) {
 		frontLeft->UseOpenLoopDrive(speeds.FL);
 		frontRight->UseOpenLoopDrive(speeds.FR);
@@ -429,8 +429,8 @@ void DriveBase::SetDriveSpeed(DriveInfo<double> speed) {
 		rearLeft->UseClosedLoopSpeedDrive(speeds.RL);
 		rearRight->UseClosedLoopSpeedDrive(speeds.RR);
 	}
-	double total = frc::Timer::GetFPGATimestamp() - start;
-	frc::SmartDashboard::PutNumber("DriveBaseSendSpeed", total);
+	// double total = frc::Timer::GetFPGATimestamp() - start;
+	// frc::SmartDashboard::PutNumber("DriveBaseSendSpeed", total);
 }
 
 void DriveBase::SetConstantVelocity(double twistInput, double velocity) {

@@ -474,6 +474,7 @@ void Robot::RunSubsystems() {
 }
 
 void Robot::InstrumentSubsystems() {
+	autoManager->Instrument();
 	if (runInstrumentation) {
 		auto wheels = driveBase->GetWheels();
 		frc::SmartDashboard::PutNumber("FL Encoder", wheels.FL->GetDriveEncoderPosition() );
