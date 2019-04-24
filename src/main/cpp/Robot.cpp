@@ -9,6 +9,7 @@
 #include "OI.h"
 #include "Util/BSPrefs.h" 
 #include "Util/UtilityFunctions.h"
+#include "Subsystems/Drive/TMW2019SwerveWheel.h"
 
 std::unique_ptr<OI> Robot::oi;
 std::shared_ptr<DriveBase> Robot::driveBase;
@@ -109,7 +110,20 @@ void Robot::TeleopInit() {
 	} else {
 		std::cout << " --- already initialized, ignoring\n";
 	}
-    
+
+	// Make sure follower is disabled
+	// Disable follower mode
+	auto wheels = Robot::driveBase->GetWheels();
+	DriveInfo<rev::CANSparkMax*> sparks;
+	sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+	sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+	sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+	sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+
+	sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+	sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
 
     std::cout << "Robot::TeleopInit <=\n";
 }
@@ -389,15 +403,30 @@ void Robot::TeleopPeriodic() {
 		// manual control
 		jackScrews->ConfigureOpenLoop(-oi->GetJoystickY(threshold));
 	} else if (testFrontDrive) {
-		if (oi->DL9->RisingEdge()) {		// warning DL9 reused in liftControl->Run()
-			driveBase->SetTargetAngle(180.0);
-		}
-		std::cout << "Running liftDrive\n";
-		liftDrive.DriveFront(
-			driveBase->GetCrabTwistOutput(),
-			0.2,
-			0,
-			true);
+		// if (oi->DL9->RisingEdge()) {		// warning DL9 reused in liftControl->Run()
+		// 	driveBase->SetTargetAngle(180.0);
+		// }
+		// std::cout << "Running liftDrive\n";
+		// liftDrive.DriveFront(
+		// 	driveBase->GetCrabTwistOutput(),
+		// 	0.2,
+		// 	0,
+		// 	true);
+
+		std::cout << " TESTING FOLLOW INVERSION \n";
+		auto wheels = Robot::driveBase->GetWheels();
+		DriveInfo<rev::CANSparkMax*> sparks;
+		sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+		sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+		sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+		sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+
+		sparks.RL->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.RR->GetDeviceId(), false);
+		sparks.RR->Set(-oi->GetJoystickY(threshold));
+		sparks.FL->Set(0.0);
+		sparks.FR->Set(0.0);
+
+
 	} else if (autoInitialized) {
 		autoManager->Periodic(world);
 	} else {

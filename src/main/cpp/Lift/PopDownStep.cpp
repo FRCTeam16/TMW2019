@@ -1,5 +1,6 @@
 #include "Lift/PopDownStep.h"
 #include "Robot.h"
+#include "Subsystems/Drive/TMW2019SwerveWheel.h"
 
 void PopDownStep::Execute() {
     auto jackScrewControls = Robot::jackScrews->GetJackScrewControls();
@@ -11,6 +12,18 @@ void PopDownStep::Execute() {
         wheels.FR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         wheels.RL->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         wheels.RR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
+
+        // Disable follower mode
+        DriveInfo<rev::CANSparkMax*> sparks;
+        sparks.FL = static_cast<TMW2019SwerveWheel*>(wheels.FL.get())->GetDriveMotor().get();
+        sparks.FR = static_cast<TMW2019SwerveWheel*>(wheels.FR.get())->GetDriveMotor().get();
+        sparks.RL = static_cast<TMW2019SwerveWheel*>(wheels.RL.get())->GetDriveMotor().get();
+        sparks.RR = static_cast<TMW2019SwerveWheel*>(wheels.RR.get())->GetDriveMotor().get();
+
+        sparks.FL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        sparks.FR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        sparks.RL->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
+        sparks.RR->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
 
         Robot::jackScrews->ConfigureControlled(
             JackScrews::LiftMode::kAll,

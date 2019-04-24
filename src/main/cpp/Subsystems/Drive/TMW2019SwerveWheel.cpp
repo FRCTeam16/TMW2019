@@ -35,6 +35,7 @@ void TMW2019SwerveWheel::InitializeDrivePID() {
 	const double driveF = prefs->GetDouble("DriveF", 0.0);
 	const double driveIZone = prefs->GetDouble("DriveIZone", 0.0);
 
+    driveMotor->Follow(rev::CANSparkMax::kFollowerDisabled, 0);
     driveMotor->SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
     driveMotor->Set(0.0);
     isOpenLoop = true;
@@ -85,6 +86,7 @@ void TMW2019SwerveWheel::UseOpenLoopDrive(double speed) {
     
     frc::SmartDashboard::PutNumber(name + " Drive Speed", speed);
     // std::cout << "TMW2019SwerveWheel " << name << " OpenLoop: " << speed << "\n";
+    // std::cout << "TMW2019SwerveWheel " << name << " Follower? " << driveMotor->IsFollower() << "\n";
 
     driveMotor->Set(speed);
     isOpenLoop = true;

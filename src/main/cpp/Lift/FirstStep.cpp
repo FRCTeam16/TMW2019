@@ -83,7 +83,8 @@ void FirstStep::Execute() {
                 if (!sparks.FR->IsFollower()) {
                     std::cout << "...Setting FR to follow FL\n";
                     jackScrewControls->FR->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);  // disables our controlled input
-                    sparks.FR->Follow(*sparks.FL);
+                    // sparks.FR->Follow(*sparks.FL, false);
+                    sparks.FR->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.FL->GetDeviceId(), false );
                 } else {
                     std::cout << "...FR already a follower\n";
                 }
@@ -92,7 +93,8 @@ void FirstStep::Execute() {
                 if (!sparks.FL->IsFollower()) {
                     std::cout << "...Setting FL to follow FR\n";
                     jackScrewControls->FL->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);  // disables our controlled input
-                    sparks.FL->Follow(*sparks.FR);
+                    // sparks.FL->Follow(*sparks.FR, false);
+                    sparks.FL->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.FR->GetDeviceId(), false );
                 } else {
                     std::cout << "...FL already a follower\n";
                 }
@@ -111,7 +113,8 @@ void FirstStep::Execute() {
                 if (!sparks.RR->IsFollower()) {
                     std::cout << "...Setting RR to follow RL\n";
                     jackScrewControls->RR->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);  // disables our controlled input
-                    sparks.RR->Follow(*sparks.RL);
+                    // sparks.RR->Follow(*sparks.RL);
+                    sparks.RR->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.RL->GetDeviceId(), false );
                 } else {
                     std::cout << "...RR already a follower\n";
                 }
@@ -120,7 +123,8 @@ void FirstStep::Execute() {
                 if (!sparks.RL->IsFollower()) {
                     std::cout << "...Setting RL to follow RR\n";
                     jackScrewControls->RL->SetCurrentState(JackScrewControl::JackScrewState::kSwerve);  // disables our controlled input
-                    sparks.RL->Follow(*sparks.RR);
+                    // sparks.RL->Follow(*sparks.RR);
+                    sparks.RL->Follow(rev::CANSparkMax::kFollowerSparkMax, sparks.RR->GetDeviceId(), false );
                 } else {
                     std::cout << "...RL already a follower\n";
                 }
@@ -130,7 +134,7 @@ void FirstStep::Execute() {
 
     }
     /// Re-enable crawler on finish or timeout
-    if (finished || (elapsed > 3.0) ) {
+    if (finished || (elapsed > 4.0) ) {
         if (!crawlerStarted) {
             
         }
