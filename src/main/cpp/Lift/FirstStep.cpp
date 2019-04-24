@@ -70,9 +70,13 @@ void FirstStep::Execute() {
         // Check axes to make sure we haven't experienced slippage
         //  
         
-        if (jscDone.FL ^ jscDone.FR) {
+        const bool frontFollowing = (sparks.FL->IsFollower() || sparks.FR->IsFollower());
+        if (frontFollowing) {
+            std::cout << "~~~ Front already running a follower\n";
+        }
+        if ((jscDone.FL ^ jscDone.FR) && !frontFollowing) {
             std::cout << "~~~ Detected xor front axis climb state - probable slippage\n";
-            // TODO: Maybe check closed loop instead of accumulated position?
+            
             if (jackScrewControls->FL->GetAccumulatedPosition() < jackScrewControls->FR->GetAccumulatedPosition()) {
                 // Assume FR has slipped and is reporting incorrect values
                 // make it open loop and a follower
@@ -95,7 +99,11 @@ void FirstStep::Execute() {
             }
         }
 
-        if (jscDone.RL ^ jscDone.RR) {
+        const bool backFollowing = (sparks.RL->IsFollower() || sparks.RR->IsFollower());
+        if (backFollowing) {
+            std::cout << "~~~ Back already running a follower\n";
+        }
+        if ((jscDone.RL ^ jscDone.RR) && !backFollowing) {
             std::cout << "~~~ Detected xor rear axis climb state - probable slippage\n";
             if (jackScrewControls->RL->GetAccumulatedPosition() < jackScrewControls->RR->GetAccumulatedPosition()) {
                 // Assume RR has slipped and is reporting incorrect values
