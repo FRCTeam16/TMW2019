@@ -52,7 +52,7 @@ void JackScrews::Init() {
   kHaltClimbDisplacementThreshold = BSPrefs::GetInstance()->GetDouble("JackScrew.haltDisplacementThreshold", 2.0);
   speedDeltaDown = BSPrefs::GetInstance()->GetDouble("JackScrew.deltaDown", 0.05);
   speedDeltaUp = BSPrefs::GetInstance()->GetDouble("JackScrew.deltaUp", 0.05);
-  enableEmergencyHalt = BSPrefs::GetInstance()->GetBool("JackScrew.EnableEStop", true);
+  enableEmergencyHalt = BSPrefs::GetInstance()->GetBool("JackScrew.EnableEStop", false);
 
   jackScrews->FL->Init();
   jackScrews->FR->Init();
