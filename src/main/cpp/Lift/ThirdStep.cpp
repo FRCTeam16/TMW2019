@@ -17,6 +17,7 @@ void Thirdstep::Execute() {
 
     if (IsFirstRun()) {
         std::cout << "Lift Third Step\n";
+        Robot::jackScrews->ShiftFront(JackScrews::ShiftMode::kDrive);
         wheels.RL->SetDriveSoftMinMaxOutput(-1.0, 0.0);
         wheels.RR->SetDriveSoftMinMaxOutput(-1.0, 0.0);
 

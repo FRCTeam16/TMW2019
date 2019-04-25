@@ -5,7 +5,7 @@ Auto.MCS.cargoDrive1.y, 0.6
 Auto.MCS.cargoDrive2.ignoretime, 0.3
 Auto.MCS.cargoDrive2.tgt, 3
 Auto.MCS.cargoDrive2.time, 5
-Auto.MCS.cargoDrive2.y, 0.3
+Auto.MCS.cargoDrive2.y, 0.20
 Auto.MCS.cargoDrive3.time, 1.75
 Auto.MCS.cargoDrive3.x, -0.3
 Auto.MCS.cargoDrive3.y, 0.7
@@ -16,7 +16,7 @@ Auto.MCS.cargoDrive4.y, 0.3
 Auto.MCS.cargoDriveTimeout, 3.5
 Auto.MCS.initDriveSpeed.x, 0
 Auto.MCS.initDriveSpeed.y, 0.4
-Auto.MCS.pickupFastSpeed.x, 0.2
+Auto.MCS.pickupFastSpeed.x, 0.15
 Auto.MCS.pickupFastSpeed.y, -0.7
 Auto.MCS.pickupFastSpeedRamp, 0.5
 Auto.MCS.pickupFastTime1, 2.25
@@ -44,7 +44,7 @@ Auto.RBS.rocketAlignmentThreshold, 1
 Auto.RBS.rocketAlignmentTime, 3
 Auto.RBS.rocketAngle, 150
 Auto.RBS.rocketDistThresh, 5
-Auto.RBS.rocketDistance, 160
+Auto.RBS.rocketDistance, 170
 Auto.RBS.rocketKickoutSpeed, -0.2
 Auto.RBS.rocketKickoutTime, 0.75
 Auto.RBS.rocketPushInTime, 1.5
@@ -142,7 +142,7 @@ JackScrew.cr.backSpeed, 1
 JackScrew.cr.frontSpeed, 1
 JackScrew.cr.rampTime, 0.5
 JackScrew.cr.spinUpSpeed, 0.25
-JackScrew.cr.spinUpTime, 0.25
+JackScrew.cr.spinUpTime, 0.50
 JackScrew.deltaDown, 0.035
 JackScrew.deltaUp, 0.05
 JackScrew.dist, 98
