@@ -44,7 +44,7 @@ Auto.RBS.rocketAlignmentThreshold, 1
 Auto.RBS.rocketAlignmentTime, 3
 Auto.RBS.rocketAngle, 150
 Auto.RBS.rocketDistThresh, 5
-Auto.RBS.rocketDistance, 175
+Auto.RBS.rocketDistance, 171
 Auto.RBS.rocketKickoutSpeed, -0.2
 Auto.RBS.rocketKickoutTime, 0.75
 Auto.RBS.rocketPushInTime, 1.5
