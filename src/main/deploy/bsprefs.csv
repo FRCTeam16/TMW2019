@@ -1,6 +1,6 @@
 Auto.MCS.PushBack.y, -0.15
 Auto.MCS.cargoDrive1.time, 0.75
-Auto.MCS.cargoDrive1.x, 0.6
+Auto.MCS.cargoDrive1.x, 0.4
 Auto.MCS.cargoDrive1.y, 0.6
 Auto.MCS.cargoDrive2.ignoretime, 0.3
 Auto.MCS.cargoDrive2.tgt, 3
@@ -44,7 +44,7 @@ Auto.RBS.rocketAlignmentThreshold, 1
 Auto.RBS.rocketAlignmentTime, 3
 Auto.RBS.rocketAngle, 150
 Auto.RBS.rocketDistThresh, 5
-Auto.RBS.rocketDistance, 170
+Auto.RBS.rocketDistance, 175
 Auto.RBS.rocketKickoutSpeed, -0.2
 Auto.RBS.rocketKickoutTime, 0.75
 Auto.RBS.rocketPushInTime, 1.5
