@@ -40,8 +40,10 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double cargoDrive1Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.y", 0.4);
     const double cargoDrive1X = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.x", 0.1) * inv;
     const double cargoDrive1Time = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive1.time", 1.5);
-    steps.push_back(new TimedDrive(cargoShipAngle, cargoDrive1Y, cargoDrive1X, cargoDrive1Time, -1));
-    steps.push_back(new SetVisionLight(true));
+    steps.push_back(new ConcurrentStep({
+        new TimedDrive(cargoShipAngle, cargoDrive1Y, cargoDrive1X, cargoDrive1Time, -1),
+        new SetVisionLight(true)
+    }));
 
     // Drive and Stop at Target
     const double cargoDrive2Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.y", 0.3);
@@ -53,7 +55,6 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
 
     // Drive and Place Hatch
     DriveAndPlaceHatch(cargoShipAngle, inv);
-    steps.push_back(new SetVisionOutputRange(0.3)); // TODO: use reset method
 
     // Drive quickly to hatch pickup
     const double pickupAngle = 180.0;
@@ -64,6 +65,7 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double pickupFastTime1 = BSPrefs::GetInstance()->GetDouble("Auto.MCS.pickupFastTime1", 3.0);
     steps.push_back(new ConcurrentStep({
         new TimedDrive(pickupAngle, pickupFastSpeed, pickupFastSpeedX, pickupFastTime1),
+        new SetVisionOutputRange(0.3),      // TODO: Need reset method
         new SelectVisionPipeline(0),
         new SetVisionLight(true)
     }));
@@ -93,9 +95,13 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double cargoDrive3Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.y", 0.6);
     const double cargoDrive3X = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.x", -0.3) * inv;
     const double cargoDrive3Time = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.time", 1.5);
-    steps.push_back(new TimedDrive(cargoShipAngle, cargoDrive3Y, cargoDrive3X, cargoDrive3Time, 0.5));
-    steps.push_back(new SetVisionLight(true));
-    steps.push_back(new SelectVisionPipeline(isRight? 2 : 1));
+    const double cargoDrive3Ramp = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive3.ramp", 0.5);
+    steps.push_back(new ConcurrentStep({
+        new TimedDrive(cargoShipAngle, cargoDrive3Y, cargoDrive3X, cargoDrive3Time, cargoDrive3Ramp),
+        new SetVisionLight(true),
+        new SelectVisionPipeline(isRight? 2 : 1)
+    }));
+    // new SetVisionOutputRange(visionOutputRange)
 
     // Drive and Stop at Target
     const double cargoDrive4Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive4.y", 0.3);
