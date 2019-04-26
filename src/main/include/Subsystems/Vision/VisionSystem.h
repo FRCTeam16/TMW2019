@@ -35,6 +35,8 @@ class VisionSystem : public SubsystemManager {
   void ToggleCameraMode();
   std::shared_ptr<VisionInfo> GetLastVisionInfo();
   std::shared_ptr<Limelight> GetLimelight() { return limelight; }
+  void SetMaxOutputRange(double _range);
+  void ResetMaxOutputRange();
 private:
   std::shared_ptr<Limelight> limelight;
   std::unique_ptr<XOffsetController> xoffsetController;

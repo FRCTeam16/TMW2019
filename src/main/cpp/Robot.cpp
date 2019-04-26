@@ -110,6 +110,7 @@ void Robot::TeleopInit() {
 	} else {
 		std::cout << " --- already initialized, ignoring\n";
 	}
+	visionSystem->ResetMaxOutputRange();
 
 	// Make sure follower is disabled
 	// Disable follower mode

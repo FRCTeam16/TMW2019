@@ -1,6 +1,6 @@
 Auto.MCS.PushBack.y, -0.15
 Auto.MCS.cargoDrive1.time, 0.75
-Auto.MCS.cargoDrive1.x, 0.4
+Auto.MCS.cargoDrive1.x, 0.35
 Auto.MCS.cargoDrive1.y, 0.6
 Auto.MCS.cargoDrive2.ignoretime, 0.3
 Auto.MCS.cargoDrive2.tgt, 3
@@ -27,7 +27,8 @@ Auto.MCS.pickupVizArea1, 2.0
 Auto.MCS.pickupVizArea2, 4.5
 Auto.MCS.pickupVizTimeout, 2.5
 Auto.MCS.placeHatchThreshold, 4.5
-Auto.MCS.placeHatchY, 0.3
+Auto.MCS.placeHatchY, 0.2
+Auto.MCS.visionOutputRange, 0.2
 Auto.RBS.initDriveSpeed, 0.3
 Auto.RBS.pickupFastSpeed, -0.8
 Auto.RBS.pickupFastSpeedX, 0.2
@@ -145,7 +146,7 @@ JackScrew.cr.spinUpSpeed, 0.25
 JackScrew.cr.spinUpTime, 0.50
 JackScrew.deltaDown, 0.035
 JackScrew.deltaUp, 0.05
-JackScrew.dist, 98
+JackScrew.dist, 100
 JackScrew.dist.L2, 35
 JackScrew.haltDisplacementThreshold, 10
 JackScrew.speedDisplacementThreshold, 1

@@ -71,3 +71,13 @@ void VisionSystem::Instrument() {
         frc::SmartDashboard::PutNumber("Vision Threshold?", currentVisionInfo->inThreshold);
     }
 }
+
+void VisionSystem::SetMaxOutputRange(double range) {
+    std::cout << "Setting VisionSystem MaxOutputRange: " << range << "\n";
+    xoffPID->SetOutputRange(-range, range);
+}
+
+void VisionSystem::ResetMaxOutputRange() {
+    double range = BSPrefs::GetInstance()->GetDouble("Vision.x.range", 0.3);
+    SetMaxOutputRange(range);
+}

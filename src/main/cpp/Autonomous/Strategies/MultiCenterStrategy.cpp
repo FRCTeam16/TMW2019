@@ -11,6 +11,7 @@
 #include "Autonomous/Steps/SetVisionLight.h"
 #include "Autonomous/Steps/StopAtTargetCount.h"
 #include "Autonomous/Steps/TimedDrive.h"
+#include "Autonomous/Steps/SetVisionOutputRange.h"
 
 void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     std::cout << "MultiCenterStrategy::Init\n";
@@ -25,9 +26,11 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     // Drive off platform
     const double initialDriveSpeedY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.initDriveSpeed.y", 0.3);
     const double initialDriveSpeedX = BSPrefs::GetInstance()->GetDouble("Auto.MCS.initDriveSpeed.x", 0.0) * inv;
+    const double visionOutputRange = BSPrefs::GetInstance()->GetDouble("Auto.MCS.visionOutputRange", 0.2);
     steps.push_back(new ConcurrentStep({
 		new TimedDrive(0.0, initialDriveSpeedY, initialDriveSpeedX, 1.25, 0.25),
 		new RotateIntake(IntakeRotate::IntakePosition::kLevelOne),
+        new SetVisionOutputRange(visionOutputRange),
         new SelectVisionPipeline(isRight? 2 : 1)
 	}));
 
