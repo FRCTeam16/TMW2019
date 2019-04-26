@@ -12,6 +12,7 @@
 #include "Autonomous/Steps/StopAtTargetCount.h"
 #include "Autonomous/Steps/TimedDrive.h"
 #include "Autonomous/Steps/SetVisionOutputRange.h"
+#include "Autonomous/Steps/AlignToTarget.h"
 
 void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     std::cout << "MultiCenterStrategy::Init\n";
@@ -52,6 +53,7 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
 
     // Drive and Place Hatch
     DriveAndPlaceHatch(cargoShipAngle, inv);
+    steps.push_back(new SetVisionOutputRange(0.3)); // TODO: use reset method
 
     // Drive quickly to hatch pickup
     const double pickupAngle = 180.0;
@@ -110,12 +112,23 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
 }
 
 void MultiCenterStrategy::DriveAndPlaceHatch(double cargoShipAngle, int inv, bool doPlacement) {
+    // First perform finer tuned alignment
+    const double placeAlignThrehold = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentThreshold", 5);
+    const double placeAlignTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentTime", 0.5);
+    const double placeAlignScans = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentScans", 1);
+    steps.push_back(new AlignToTarget(cargoShipAngle, placeAlignThrehold, placeAlignTime, placeAlignScans));
+
+    // drive to target while adjusting until we meet target area
     const double placeHatchY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeHatchY", 0.3);
 	const double placeHatchThreshold = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeHatchThreshold", 5.0);
 	const double placeHatchTimeout = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDriveTimeout", 3.5);
-    const double pushBackSpeed = BSPrefs::GetInstance()->GetDouble("Auto.MCS.PushBack.y", -0.15);
-
 	steps.push_back(new DriveToTarget(cargoShipAngle, placeHatchY, placeHatchThreshold, placeHatchTimeout));
+
+    // Extra push to target
+    const double pushBackSpeed = BSPrefs::GetInstance()->GetDouble("Auto.MCS.PushBack.y", -0.15);
+    const double placePushY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placePushY", 0.2);
+    const double placePushTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placePushTime", 0.25);
+    steps.push_back(new TimedDrive(cargoShipAngle, 0.0, -1 * inv * placePushY, placePushTime));
 
     if (doPlacement) {
         steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
