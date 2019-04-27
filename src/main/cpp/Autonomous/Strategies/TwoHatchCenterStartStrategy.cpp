@@ -90,16 +90,25 @@ void TwoHatchCenterStartStrategy::Init(std::shared_ptr<World> world) {
 	const double toCargoIgnoreTime = BSPrefs::GetInstance()->GetDouble("Auto.THCS.toCargoIgnoreTime", 0.5);
 
 	// Approach cargo ship and look for first target
-	auto drive = new TimedDrive(cargoShipAngle, toCargoY, toCargoX, toCargoTime);
+	const double toCargoY2 = BSPrefs::GetInstance()->GetDouble("Auto.THCS.toCargoY2", 0.20);
+	auto drive = new TimedDrive(cargoShipAngle, toCargoY2, toCargoX, toCargoTime);
 	steps.push_back(new ConcurrentStep({
 		new StopAtTarget(drive, toCargoVizThresh, 1, toCargoIgnoreTime, toCargoTime),
 		new SetVisionLight(true)
 	}, true));
 
+	// drive to target
 	const double cargoDriveY = BSPrefs::GetInstance()->GetDouble("Auto.THCS.cargoDriveY", 0.3);
 	const double cargoDriveThreshold = BSPrefs::GetInstance()->GetDouble("Auto.THCS.cargoDriveThreshold", 5.0);
 	const double cargoDriveTimeout = BSPrefs::GetInstance()->GetDouble("Auto.THCS.cargoDriveTimeout", 3.5);
 	steps.push_back(new DriveToTarget(cargoShipAngle, cargoDriveY, cargoDriveThreshold, cargoDriveTimeout));
+
+	// extra push
+    const double placePushY = BSPrefs::GetInstance()->GetDouble("Auto.THCX.placePushY", 0.2);
+    const double placePushTime = BSPrefs::GetInstance()->GetDouble("Auto.THCX.placePushTime", 0.25);
+    steps.push_back(new TimedDrive(cargoShipAngle, 0.0, -1 * inv * placePushY, placePushTime));
+
+	// do intake
 	steps.push_back(new DoIntakeAction(DoIntakeAction::Action::kEjectHatch, 0.5));
 	steps.push_back(new Delay(1.0));
 	steps.push_back(new ConcurrentStep({

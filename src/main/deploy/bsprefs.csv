@@ -96,6 +96,9 @@ Auto.THCS.toCargoTime, 2.75
 Auto.THCS.toCargoVizThresh, 10
 Auto.THCS.toCargoX, -0.065
 Auto.THCS.toCargoY, 0.2
+Auto.THCS.toCargoY2, 0.25
+Auto.THCX.placePushY, 0.2
+Auto.THCX.placePushTime, 0.25
 DriveControlP, 0
 DriveControlI, 0
 DriveControlD, 0
