@@ -47,13 +47,22 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
 
     // Drive and Stop at Target
     const double cargoDrive2Y = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.y", 0.3);
+    const double cargoDrive2YStep = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.step.y", 0.25);
     const double cargoDrive2Time = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.time", 5.0);
     const double cargoDrive2IgnoreTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.ignoretime", 0.0);
     const int cargoDrive2Target = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive2.tgt", 3);
     auto cargoDrive2 = new TimedDrive(cargoShipAngle, cargoDrive2Y, 0.0, cargoDrive2Time);
-	steps.push_back(new StopAtTargetCount(cargoDrive2, cargoDrive2Target, isRight, cargoDrive2IgnoreTime, cargoDrive2Time));
+    auto stopAtTarget1 = new StopAtTargetCount(cargoDrive2, cargoDrive2Target, isRight, cargoDrive2IgnoreTime, cargoDrive2Time);
+    stopAtTarget1->SetStepDownYSpeed(cargoDrive2YStep);
+	steps.push_back(stopAtTarget1);
 
-    // Drive and Place Hatch
+    // Perform explicit alignment
+    const double placeAlignThrehold = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentThreshold", 5);
+    const double placeAlignTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentTime", 0.5);
+    const double placeAlignScans = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentScans", 1);
+    steps.push_back(new AlignToTarget(cargoShipAngle, placeAlignThrehold, placeAlignTime, placeAlignScans));
+
+    // Drive and Place Hatch 
     DriveAndPlaceHatch(cargoShipAngle, inv);
 
     // Drive quickly to hatch pickup
@@ -109,7 +118,8 @@ void MultiCenterStrategy::Init(std::shared_ptr<World> world) {
     const double cargoDrive4IgnoreTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive4.ignoretime", 0.0);
     const int cargoDrive4Target = BSPrefs::GetInstance()->GetDouble("Auto.MCS.cargoDrive4.tgt", 2);
     auto cargoDrive4 = new TimedDrive(cargoShipAngle, cargoDrive4Y, 0.0, cargoDrive4Time);
-	steps.push_back(new StopAtTargetCount(cargoDrive4, cargoDrive4Target, isRight, cargoDrive4IgnoreTime, cargoDrive4Time));
+    auto stopAtTarget2 = new StopAtTargetCount(cargoDrive4, cargoDrive4Target, isRight, cargoDrive4IgnoreTime, cargoDrive4Time);
+	steps.push_back(stopAtTarget2);
     steps.push_back(new SelectVisionPipeline(0));
 
     // Drive and Place Hatch
@@ -122,7 +132,7 @@ void MultiCenterStrategy::DriveAndPlaceHatch(double cargoShipAngle, int inv, boo
     const double placeAlignThrehold = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentThreshold", 5);
     const double placeAlignTime = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentTime", 0.5);
     const double placeAlignScans = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeAlignmentScans", 1);
-    steps.push_back(new AlignToTarget(cargoShipAngle, placeAlignThrehold, placeAlignTime, placeAlignScans));
+    // steps.push_back(new AlignToTarget(cargoShipAngle, placeAlignThrehold, placeAlignTime, placeAlignScans));
 
     // drive to target while adjusting until we meet target area
     const double placeHatchY = BSPrefs::GetInstance()->GetDouble("Auto.MCS.placeHatchY", 0.3);

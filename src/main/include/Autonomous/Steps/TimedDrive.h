@@ -16,9 +16,11 @@ public:
 	virtual ~TimedDrive() {}
 	bool Run(std::shared_ptr<World> world) override;
 
+	void OverrideYSpeed(double yspeed) { ySpeed = yspeed; }
+
 private:
     const double angle;
-    const double ySpeed;
+    /*const*/ double ySpeed;
     const double xSpeed;
     const double timeToDrive;
 	const double rampUpTime;

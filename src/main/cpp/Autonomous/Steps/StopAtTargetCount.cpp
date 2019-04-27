@@ -2,7 +2,7 @@
 
 #include "Robot.h"
 
-StopAtTargetCount::StopAtTargetCount(Step *step, int numTargets_, bool moveRight_, double _ignoreTime, double _timeOutTime) 
+StopAtTargetCount::StopAtTargetCount(TimedDrive *step, int numTargets_, bool moveRight_, double _ignoreTime, double _timeOutTime) 
   : step(step),  numberOfTargets(numTargets_), movingRight(moveRight_), ignoreTime(_ignoreTime), timeOutTime(_timeOutTime) {}
 
 bool StopAtTargetCount::Run(std::shared_ptr<World> world) {
@@ -36,13 +36,22 @@ bool StopAtTargetCount::Run(std::shared_ptr<World> world) {
 
             visionThresholdMet = (targetsFound >= numberOfTargets);
            
-            std::cout << "StopAtTarget(targetsFound = " << targetsFound << "):" 
+            std::cout << "StopAtTargetCount(targetsFound = " << targetsFound << "):" 
                     << " | xspeed: " << vision->xSpeed
                     << " | ta: " << vision->targetArea
                     << " | tx: " << vision->xOffset
                     << " | deltax: " << deltaX
                     << " | ta met? " << visionThresholdMet
                     << "\n"; 
+
+            // Step down speed
+            if (stepDownSpeedEnabled && (targetsFound == (numberOfTargets - 2))) {
+                if (!stepDownSpeedSet) {
+                    std::cout << "StopAtTargetCount - setting speed\n";
+                    step->OverrideYSpeed(stepDownSpeed);
+                }
+                // else step down speed already configured in wrapped step
+            }
         } else {
             std::cout << "StopAtTarget(targetsFound = " << targetsFound << "): no target\n";
         }
